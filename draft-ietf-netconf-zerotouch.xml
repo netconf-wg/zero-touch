@@ -1,0 +1,1195 @@
+<?xml version='1.0'?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY rfc6187 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6187.xml">
+<!ENTITY rfc7317 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7317.xml">
+]>
+
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<?rfc linkmailto="no" ?>
+<?rfc editing="no" ?>
+<?rfc comments="yes" ?>
+<?rfc inline="yes"?>
+<?rfc rfcedstyle="yes"?>
+<?rfc-ext allow-markup-in-artwork="yes" ?>
+<?rfc-ext include-index="no" ?>
+<!--<?rfc strict="no"?> -->
+
+<rfc category="std"
+     ipr="trust200902"
+     docName="draft-ietf-netconf-zero-touch-latest">
+    <front>
+        <title abbrev="ZeroTouch">Zero Touch Provisioning for NETCONF Call Home (ZeroTouch)</title>
+        <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
+            <organization>Juniper Networks</organization>
+            <address>
+                <email>kwatsen@juniper.net</email>
+            </address>
+        </author>
+        <author initials="S.H." surname="Hanna" fullname="Stephen Hanna">
+            <organization>Juniper Networks</organization>
+            <address>
+                <email>shanna@juniper.net</email>
+            </address>
+        </author>
+        <author initials="J.M.C." surname="Clarke" fullname="Joe Marcus Clarke">
+            <organization>Cisco Systems</organization>
+            <address>
+                <email>jclarke@cisco.com</email>
+            </address>
+        </author>
+        <author initials="M.A." surname="Abrahamsson" fullname="Mikael Abrahamsson">
+            <organization>T-Systems</organization>
+            <address>
+                <email>"mikael.abrahamsson@t-systems.se</email>
+            </address>
+        </author>
+        <date day="1" month="October" year="2014"/>
+        <area>Operations</area>
+        <workgroup>NETCONF Working Group</workgroup>
+        <keyword>zerotouch</keyword>
+        <abstract>
+            <t>This draft presents a technique for establishing a
+            secure NETCONF connection between a newly deployed 
+            IP-based device, configured with just its factory 
+            default settings, and the new owner's Network Management 
+            System (NMS).</t>
+        </abstract>
+    </front>
+
+    <middle>
+      <section title="Introduction">
+
+        <section title="Terminology">
+          <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+          "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+          and "OPTIONAL" in this document are to be interpreted as
+          described in RFC 2119 <xref target="RFC2119"/>.</t>
+        </section>
+
+        <section title="Objectives">
+          <t>A fundamental business requirement is to reduce 
+          operational costs where possible.  Deploying new 
+          IP-based devices is many times one of the largest
+          costs in running a network, as sending trained 
+          specialists to each site to do an installation is 
+          both cost prohibitive and does not scale.</t>
+          <t>Both networking vendors and standard bodies have
+          tried to address this issue, with varying levels of
+          success.  For instance, the Broadband Forum TR-069 
+          specification <xref target="TR069"/> relies solely
+          on DHCP for NMS discovery, but this can only work in
+          environments where the DHCP server is locally administered,
+          which is not the case when the device is connected to 
+          an ISP's network.  In another example, some network
+          vendors have enabled their devices to load an initial
+          configuration from removable storage media (e.g., a
+          USB flash drive), but not all devices have such ports.</t>
+          <t>The solution presented herein, ZeroTouch, enables
+          a device to securely obtain an initial configuration
+          from the network without any operator intervention.
+          The discovered configuration initiates the device to
+          "call home" using either SSH or TLS, as described in 
+          <xref target="NETCONF-CALL-HOME"/>.</t>
+          <t><vspace blankLines="3"/></t>
+        </section>
+
+
+        <section title="Use Cases" anchor="use-cases">
+          <t>
+            <list style="symbols">
+              <t>Connecting to a remotely administered network
+                <list style="empty">
+                  <t>This use-case involves scenarios, such as a remote
+                  branch office or convenience store, whereby the device
+                  connects to an ISP's network.  In this case, the device
+                  receives only generic networking settings (address, netmask,
+                  gateway, DNS servers, etc.) provided by the ISP,
+                  with no site-specific customizations, such that the
+                  device has no recourse but to reach out to the 
+                  presumably insecure network for its initial 
+                  configuration.</t>
+                </list>
+              </t>
+              <t>Connecting to a locally administered network
+                <list style="empty">
+                  <t>This use-case covers all other scenarios and 
+                  differs only in that the device may additionally
+                  receive some site-specific information to guide
+                  its call home process, which could then direct
+                  it to a local server for its initial configuration.
+                  If no site-specific information is provided, or the
+                  device is unable to use the information provided,
+                  it can then reach out to network just as it would
+                  for a remotely administered network.</t>
+                </list>
+              </t>
+            </list>
+          </t>
+          <t><vspace blankLines="30"/></t>
+        </section>
+
+        <section title="Actors and Roles">
+          <t>
+            <figure>
+              <artwork><![CDATA[
+                               fetches Configlet and
+                 +----------+  boot-image, if needed
+    +------------|  Device  |---------------------+
+    |            +----------+                     |
+    |                 ^                           |
+    |                 |                           V
+    | call home       | manufactures         +----------+
+    |                 | with neceassary      |  Config  |
+    |                 | default state        |  Server  |<----+
+    |                 | for ZeroTouch        +----------+     |
+    |                 |                                       |
+    |                 |                                       |
+    |            +----------+  delegates trust                |
+    |            |  Vendor  |-------------------+             |
+    |            +----------+                   |             |
+    |               ^    ^                      |             |
+    |               |    |                      V             |
+    |               |    |                 +----------+       |
+    |       imports |    | validate owner  |  Config  |       |
+    |         trust |    +-----------------|  Signer  |       |
+    |        anchor |                      +----------+       |
+    |               |                           ^             |
+    |               |                           |             |
+    |            +---------+  requests signing  |             |
+    +----------->|   NMS   |--------------------+             |
+                 +---------+                                  |
+                     |                                        |
+                     +----------------------------------------+
+                       signed Configlet and boot-image file
+]]></artwork>
+
+              <postamble>Though not represented as a box in the diagram,
+              the Configlet is also a first-class object in the solution.</postamble>
+            </figure>
+          </t>
+          <t>
+          <list style="symbols">
+            <t>Configlet
+              <list style="empty">
+                <t>A Configlet is an XML document that, when
+                loaded onto a device, configures the device
+                to initiate a call home connection to a deployment
+                specific NMS, as well as set a local administrator
+                account for the NMS to log into.  The Configlet
+                is signed and optionally encrypted.  More information
+                about Configlets is in <xref target="configlet"/>.</t>
+              </list>
+            </t>
+            <t>Configuration Server
+              <list style="empty">
+                <t>A Configuration Server hosts Configlets and 
+                boot-images to be downloaded over a network via
+                HTTP/S.  Configuration Servers can be deployed 
+                either on the locally
+                administered network or on some external network
+                (e.g., the Internet).  Configuration Servers are
+                known to devices in the form of a URI, which can
+                be either preconfigured or dynamically discovered.
+                More information about Configuration Servers is 
+                in <xref target="config-server"/>.</t>
+              </list>
+            </t>
+            <t>Configuration Signer
+              <list style="empty">
+                <t>A Configuration Signer is an entity that the
+                device's vendor has delegated the Configlet-signing
+                function to.  A Configuration Signer only needs to 
+                ensure that the requestor is the rightful owner of 
+                the device to which a configuration is destined.  A
+                Configuration Signer may be site-specific or an
+                external entity. More information about 
+                Configuration Signers is in
+                <xref target="config-signer"/>.</t>
+              </list>
+            </t>
+            <t>Device
+              <list style="empty">
+                <t>The device is the networking entity that initiates
+                ZeroTouch, whenever booting with its factory default
+                settings.  The device is preconfigured with a secure
+                device identity, Configuration Servers URIs, and
+                certificates for both Configuration Signers and 
+                Configuration Servers it trusts by default.  A
+                device may dynamically discover additional URIs and
+                certificates from a locally-administered network.
+                More information about Devices
+                is in <xref target="device"/>.</t>
+              </list>
+            </t>
+            <t>Network Management System
+              <list style="empty">
+                <t>The NMS is the deployment-specific system that
+                devices initiate their call home connections to.
+                The NMS must be configured with vendor-specific
+                trust anchors and unique device identifiers.
+                The administrators of the NMS system interact with
+                Configuration Signer and Configuration Server
+                systems to stage the the device configurations.
+                More information about Network Management Systems
+                is in <xref target="nms"/>.</t>
+              </list>
+            </t>
+            <t>Vendor
+              <list style="empty">
+                <t>Vendors manufacture the devices with secure
+                 device identities and preconfigured Configuration
+                 URIs, and Configuration Signer certificates.
+                 Vendors are the de facto Configuration Signer
+                 for the devices it manufactures, but may
+                 delegate that role to external Configuration
+                 Signers.  More information about Vendors is in
+                 <xref target="vendor"/>.</t>
+               </list>
+            </t>
+          </list>
+          </t>
+          <t><vspace blankLines="3"/></t>
+        </section>
+      </section>
+
+      <section title="Configuration Server" anchor="config-server">
+        <t>A Configuration Server is the entity hosting configurations
+        that can be downloaded over a network. This section describes
+        the service interface a Configuration Server MUST implement
+        as well as what's needed for transport security.</t>
+        <section title="Service Interface" anchor="service-interface">
+          <t>Configuration Servers are known to devices in the form
+          of a URI.  Configuration Servers MUST support the URI schemes
+          "https" and "http".  Other URI schemes are not supported.</t>
+          <t>When accessing a Configuration Server, the device
+          appends its unique device identifier (UID) to the URI.  The
+          unique identifier MUST be the same as the identifier stored
+          within the device's IDevID certificate, which is described
+          in <xref target="device-precondition"/>.</t>
+          <t>
+          For instance, if the URI were:
+          <figure>
+            <artwork><![CDATA[
+      http://example.com/zerotouch/devices/
+      https://example.com/zerotouch?id=
+]]></artwork>
+          </figure>
+          then the device would try to access:
+          <figure>
+            <artwork><![CDATA[
+      http://example.com/zerotouch/devices/<uid>
+      https://example.com/zerotouch?id=<uid>
+]]></artwork>
+          </figure>
+          </t>
+          <t>When accessing the Configuration Server, the HTTP
+          Accept-Type MUST be set to either "application/zerotouch-config"
+          or "application/zerotouch-bootimage".  Please see 
+          <xref target="zerotouch-media-types"/>. A wildcard Accept-Type
+          (e.g., */*) SHOULD default to "application/zerotouch-config".</t>
+        </section>
+        <section title="Interactive Interface">
+          <t>The Configuration server SHOULD provide a
+          user-facing interface to enable the end-user to
+          provide a Configlet and, optionally, a bootimage file.
+          How the Configlet and bootimage file are provided to the
+          Configuration Server is outside the scope of this
+          document.</t>
+          <t><vspace blankLines="3"/></t>
+        </section>
+        <section title="Transport Security">
+          <t>As described in <xref target="config-signer"/>, configurations
+          MUST be signed and MAY be encrypted.  As such, transport-level
+          security is not needed to assure authenticity or confidentiality
+          of the configuration itself.  However, transport-level security
+          enables devices to authenticate the Configuration Server and
+          also extends confidentiality to the application-level protocol.
+          Therefore, it is RECOMMENDED that only secure URL schemes are
+          used (see <xref target="service-interface"/>).</t>
+          <t>If a Configuration Server uses X.509-based encryption, 
+          then its X.509 certificate MUST have a chain of trust
+          to a trust anchor known to devices (see 
+          <xref target="device-precondition"/>.  More specifically, the
+          Configuration Server MUST possess all the intermediate 
+          certificates leading to the trust anchor.</t>
+          <t>When a Configuration Server negotiates encryption with the
+          device, it provides the chain of certificates, from its server
+          specific certificate to, but not including, its trust anchor.  
+          Including the trust anchor's certificate is unnecessary since 
+          the device MUST be pre-provisioned with it. Devices need the 
+          chain of certificates to be passed so they can validate the server
+          using only a simple list of Configuration Server trust anchors.</t>
+        </section>
+        <section title="Expiration Policy">
+          <t>An expiration policy is needed to limit how long a 
+          Configuration Server needs to retain a configuration and, 
+          in turn, how many configurations it might need to retain
+          at a given time.</t>
+          <t>It is expected that Configuration Servers will enable
+          retention information to be given at the same time as
+          when the configuration is provided to it.  Options should
+          be temporal in nature, not based on access counts, so as
+          to thwart a DoS attack whereby the configuration is accessed
+          by an entity other than the device.  Configuration Servers
+          SHOULD put a limit on the maximum amount of time it will
+          hold onto a configuration before purging it, even if the
+          configuration had never been accessed.</t>
+        </section>
+        <section title="Troubleshooting and Auditing">
+          <t>In order to facilitate troubleshooting and auditing, the
+          Configuration Server SHOULD record into a log a record of 
+          the various Configlet download requests.  This draft does 
+          not define what information should be kept or for how 
+          long.</t>
+          <t><vspace blankLines="3"/></t>
+        </section>
+      </section>
+
+      <section title="Configuration Signer" anchor="config-signer">
+        <section title="Overview" anchor="signer-overview">
+          <t>A Configuration Signer MUST be able to sign configurations.
+          This function requires the Configuration Signer be able to
+          authenticate that the requestor is the true owner of the
+          device, as identified within the contents of the configuration
+          being signed.</t>
+          <t>The user interface a Configuration Signer provides to perform
+          its role is outside the scope of this document.  However, in
+          order to meet operational expectations, the time it takes to
+          respond to a request should be as expeditious as possible.</t>
+          <t>A Configuration Signer does not need to retain a configuration 
+          after signing it.  The Configuration Signer SHOULD retain an
+          audit log for indemnification purposes.</t>
+        </section>
+        <section title="Signing Configurations">
+           <t>A Configuration Signer MUST have an X.509 certificate with 
+           Key Usage capable of signing data (digitalSignature) and 
+           be signed by a certificate authority having a chain of 
+           trust leading to a trust anchor known to the devices 
+           loading its Configlets.  The Configuration Signer MUST 
+           possess all intermediate certificates leading to its 
+           trust anchor.</t>
+           <t>When a Configuration Signer signs a Configlet, it attaches
+           both the signature and the chain of X.509 certificates,
+           including its own, but not necessarily including the
+           trust anchor's certificate.  This chain of certificates
+           is needed so a device can validate a Configlet using
+           only the Configuration Signer trust anchors known to it.</t>
+        </section>
+        <section title="Optional Encryption">
+          <t>A Configuration Signer MAY optionally encrypt configurations
+          prior to signing them.  This function requires the Configuration
+          Signer know the device's unique public key, as encoded within
+          its secure device identity certificate.</t>
+          <!-- KENT: what KeyUsage bits need to be set?
+                   - are they in IDEVID? -->
+        </section>
+        <section title="Delegation of Trust" anchor="delegate-trust">
+          <t>A device's vendor is the root of trust for all of its
+          devices.  That is, the vendor's devices implicitly trust
+          the vendor for such things as software images, subscription
+          updates, and licenses.  As such, the vendor is the ultimate
+          Configuration Signer for its devices.</t>
+          <t>However, both vendors and its customers may prefer that
+          this role be performed by another entity.  For instance,
+          a vendor may not want this role due to it being outside
+          its primary business function, and customers may not want
+          the vendor to have this role for privacy reasons.</t>
+          <t>It is therefore provided that a vendor MAY delegate
+          the Configuration Signer role to other entities.  Using
+          X.509 certificates, the Vendor need only sign the
+          delegate's certificate signing request (CSR), providing
+          back to the delegate a signed X.509 certificate
+          authenticating its ability to perform the signing
+          function.</t>
+          <t>In order enable a delegate to fulfill its operational
+          role, as described in <xref target="signer-overview"/>,
+          the vendor MUST provide a mechanism that can be used to
+          authenticate if a given requestor is the true owner of a
+          specific device.  Additionally, to support Configuration
+          Signers that want to encrypt configurations, the vendor
+          MUST also provide a means for the Configuration Signer
+          to know the public key for a given device.  How the vendor
+          provides this information to Configuration Signers is
+          outside the scope of this document.</t>
+        </section>
+        <section title="Delegation to a Specific Customer">
+          <t>The general expectation is that the Configuration 
+          Signer is an impartial 3rd-party.  However,  certain 
+          deployments may want to be able to perform the function for 
+          themselves.  Yet without constraints, that deployment
+          could sign configurations for devices that do not
+          belong to it.</t>
+          <t>Resolving this concern is possible when 1) the
+          deployment specific Configuration Signer's certificate
+          is annotated with a customer identifier and 2) the
+          devices sold to that customer have that same identifier
+          encoded into their secure device identifier.</t>
+          <t>This entails the vendor augmenting its manufacturing
+          process for these special devices, which would likely
+          be sold directly to the customer, as opposed to through
+          a sales channel.  This takes extraordinary effort and
+          likely only implemented for the most important customers,
+          if at all.</t>
+        </section>
+      </section>
+      <section title="Device" anchor="device">
+        <section title="Overview">
+          <t>While the wholistic solution, ZeroTouch, involves a
+          number of entities, a device being powered-on is the
+          essential event that sets things in motion.</t>
+          <t>Whenever a device boots with its factory
+          default settings, it initiates ZeroTouch with the goal
+          of finding a configuration to initialize itself with.
+          Once a configuration is found, the device initializes
+          its running datastore with it and then enters normal
+          operation.  Since the configuration initializes the 
+          device to call home upon entering its normal operating
+          mode, the device immediately begins trying to establish
+          a secure connection with the deployment specific NMS.</t>
+        </section>
+        <section title="Factory Default State" anchor="device-precondition">
+          <t>
+            <figure>
+                <artwork><![CDATA[
+  +------------------------------------------------------------------+
+  |                            <device>                              |
+  |                                                                  |
+  |     +------------------------------------------------------+     |
+  |     |                <immutable storage>                   |     |
+  |     |                                                      |     |
+  |     |  list of Configuration Signer trust anchor certs     |     |
+  |     |  list of Configuration Server trust anchor certs     |     |
+  |     +------------------------------------------------------+     |
+  |                                                                  |
+  |   +----------------------------------------------------------+   |
+  |   |                    <other storage>                       |   |
+  |   |                                                          |   |
+  |   |  two sets of Configuration Server URIs                   |   |
+  |   |  IDevID entity & associated intermediate certificate(s)  |   |
+  |   +----------------------------------------------------------+   |
+  |                                                                  |
+  |                    +----------------------+                      |
+  |                    |   <secure storage>   |                      |
+  |                    |                      |                      |
+  |                    |  IDevID private key  |                      |
+  |                    +----------------------+                      |
+  |                                                                  |
+  +------------------------------------------------------------------+
+]]></artwork>
+            </figure>
+          </t>
+          <t>Devices supporting ZeroTouch  MUST have a 
+          manufacturer-provisioned secure device identifier, as 
+          defined in <xref target="Std-802.1AR-2009"/>.  This identifier
+          is known by the IEEE standard as the Initial Device 
+          Identifier (IDevID).  The IDevID includes both an X.509
+          certificate, encoding a globally unique per-device
+          identifier, and a chain of X.509 certificates leading to the
+          manufacturer's well-known trust anchor.  The IDevID is needed
+          in order for the NMS to positively authenticate a device.
+          The IDevID certificate MUST be used by the NETCONF server
+          as its SSH host-key (see <xref target="RFC6187"/>) or its TLS
+          server certificate, depending on which protocol is used.</t>
+          <t>Devices supporting ZeroTouch MUST be pre-provisioned with
+          one or more URIs for Internet-based Configuration Servers.
+          These URIs SHOULD be partitioned into one set that contains
+          secure schemes (e.g. https://) and another set that
+          contains insecure schemes (e.g., http://).  The
+          reason for partitioning the URIs is so all the secure schemes
+          can attempted before any of the insecure schemes (see
+          <xref target="dev-boot-seq"/>).  When using a secure scheme,
+          the Configuration Server MUST be authenticated using a
+          trust anchor the device possesses.  As each Configuration 
+          Server may use a different trust anchor, this generalizes 
+          to a list of Configuration Server trust anchor certificates.</t>
+          <t>In order to verify the signature on retrieved 
+          configurations, devices supporting ZeroTouch MUST also
+          possess the trust anchor for the Configuration Signer
+          that signed the configuration.  Generally, only the 
+          manufacturer's trust anchor is needed, as it can then
+          delegate trust for 3rd-party Configuration Signers
+          (see <xref target="delegate-trust"/>).  However, for
+          various reasons, there may be a need for more than one
+          root anchor and therefore this generalizes to a list
+          of Configuration Signer trust anchor certificates.</t>
+          <t>Devices SHOULD ensure that the certificates for its 
+          trust anchors are protected from external modification.
+          It is for this reason that the diagram shows the 
+          Configuration Signer and Configuration Server certificates 
+          in immutable storage.  Similarly, per <xref target="Std-802.1AR-2009"/>,
+          the IDevID private key shall be stored confidentially and
+          not available outside the IDevID module, hence the diagram
+          shows it is held within secure storage.</t>
+        </section>
+
+        <section title="Boot Sequence" anchor="dev-boot-seq">
+          <t>
+            <figure>
+              <artwork><![CDATA[
+    DEVICE           DHCP                         CONFIGURATION   NMS
+      |          SERVER/RELAY                        SERVERS       |
+      |                |                                |          |
+  +-->|                |                                |          |
+  |   |                |                                |          |
+  |   |--[if running config != factory default, boot normally]--+  |
+  |   |                |                                |       |  |
+<---------------------------------------------------------------+  |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   |--(discovery)-->| [if no dhcp server found, boot normally]  |
+  |   |                |                                |          |
+  |   |  +---(offer)---|                                |          |
+  |   |  |             |                                |          |
+  |   |  +--[add any listed config servers to built-in list]--+    |
+  |   |                |                                |     |    |
+  |   |<------------------------------------------------------+    |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   | (iterate until match, else boot normally)       |          |
+  |   |------------------------------------------------>|          |
+  |   |                |                                |          |
+  |   |<------------------------------(zerotouch info)--|          |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   |                |                                |          |
+  |   |--[if current image != expected, get image]----->|          |
+  |   |                |                                |          |
+  |   |  +-------------------------------------(image)--|          |
+  |   |  |             |                                |          |
+  |   |  +--[if image valid, install & reboot]--+       |          |
+  |   |                |                        |       |          |
+  +---------------------------------------------+       |          |
+      |                |                                |          |
+      |                |                                |          |
+      |                |                                |          |
+      |--[get config]---------------------------------->|          |
+      |                |                                |          |
+      |  +------------------------------------(config)--|          |
+      |  |             |                                |          |
+      |  +--[if config valid, merge into running]--+    |          |
+      |                |                           |    |          |
+      |     +--------------------------------------+    |          |
+      |     |          |                                |          |
+      |     +--[per new configuration, call home]----------------->|
+      |                |                                |          |
+      |                |                                |          |
+]]></artwork>
+            </figure>
+          </t>
+          <t>Whenever a device boots with its factory default
+          settings, it initiates ZeroTouch with the goal of
+          finding a configuration that will enable it to call home  
+          to its deployment-specific NMS.</t>
+          <t>The process begins with the device using the DHCP
+          protocol to obtain a dynamic assignment for its networking
+          stack.  When broadcasting the DISCOVERY request, the device 
+          may provide any DHCP options to identify itself or the type
+          of device it is (e.g. IPV4 options 60 or 61).</t>
+          <t>If the DHCP servers reside on a locally administered network
+          (see <xref target="use-cases"/>), then their OFFER responses
+          MAY include the ZeroTouch Information DHCP option defined in
+          <xref target="zerotouch-info-option"/>, as well as the legacy
+          DHCP options for TFTP server name, bootfile name, and/or
+          vendor specific information (e.g. IPv4 options 43, 66, 67).</t>
+          <t>If a DHCP server provides both the ZeroTouch Information 
+          and the vendor specific information DHCP options, then the
+          ZeroTouch Information option MUST be processed first.  After
+          exhausting all ZeroTouch options without being able to call
+          home, a device MAY then process the information provided by
+          the legacy DHCP options.</t>
+          <t>The ZeroTouch Information option <xref target="zerotouch-info-option"/>
+          provides a set of Configuration Server URIs.  If returned by
+          the DHCP server, the device MUST append each URI to the end 
+          of one of its two sets of Configuration Server URIs, depending
+          on if the URI's scheme is secure or not.  URIs added this way
+          MUST remain distinguishable from those URIs the device was 
+          shipped with, for reasons discussed next.</t>
+
+<!--
+          <t>Before trying any of the Configuration Server URIs,
+          the device SHOULD first try to load a configuration
+          through local means that assert physical presence.
+          For instance, a removable USB flash drive or 
+          near-field communication mechanism.  Configurations 
+          obtained through an assertion of physical presence 
+          do not have to be signed or contain the device's
+          unique identifier (e.g., serial number).  If a 
+          Configlet is found, the device MUST use it without
+          trying any of the Configuration Server URIs.</t>
+-->
+          <t>The device then iterates over its two sets of Configuration 
+          Server URIs.  The device MUST first try all the URIs
+          from the set having secure schemes before trying any
+          of the URIs from the set having insecure schemes.  For
+          each URI, until a match is found and successfully loaded,
+          the device attempts to initialize itself from the URI.
+          If the URI uses a secure scheme (e.g., https), the device
+          MUST validate the Configuration Server's certificate 
+          using one of its Configuration Server trust anchors.
+          If the device is unable to verify the server's certificate,
+          the device MUST skip that URI.  If the device reaches the
+          end of all its URIs without finding a usable match,
+          it SHOULD continue its normal boot sequence using its
+          factory default configuration.</t>
+    
+          <t>When the device is accessing a Configuration Server
+          URI that it was shipped with (i.e. not discovered 
+          while initializing its networking), it MUST do so by 
+          appending its UID to the URI string and using the
+          Accept-Type "application/zerotouch-config", as described in 
+          <xref target="config-server"/>.  For URIs discovered 
+          via the ZeroTouch Information option, the device
+          MAY also try the raw URI after trying the permutation
+          using its UID.</t>
+
+          <t>If the Configuration Server returns a configuration,
+          the device MUST first verify it before use.  Configuration
+          verification entails both verifying the configuration's
+          signature using the device's list of Configuration Signer
+          trust anchors, and also verifying that the unique identifier 
+          within the Configlet matches the device's unique identifier.</t>
+    
+          <t>Once the configuration is authenticated, the device MUST
+          compare its software image version with the expected
+          version specified within the configuration.  If there is a
+          mismatch, the device MUST download the correct image
+          version from the Configuration Server, by appending
+          its UID to the Configuration Server's URI string
+          and using the Accept-Type "application/zerotouch-bootimage", as described in  
+          <xref target="config-server"/>.  For URIs discovered  
+          via the ZeroTouch Information option, the device
+          MAY also try the raw URI after first trying the permutation
+          using its UID.  Once the image has been downloaded, the
+          device MUST install it and reboot, still with the 
+          factory default settings configured, so that ZeroTouch
+          restarts when the device comes back up.</t>
+
+          <t>If the device is running the correct software image
+          version, it merges the Configlet's contents into its running 
+          configuration.  This step effectively modifies the device
+          so that it is no longer having its factory default setting.
+          Thus, at this point, a reboot is no longer expected to 
+          start the ZeroTouch process.</t>
+          
+          <t>Though not technically required, the Configlet is presumed 
+          to have configured the device to "call home".  As soon as
+          this configuration is merged into the running configuration,
+          the device SHOULD immediately begin trying to establish the 
+          call home connection, as specified by the Configlet.</t>
+
+          <t>If configured to establish a SSH connection,
+          the the device MUST use its IDevID and associated
+          intermediate X.509 certificates as its host key per 
+          RFC 6187 <xref target="RFC6187"/>.  If configured to
+          establish a TLS connection, the device MUST use its
+          IDevID and associated intermediate X.509 certificates
+          as its server-side certificate for the TLS connection.</t>
+    
+          <t>In order to facilitate troubleshooting, the device
+          SHOULD record into a log information relating
+          to its stepping through the ZeroTouch sequence of
+          steps.  This draft does not define any specific
+          log messages, for instance, for Syslog or SNMP.</t>
+
+        </section>
+      </section>
+
+      <section title="Network Management System (NMS)" anchor="nms">
+        <section title="Overview">
+          <t>The NMS is the ultimate destination of ZeroTouch for 
+          a device.   It is the NMS's network address configured 
+          in the Configlet.  The device will initiate a call home
+          connection to the NMS, using either SSH or TLS, as 
+          configured by the Configlet loaded.</t>
+          <t><vspace blankLines="30"/></t>
+        </section>
+        <section title="Precondition">
+          <t>
+            <figure>
+                <artwork><![CDATA[
+  +------------------------------------------------------------------+
+  |                              <nsm>                               |
+  |                                                                  |
+  |     +------------------------------------------------------+     |
+  |     |                <immutable storage>                   |     |
+  |     |                                                      |     |
+  |     |  list of IDevID trust anchor certificates            |     |
+  |     |  list of expected device unique identifiers          |     |
+  |     +------------------------------------------------------+     |
+  |                                                                  |
+  |       +--------------------------------------------------+       |
+  |       |                 <secure storage>                 |       |
+  |       |                                                  |       |
+  |       |  map of device identifiers to login credentials  |       |
+  |       +--------------------------------------------------+       |
+  |                                                                  |
+  +------------------------------------------------------------------+
+]]></artwork>
+            </figure>
+          </t>
+          <t>In order to authenticate the device, the NMS
+          MUST possess the  X.509 certificate for the trust anchor 
+          leading to the device's entity certificate.  The NMS 
+          uses this certificate to validate the server-certificate 
+          the device presents during SSH or TLS transport negotiation.
+          Because an NMS may interoperate with multiple vendors, and
+          a vendor may have more than one trust anchor for signing
+          its devices IDevID certificates, this generalizes into
+          the NMS needing a list of trust anchor certificates.
+          This certificates SHOULD be stored in a way that prevents
+          tampering, which is why they are shown in immutable
+          storage in the diagram.</t>
+          <t>In order for the NMS to validate that the specific
+          device connecting to it is expected, it MUST have
+          a list of unique device identifiers that it can use
+          to validate the device's IDevID certificate with.
+          The list SHOULD be protected from external modification,
+          which is why it is shown in immutable storage in the
+          diagram.  In order for the NMS to know the unique 
+          identifiers, device manufacturers will need to provide
+          a mechanism to convey this information to its customers.
+          This draft not specify a format for this information exchange.</t>
+          <t>In addition to authenticating the device, the NMS must
+          also authenticate itself to the device.  How this is done
+          is deployment specific, but generalizes to the NMS needing
+          to have login credentials for each device.  These credentials
+          will entail knowing a secret (e.g., password, private key).
+          For this reason the diagram shows the NMS storing a map of
+          device credentials in secure storage.</t>
+        </section>
+        <section title="Connection Handling">
+          <t>When receiving a NETCONF call home connection from a
+          device, the NSM completes the connection as specified 
+          NETCONF Call Home <xref target="NETCONF-CALL-HOME"/>.</t>
+        </section>
+      </section>
+
+      <section title="Vendor" anchor="vendor">
+        <section title="Order Information" anchor="order-information">
+          <t>In order for a Vendor's customers to configure their 
+          NMSs with what devices are expected, as well as to know how to
+          set the "unique-identifier" field within a Configlet
+          when requesting a signing, Vendors need to provide a 
+          mechanism for customers to obtain the unique 
+          identifier value for the devices they have
+          ordered.  For instance, customers could receive emails
+          containing shipping information for their devices.</t>
+          <t>Additionally, to facilitate workflows where the
+          devices are initially received by a customer-specific
+          warehouse, or moved after having been unboxed, it is 
+          ideal for the unique identifier to be easily tracked
+          through labels affixed to the device as well as the box
+          it is packaged in.  A device's serial number is commonly
+          treated this way and would be suitable for this purpose,
+          so long as it is directly related to its IDevID identity.</t>
+        </section>
+        <section title="Ownership Validation">
+          <t>In order for Configuration Signers to validate that a
+          requestor is the true owner of a device (i.e. its IDevID
+          identity), Vendors need to provide a mechanism enabling
+          a near real-time lookup.  The interface used to implement
+          this lookup is outside the scope of this document.</t>
+        </section>
+      </section>
+
+      <section title="Configlet" anchor="configlet">
+        <section title="Overview" anchor="configlet-overview">
+          <t>A Configlet is an XML file, containing specific YANG-defined 
+          configuration, that has been signed by a trusted signer known to
+          the device (e.g., the device's manufacturer).</t>
+          <t>The Configlet data-model, defined by the YANG module in 
+          <xref target="configlet-yang-module"/>, contains information for 
+          the device to ensure that it's safe for it to load the configlet 
+          (i.e. target-requirements) along with a payload, the configuration
+          the device is to merge into its running datastore.</t>
+          <t>In order for the device to call home, the configuration
+          contained within the Configlet MUST at least configure a local user 
+          account and configure the connection information for the NMS the 
+          device is to call home to.   This configuration MAY use IETF-defined 
+          modules "ietf-system" <xref target="RFC7317"/> and 
+          "ietf-netconf-server" <xref target="NETCONF-SERVER-MODEL"/>.</t>
+          <t>The signature on the Configlet is enveloped, 
+          meaning that the signature is contained inside the
+          XML file itself.  The signature block also contains
+          the X.509 certificate of the Configuration Signer
+          and its chain of trust.</t>
+          <t>Once a device authenticates the signature on a
+          Configlet and matches the unique identifier
+          (e.g., serial number) within the Configlet, it merges
+          the configuration contained in the Configlet into
+          its running datastore.</t>
+        </section>
+        <section title="Data Model" anchor="configlet-data-model">
+          <t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-netconf-zerotouch.yang.tree)
+]]></artwork>
+            </figure>
+          </t>
+          <t>The Configlet's data model is no more than a wrapper
+          around a header (i.e. &lt;target-requirements&gt;) and a 
+          payload (i.e. &lt;configuration&gt;).</t>
+          <t>The &lt;target-requirements&gt; element contains
+          information that MUST be validated by the device
+          prior to processing the  &lt;configuration&gt; element.
+          Specifically, it contains:
+            <list style="symbols">
+              <t>unique-identifier
+                <list style="empty">
+                  <t>The unique-identifier field is used to ensure that
+                  the Configlet is loaded onto the targeted device
+                  and no other.  This field is also used by the
+                  Configuration Signer, when ensuring the requestor
+                  is the true owner of the device.  The value MUST
+                  be the same as the 'subject' field in the device's
+                  IDevID credential, as specified by section 7.2.8 in
+                  IEEE Std 802.1AR-2009.</t>
+                </list>
+              </t>
+              <t>software-version
+                <list style="empty">
+                  <t>The software-version field is used to ensure
+                  the device is running the right software version
+                  prior to loading the configuration (e.g., 14.1R2.5).
+                  If the device finds that it is not running the 
+                  correct version of software, it MUST pull the 
+                  correct version from the Configuration Server.</t>
+                </list>
+              </t>
+            </list>
+          </t>
+          <t>The &lt;configuration&gt; element contains the configuration
+          that is to be committed to the device's running datastore.  This
+          element uses the "anyxml" type, enabling it to contain either
+          vendor-specific or standards-based data models.  When using
+          standard models, in order to complete a call home connection,
+          only the following is needed:
+            <list style="symbols">
+              <t>The "authentication" subtree from "ietf-system", defined in <xref target="RFC7317"/>.</t>
+              <t>The "call-home" subtree from "ietf-netconf-server", defined in <xref target="NETCONF-SERVER-MODEL"/>.</t>
+            </list>
+          </t>
+        </section>
+        <section title="Signature">
+          <t>All Configlets MUST be signed by a Configuration Signer
+          in order to be authentic.  Devices MUST reject any Configlet
+          that is either unsigned or having an invalid signature.
+          Configlets are signed using the W3C standard
+          "XML Signature Syntax and Processing" <xref target="XMLSIG"/>.
+          The entire contents of the Configlet MUST be signed.  The
+          signature block must also include the Configuration Signer's 
+          certificate and any intermediate certificates leading to 
+          a Configuration Signer trust anchor.  A signed Configlet 
+          example is in section <xref target="signed-configlet"/>.</t>
+        </section>
+        <section title="Encryption (optional)">
+          <t>Configlets MAY optionally be encrypted prior to being
+          signed.  Encrypting the Configlet provides confidentiality
+          for the Configlet's contents without relying on transport-level
+          security.  Configlets are encrypted using the W3C standard
+          "XML Encryption Syntax and Processing" <xref target="XMLENC"/>.
+          The entire contents of the Configlet MUST be encrypted.
+          An encrypted Configlet example is in section 
+          <xref target="signed-encrypted-configlet"/>.</t>
+        </section>
+        <section title="YANG Module" anchor="configlet-yang-module">
+          <t>
+            <figure>
+              <preamble>Following is the YANG module for the 
+              Configlet:</preamble>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(ietf-netconf-zerotouch.yang)
+]]></artwork>
+            </figure>
+          </t>
+        </section>
+      </section>
+
+      <section title="Security Considerations">
+        <section title="Immutable storage for trust anchors">
+          <t>Devices SHOULD ensure that all its trust anchor 
+          certificates, including those for the Configuration 
+          Signer and Configuration Server, are protected from
+          external modification.  It is for this reason that
+          the diagram in <xref target="device-precondition"/>
+          shows them in immutable storage.</t>
+          <t>However, it may be necessary to update these 
+          certificates over time (e.g., the vendor wants to
+          delegate trust to a new CA).  It is therefore expected
+          that devices MAY update these trust anchors when 
+          needed through a verifiable process, such as a 
+          software upgrade using signed software images.</t>
+        </section>
+        <section title="Substitutions">
+          <t>It is generally not possible to substitute a 
+          Configlet created for a different device, since 
+          devices assert that the Configlet contains their 
+          unique identifier (e.g., serial number).</t>
+          <t>However, it is possible to substitute a Configlet 
+          created for a device with a different Configlet 
+          created for the same device.  Generally, unless 
+          imposed by the Configuration Signers, there is no
+          limit to the number of Configlets that may be
+          generated for a given device.  This could be resolved, in 
+          part, by placing a timestamp into the Configlet and 
+          ensuring devices do not load Configlets older than some 
+          amount, but this requires the devices have an accurate 
+          clock when validating a Configlet and for Configuration 
+          Signers to not sign a Configlet when another Configlet
+          is still active.</t>
+        </section>
+        <section title="Confidentiality">
+          <t>This draft allows devices to use insecure schemes when
+          doing a Configuration Server lookup.  This is deemed 
+          acceptable because the Configlet is tamper-proof, since
+          it MUST be signed, only confidentiality is lost.</t>
+          <t>Confidentiality of a Configlet's contents is assured
+          when either the Configlet is encrypted or when the a 
+          secure scheme is used when accessing the Configuration Server.</t>
+          <t>Some confidentiality is lost when an insecure scheme is
+          used to access a Configuration Server, as then the device's
+          unique identifier is in the clear.</t>
+          <t>Given the fairly regular format for unique identifiers,
+          it is possible that an adversary to guess unique identifiers
+          and access a device's Configlet.  Configlets that have been
+          encrypted do not disclose any confidential information.</t>
+        </section>
+        <section title="Entropy loss over time">
+          <t>Section 7.2.7.2 of the IEEE Std 802.1AR-2009 standard says
+          that IDevID certificate should never expire (i.e. having a
+          notAfter 99991231235959Z).  Given the long-lived
+          nature of these certificates, it is paramount to use a 
+          strong key length (e.g., 512-bit ECC).   Vendors SHOULD
+          deploy Online Certificate State Protocol (OCSP) responders 
+          or CRL Distribution Points (CDP) to revoke certificates in 
+          case necessary.</t>
+        </section>
+        <section title="Serial Numbers">
+          <t>This draft mentions using the device's serial number as
+          its unique identifier in its IDevID certificate.  This is 
+          because serial numbers are ubiquitous and prominently 
+          contained in invoices and on labels affixed to devices and
+          their packaging.  That said, serial numbers many times encode
+          revealing information, such as the device's model number,
+          manufacture date, and/or sequence number.  Knowledge of this
+          information may provide an adversary with details needed 
+          to launch an attack.  To address this concern, the 
+          certificate could contain the hash of the serial number
+          instead, which the NMS could also compute, but doing so 
+          is much less intuitive and raises questions if it is just
+          security through obscurity.</t>
+        </section>
+      </section>
+
+      <section title="IANA Considerations">
+        <section title="ZeroTouch Information DHCP Option" anchor="zerotouch-info-option">
+          <t>TBD, but it essentially returns a list of URIs.</t>
+        </section>
+        <section title="Media Types for Images and Configurations" anchor="zerotouch-media-types">
+          <t>TBD, but in accordance with RFC 6838, the draft registers: application/zerotouch-configlet
+          and application/zerotouch-bootimage</t>
+        </section>
+      </section>
+
+      <section title="Acknowledgements">
+        <t>The authors would like to thank for following for
+        lively discussions on list and in the halls (ordered
+        by last name): 
+        David Harrington,
+        Dean Bogdanovic,
+        Martin Bjorklund,
+        Wes Hardaker,
+        Russ Mundy,
+        Reinaldo Penno,
+        Randy Presuhn,
+        Juergen Schoenwaelder.</t>
+          
+        <t>Special thanks goes to Russ Mundy and Wes Hardaker
+        for brainstorming the original I-D's solution during
+        the IETF 87 meeting in Berlin.</t>
+      </section>
+    </middle>
+
+    <back>
+        <references title="Normative References">
+            &rfc2119;
+            &rfc6187;
+
+            <!-- &rfc7317;  - why isn't this working!  below is the same as fetched by the URL! -->
+<reference anchor="RFC7317">
+<front>
+<title>A YANG Data Model for System Management</title>
+<author initials="A." surname="Bierman" fullname="A. Bierman">
+<organization/>
+</author>
+<author initials="M." surname="Bjorklund" fullname="M. Bjorklund">
+<organization/>
+</author>
+<date year="2014" month="August"/>
+<abstract>
+<t>
+This document defines a YANG data model for the configuration and identification of some common system properties within a device containing a Network Configuration Protocol (NETCONF) server. This document also includes data node definitions for system identification, time-of-day management, user management, DNS resolver configuration, and some protocol operations for system management.
+</t>
+</abstract>
+</front>
+<seriesInfo name="RFC" value="7317"/>
+<format type="TXT" octets="60119" target="http://www.rfc-editor.org/rfc/rfc7317.txt"/>
+</reference>
+
+            <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
+                <front>
+                    <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
+                    <author fullname="WG802.1 - Higher Layer LAN Protocols Working Group">
+                        <organization>IEEE SA-Standards Board</organization>
+                    </author>
+                    <date month="December" year="2009"/>
+                </front>
+            </reference>
+
+            <reference anchor="XMLSIG" target="http://www.w3.org/TR/xmldsig-core1">
+                <front>
+                    <title>XML Signature Syntax and Processing</title>
+                    <author fullname="World Wide Web Consortium"></author>
+                    <date month="April" year="2013"/>
+                </front>
+            </reference>
+
+            <reference anchor="XMLENC" target="http://www.w3.org/TR/xmlenc-core1">
+                <front>
+                    <title>XML Encryption Syntax and Processing</title>
+                    <author fullname="World Wide Web Consortium"></author>
+                    <date month="April" year="2013"/>
+                </front>
+            </reference>
+
+            <reference anchor="NETCONF-CALL-HOME" target="https://tools.ietf.org/html/draft-ietf-netconf-call-home-01">
+                <front>
+                    <title>NETCONF Call Home (work in progress)</title>
+                    <author initials="K.W." surname="Watsen"
+                            fullname="Kent Watsen">
+                        <organization>Juniper Networks</organization>
+                    </author>
+                    <date month="October" year="2014"/>
+                </front>
+            </reference>
+
+            <reference anchor="NETCONF-SERVER-MODEL" target="http://tools.ietf.org/html/draft-ietf-netconf-server-model-03">
+                <front>
+                    <title>NETCONF Server Model (work in progress)</title>
+                    <author initials="K.W." surname="Watsen"
+                            fullname="Kent Watsen">
+                        <organization>Juniper Networks</organization>
+                    </author>
+                    <date month="September" year="2014"/>
+                </front>
+            </reference>
+
+        </references>
+        <references title="Informative References">
+
+            <reference anchor="TR069" target="http://www.broadband-forum.org/technical/download/TR-069_Amendment-3.pdf">
+                <front>
+                    <title>
+                        TR-069 Amendment 3, CPE WAN Management Protocol
+                    </title>
+                    <author surname="The Broadband Forum" 
+                            fullname="The Broadband Forum"/>
+                    <date month="November" year="2010" />
+                </front>
+            </reference>
+
+        </references>
+        <section title="Examples" anchor="examples">
+            <section title="Signed Configlet" anchor="signed-configlet">
+                <t>
+                <figure>
+                    <preamble>This example illustrates a Configlet
+                    configuring both a local user account and
+                    call home using SSH.  This Configlet includes both
+                    the Configuration Signer's certificate as well as
+                    an Intermediate certificate.  Note that '\'
+                    characters were added for formatting
+                    reasons.</preamble>
+                    <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
+]]></artwork>
+                </figure>
+                </t>
+            </section>
+            <section title="Signed Encypted Configlet" anchor="signed-encrypted-configlet">
+                <t>
+                <figure>
+                    <preamble>This example is the same as to previous
+                    example (section <xref target="signed-configlet"/>)
+                    except that the Configlet was encrypted using the
+                    device's public key prior to being signed using
+                    the Configuration Server's private key.  Note that
+                    '\' characters were added for formatting
+                    reasons.</preamble>
+                    <artwork><![CDATA[
+// This example is currently missing
+]]></artwork>
+                </figure>
+                </t>
+            </section>
+
+        </section>
+
+        <section title="Change Log">
+          <section title="ID to 00">
+            <t>
+            <list>
+              <t>Complete re-write.  Switched from using signed DNS
+              records using DNSSEC to using signed YANG-defined
+              XML files using XML Signature.  This update took
+              into a lot a feedback from both operators and 
+              vendors.</t>
+            </list>
+            </t>
+          </section>
+          <section title="00 to 01">
+            <t>
+            <list>
+              <t>Major structural update; the essence is the same.
+              Most every section was rewritten to some degree.</t>
+              <t>Added a Use Cases section</t>
+              <t>Added diagrams for "Actors and Roles" and
+              "NMS Precondition" sections, and greatly improved
+              the "Device Boot Sequence" diagram</t>
+              <t>Removed support for physical presence or any
+              ability for Configlets to not be signed.</t>
+              <t>Defined the ZeroTouch Information DHCP option</t>
+              <t>Added an ability for devices to also download
+              images from Configuration Servers</t>
+              <t>Added an ability for Configlets to be encrypted</t>
+              <t>Now Configuration Servers only have to support
+              HTTP/S - no other schemes possible</t>
+            </list>
+            </t>
+          </section>
+          <section title="01 to 02">
+            <t>
+            <list>
+              <t>Added boot-image and validate-owner annotations
+                 to the "Actors and Roles" diagram.</t>
+              <t>Fixed 2nd paragrph in section 7.1 to reflect 
+                 current use of anyxml.</t>
+              <t>Numerous small corrections suggested by others.</t>
+
+            </list>
+            </t>
+          </section>
+
+
+        </section>
+    </back>
+</rfc>
+
