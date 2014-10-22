@@ -1147,17 +1147,6 @@ INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
           <section title="ID to 00">
             <t>
             <list>
-              <t>Complete re-write.  Switched from using signed DNS
-              records using DNSSEC to using signed YANG-defined
-              XML files using XML Signature.  This update took
-              into a lot a feedback from both operators and 
-              vendors.</t>
-            </list>
-            </t>
-          </section>
-          <section title="00 to 01">
-            <t>
-            <list>
               <t>Major structural update; the essence is the same.
               Most every section was rewritten to some degree.</t>
               <t>Added a Use Cases section</t>
@@ -1175,7 +1164,7 @@ INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
             </list>
             </t>
           </section>
-          <section title="01 to 02">
+          <section title="00 to 01">
             <t>
             <list>
               <t>Added boot-image and validate-owner annotations
@@ -1183,7 +1172,6 @@ INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
               <t>Fixed 2nd paragrph in section 7.1 to reflect 
                  current use of anyxml.</t>
               <t>Numerous small corrections suggested by others.</t>
-
             </list>
             </t>
           </section>
