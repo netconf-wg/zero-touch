@@ -21,7 +21,7 @@
 
 <rfc category="std"
      ipr="trust200902"
-     docName="draft-ietf-netconf-zero-touch-latest">
+     docName="draft-ietf-netconf-zerotouch-latest">
     <front>
         <title abbrev="ZeroTouch">Zero Touch Provisioning for NETCONF Call Home (ZeroTouch)</title>
         <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
@@ -48,7 +48,7 @@
                 <email>"mikael.abrahamsson@t-systems.se</email>
             </address>
         </author>
-        <date day="1" month="October" year="2014"/>
+        <date day="27" month="October" year="2014"/>
         <area>Operations</area>
         <workgroup>NETCONF Working Group</workgroup>
         <keyword>zerotouch</keyword>
@@ -804,8 +804,8 @@
           <t>A Configlet is an XML file, containing specific YANG-defined 
           configuration, that has been signed by a trusted signer known to
           the device (e.g., the device's manufacturer).</t>
-          <t>The Configlet data-model, defined by the YANG module in 
-          <xref target="configlet-yang-module"/>, contains information for 
+          <t>The Configlet data-model, defined by the XSD schema in 
+          <xref target="configlet-xsd-schema"/>, contains information for 
           the device to ensure that it's safe for it to load the configlet 
           (i.e. target-requirements) along with a payload, the configuration
           the device is to merge into its running datastore.</t>
@@ -900,20 +900,19 @@ INSERT_TEXT_FROM_FILE(refs/ietf-netconf-zerotouch.yang.tree)
           An encrypted Configlet example is in section 
           <xref target="signed-encrypted-configlet"/>.</t>
         </section>
-        <section title="YANG Module" anchor="configlet-yang-module">
+        <section title="XSD Schema" anchor="configlet-xsd-schema">
           <t>
             <figure>
-              <preamble>Following is the YANG module for the 
-              Configlet:</preamble>
+              <preamble>Following is the XSD for the Configlet:</preamble>
               <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(ietf-netconf-zerotouch.yang)
+INSERT_TEXT_FROM_FILE(ietf-netconf-zerotouch-configlet.xsd)
 ]]></artwork>
             </figure>
           </t>
         </section>
       </section>
 
-      <section title="Security Considerations">
+      <section title="Security Considerations" anchor="sec-con">
         <section title="Immutable storage for trust anchors">
           <t>Devices SHOULD ensure that all its trust anchor 
           certificates, including those for the Configuration 
@@ -991,11 +990,152 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-zerotouch.yang)
 
       <section title="IANA Considerations">
         <section title="ZeroTouch Information DHCP Option" anchor="zerotouch-info-option">
-          <t>TBD, but it essentially returns a list of URIs.</t>
+          <t>The following registration is in accordance to RFC 2939 for
+          "BOOTP Vendor Extensions and DHCP Options" registry maintained at
+          http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
+          <section title="DHCP v4 Option">
+            <figure>
+              <artwork>
+   Tag: XXX
+
+   Name: Zero Touch Information
+
+   Description: Returns a list of null-terminated Configuration 
+                Server URIs
+
+    Code   Len
+   +-----+-----+------+------+----
+   | XXX |  n  | url1 | url2 | ...
+   +-----+-----+------+------+----
+
+   Reference: RFC XXXX
+              </artwork>
+            </figure>
+          </section>
+          <section title="DHCP v6 Option">
+            <figure>
+              <artwork>
+   Tag: YYY
+
+   Name: Zero Touch Information
+
+   Description: Returns a list of null-terminated Configuration 
+                Server URIs
+
+    Code   Len
+   +-----+-----+------+------+----
+   | YYY |  n  | url1 | url2 | ...
+   +-----+-----+------+------+----
+
+   Reference: RFC XXXX
+              </artwork>
+            </figure>
+          </section>
         </section>
-        <section title="Media Types for Images and Configurations" anchor="zerotouch-media-types">
-          <t>TBD, but in accordance with RFC 6838, the draft registers: application/zerotouch-configlet
-          and application/zerotouch-bootimage</t>
+        <section title="Media Types for Boot Images and Configurations" anchor="zerotouch-media-types">
+          <t>The following registrations are in accordance to RFC 6838.</t>
+          <section title="application/zerotouch-configlet">
+            <figure>
+              <artwork>
+ 
+   Type name: application
+
+   Subtype name: zerotouch-configlet
+
+   Required parameters: None
+
+   Optional parameters: None
+
+   Encoding considerations: 8-bit
+
+   Security considerations: See Security Considerations in RFC XXXX
+
+   Interoperability considerations: None
+
+   Published specification: RFC XXXX
+
+   Applications that use this media type:
+
+      Configuration servers and NETCONF servers.
+
+   Fragment identifier considerations: None
+
+   Additional information:
+
+     Deprecated alias names for this type: N/A
+     Magic number(s): None
+     File extension(s): xml
+     Macintosh file type code(s): 'TEXT'
+
+   Person &amp; email address to contact for further information:
+      Kent Watsen &lt;kwatsen@juniper.net&gt;
+
+   Intended usage: COMMON
+
+   Restrictions on usage: None
+
+   Author:
+     This specification is a work item of the IETF NETCONF working 
+     group, with mailing list address &lt;netconf@ietf.org&gt;.
+
+   Change controller: The IESG &lt;iesg@ietf.org&gt;
+
+   Provisional registration? (standards tree only): No
+              </artwork>
+            </figure>
+
+          </section>
+          <section title="application/zerotouch-bootimage">
+            <figure>
+              <artwork>
+
+   Type name: application
+
+   Subtype name: zerotouch-bootimage
+
+   Required parameters: None
+
+   Optional parameters: None
+
+   Encoding considerations: binary
+
+   Security considerations: See Security Considerations in RFC XXXX
+
+   Interoperability considerations: None
+
+   Published specification: RFC XXXX
+
+   Applications that use this media type:
+
+      Configuration servers and NETCONF servers.
+
+   Fragment identifier considerations: None
+
+   Additional information:
+
+     Deprecated alias names for this type: N/A
+     Magic number(s): None
+     File extension(s): None
+     Macintosh file type code(s): N/A
+
+   Person &amp; email address to contact for further information:
+      Kent Watsen &lt;kwatsen@juniper.net&gt;
+
+   Intended usage: COMMON
+
+   Restrictions on usage: None
+
+   Author:
+     This specification is a work item of the IETF NETCONF working 
+     group, with mailing list address &lt;netconf@ietf.org&gt;.
+
+   Change controller: The IESG &lt;iesg@ietf.org&gt;
+
+   Provisional registration? (standards tree only): No
+              </artwork>
+            </figure>
+
+          </section>
         </section>
       </section>
 
@@ -1108,34 +1248,66 @@ This document defines a YANG data model for the configuration and identification
 
         </references>
         <section title="Examples" anchor="examples">
+            <section title="Unsigned Configlet" anchor="unsigned-configlet">
+              <t>
+                <figure>
+                    <preamble>
+                      This example illustrates a Configlet
+                      configuring both a local user account and
+                      call home using SSH.
+
+                      Note, this is not a valid Configlet because it isn't signed.
+                    </preamble>
+                    <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-configlet.xml)
+]]></artwork>
+                </figure>
+              </t>
+            </section>
             <section title="Signed Configlet" anchor="signed-configlet">
                 <t>
                 <figure>
-                    <preamble>This example illustrates a Configlet
-                    configuring both a local user account and
-                    call home using SSH.  This Configlet includes both
-                    the Configuration Signer's certificate as well as
-                    an Intermediate certificate.  Note that '\'
-                    characters were added for formatting
-                    reasons.</preamble>
+                    <preamble>
+                      This example illustrates the above unsigned Configlet
+                      signed as if by a Configuration Signer. Note
+                      that in addition to the signature itself, the
+                      signed Configlet embeds two certificates, the
+                      chain of certificates from the signer's certificate
+                      up to but not including the trust anchor certificate.
+                    </preamble>
                     <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-configlet-signed.xml)
 ]]></artwork>
                 </figure>
                 </t>
             </section>
-            <section title="Signed Encypted Configlet" anchor="signed-encrypted-configlet">
+            <section title="Encrypted Configlet" anchor="encrypted-configlet">
                 <t>
                 <figure>
-                    <preamble>This example is the same as to previous
-                    example (section <xref target="signed-configlet"/>)
-                    except that the Configlet was encrypted using the
-                    device's public key prior to being signed using
-                    the Configuration Server's private key.  Note that
-                    '\' characters were added for formatting
-                    reasons.</preamble>
+                    <preamble>
+                      This example illustrates the above unsigned Configlet
+                      that has been encrypted using the device's public key.
+
+                      Note, this is not a valid Configlet because it isn't signed.
+                    </preamble>
                     <artwork><![CDATA[
-// This example is currently missing
+INSERT_TEXT_FROM_FILE(refs/ex-configlet-encrypted.xml)
+]]></artwork>
+                </figure>
+                </t>
+            </section>
+
+
+            <section title="Signed Encrypted Configlet" anchor="signed-encrypted-configlet">
+                <t>
+                <figure>
+                    <preamble>
+                      This example illstrates the above encrypted Configlet
+                      that has been signed by a Configuration Signer's
+                      private key.
+                    </preamble>
+                    <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-configlet-encrypted-signed.xml)
 ]]></artwork>
                 </figure>
                 </t>
@@ -1146,7 +1318,7 @@ INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
         <section title="Change Log">
           <section title="ID to 00">
             <t>
-            <list>
+            <list style="symbols">
               <t>Major structural update; the essence is the same.
               Most every section was rewritten to some degree.</t>
               <t>Added a Use Cases section</t>
@@ -1166,12 +1338,15 @@ INSERT_TEXT_FROM_FILE(ex-configlet-signed.xml)
           </section>
           <section title="00 to 01">
             <t>
-            <list>
+            <list style="symbols">
               <t>Added boot-image and validate-owner annotations
                  to the "Actors and Roles" diagram.</t>
               <t>Fixed 2nd paragrph in section 7.1 to reflect 
                  current use of anyxml.</t>
-              <t>Numerous small corrections suggested by others.</t>
+              <t>Added encrypted and signed-encrypted examples</t>
+              <t>Replaced YANG module with XSD schema</t>
+              <t>Added IANA request for the ZeroTouch Information DHCP Option</t>
+              <t>Added IANA request for media types for boot-image and configuration</t>
             </list>
             </t>
           </section>

@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<configlet xmlns="urn:ietf:params:xml:ns:ietf-netconf-zerotouch">
+  <target-requirements>
+    <unique-identifier>0123456789</unique-identifier>
+    <software-version>14.1R3.5</software-version>
+  </target-requirements>
+  <configuration>
+
+    <!-- from ietf-system.yang -->
+    <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
+      <authentication>
+        <user>
+          <name>admin</name>
+          <ssh-key>
+            <name>admin's rsa ssh host-key</name>
+            <algorithm>ssh-rsa</algorithm>
+            <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRC
+            jCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2Mwj
+            E1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcC
+            WAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5
+            vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWq
+            EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6
+            gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
+          </ssh-key>
+        </user>
+      </authentication>
+    </system>
+
+    <!-- from ietf-netconf-server.yang -->
+    <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+      <call-home>
+        <application>
+          <name>config-mgr</name>
+          <ssh>
+            <endpoints>
+              <endpoint>
+                <name>east-data-center</name>
+                <address>11.22.33.44</address>
+              </endpoint>
+              <endpoint>
+                <name>west-data-center</name>
+                <address>55.66.77.88</address>
+              </endpoint>
+            </endpoints>
+            <host-keys>
+              <host-key>my-call-home-x509-key</host-key>
+            </host-keys>
+          </ssh>
+        </application>
+      </call-home>
+    </netconf-server>
+
+  </configuration>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod
+Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+      <SignatureMethod
+Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <Reference>
+        <Transforms>
+          <Transform
+Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+        </Transforms>
+        <DigestMethod 
+Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <DigestValue>t9OdNsxPsjyzrKu7kO0ydcFK6xU=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>
+AS/dlRNk/DDy2baDfQXspstvQzOxZo/goZ+Z9iiW5dbOZ+wiZwxMlJuMYlxuNrfL
+o38JzJ+KnY1XexfRkFmSaaShyMJ0N9kianxaYWJgvF7+/lx5U6isFxpfIwvo9YkQ
+27w/i9xb5e/tl+PzVr+FMKyUuyitdy5yjVGpa3y8Gqlk7YSo4df4LWzmR4hAYWTN
+P7cuV516tHakKpyTi9FweBrqEUNT7W7BNb6Js0Q1twrEIR4lFwpQn/iWUM5KqxAu
+QzP7YG/d58oWzdILeCXZ2CX3RHhhtm/Brwa9UFN9TFS3D9WLIx1pO+L0HNt5gIiu
+eOMq1vN6sazkMtm6Z1NMqg==
+    </SignatureValue>
+    <KeyInfo>
+      <X509Data>
+        <X509Certificate>
+MIIFKjCCBBKgAwIBAgIBAjANBgkqhkiG9w0BAQsFADAwMRMwEQYDVQQKFApUUE1f
+VmVuZG9yMRkwFwYDVQQDFBBKdW5pcGVyX1hYWFhYX0NBMB4XDTE0MDIyNzE0MTM1
+M1oXDTE1MDIyNzE0MTM1M1owKzETMBEGA1UEChQKVFBNX1ZlbmRvcjEUMBIGA1UE
+AxQLY2hpcF8wMDAwMDEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1
+x0WiRICc5g+w0ILzTueLxlV+TIZhqeOe1hLHcBpJQd/OmX31rl8l+rgL1juu5BDF
+wkwl4EA4dZhjfuiiVChNkD4lks+464PreyjuWh+V+vgytdM84TRrXB1I+yTLrXuH
+/gZSKje67/5kWICAYAdRCkD8FnSdfXFtHE7blG6gYmAOHt1/g3N/UsjxOGPiUBFW
+PUvH4WYWVCgSup16ehb2SOBJGjE3FBjAOQLMlL4FiFSDB4nzNnsaRxZsHgftW87d
+x2d6lprLNIlmGDFRgELM/ItGsZFOpKyv3ftqdyC3rYaOz40I5i4NzP04vwfjcWxX
+glRvCjwY+T9MjOwGYpirAgMBAAGjggJSMIICTjAMBgNVHRMBAf8EAjAAMIGTBgNV
+HSABAf8EgYgwgYUwgYIGC2CGSAGG+EUBBy8BMHMwOQYIKwYBBQUHAgEWLWh0dHA6
+Ly93d3cudmVyaXNpZ24uY29tL3JlcG9zaXRvcnkvaW5kZXguaHRtbDA2BggrBgEF
+BQcCAjAqGihUQ1BBIFRydXN0ZWQgUGxhdGZvcm0gTW9kdWxlIEVuZG9yc2VtZW50
+MIHXBgNVHSMEgc8wgcyAFHppoyXFyh/JaftWYf7m3KBzOdg2oYGwpIGtMIGqMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTESMBAGA1UEBxMJU3Vubnl2
+YWxlMRkwFwYDVQQKFBBKdW5pcGVyX05ldHdvcmtzMR0wGwYDVQQLFBRDZXJ0aWZp
+Y2F0ZV9Jc3N1YW5jZTEZMBcGA1UEAxQQVFBNX1RydXN0X0FuY2hvcjEdMBsGCSqG
+SIb3DQEJARYOY2FAanVuaXBlci5jb22CAQEwcQYDVR0fBGowaDBmoC6gLIYqaHR0
+cDovL2NybC5qdW5pcGVyLm5ldD9jYT1KdW5pcGVyX1hYWFhYX0NBojSkMjAwMRMw
+EQYDVQQKFApUUE1fVmVuZG9yMRkwFwYDVQQDFBBKdW5pcGVyX1hYWFhYX0NBMFsG
+A1UdEQEB/wRRME+kTTBLMQswCQYDVQQGEwJVSzEYMBYGA1UEChMPTXkgT3JnYW5p
+emF0aW9uMRAwDgYDVQQLEwdNeSBVbml0MRAwDgYDVQQDEwdNeSBOYW1lMA0GCSqG
+SIb3DQEBCwUAA4IBAQCCKQLSng8OkgniJ4EpLnzUUGmFc8BDerVuaWv+kj1Zkk0h
+8leTPuNepWMiqAzdTjYVZYw4pzzSF/wYAKCVi1ng9ULlZS6wZAOL9exCF4bllvjz
+rBwDUX6gxKTq0o6jKf3qEUZLCJzwaX1LD4MW8yrWf6KR56gfUerQY2M6xmklA70d
+rY4u5+2F2sE6Vuh8N2aAo7HSaFMEVd5b399kC7nLMA8UJQ6S8OO+uPe9gYkqNgUJ
+HwsblCuekEeL1Gs/sZ25zGzD6Ofo097MsSYBGdPVbZbKUj9XUfIsUggY+1iAFyQI
+AuSxmTIAOISUbuxupPQPAU4nHOzEZediAoiNIGd5
+        </X509Certificate>
+        <X509Certificate>
+MIIExTCCA62gAwIBAgIBATANBgkqhkiG9w0BAQsFADCBqjELMAkGA1UEBhMCVVMx
+EzARBgNVBAgTCkNhbGlmb3JuaWExEjAQBgNVBAcTCVN1bm55dmFsZTEZMBcGA1UE
+ChQQSnVuaXBlcl9OZXR3b3JrczEdMBsGA1UECxQUQ2VydGlmaWNhdGVfSXNzdWFu
+Y2UxGTAXBgNVBAMUEFRQTV9UcnVzdF9BbmNob3IxHTAbBgkqhkiG9w0BCQEWDmNh
+QGp1bmlwZXIuY29tMB4XDTE0MDIyNzE0MTM1MloXDTE1MDIyNzE0MTM1MlowMDET
+MBEGA1UEChQKVFBNX1ZlbmRvcjEZMBcGA1UEAxQQSnVuaXBlcl9YWFhYWF9DQTCC
+ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANL5Mk5qFsVuqo+JmXWLmFxI
+RDEuRiZNRNLeJpgN9YWkXLAZX2rASwy041EMmZ6KAkWUd3ZmXucfoLpdRemfuPii
+ap1DgmS3IaYl/s4OOF8yzcYJprm8O7NyZp+Y9H1U/7Qfp97/KbqwCgkHSzOlnt0X
+KQTpIM/rNrbrkuTmalezFoFS7mrxLXJAsfP1guVcD7sLCyjvegL8pRCCrU9xyKLF
+8u/Qz4s0x0uzcGYh0sd3iWj21+AtigSLdMD76/j/VzftQL8B1yp3vc1EZiowOwq4
+KmORbiKU2GTGZkaCgCjmrWpvrYWLoXv/sf2nPLyK6YjiWsslOJtRO+KzRbs2B18C
+AwEAAaOCAW0wggFpMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHppoyXF
+yh/JaftWYf7m3KBzOdg2MIHfBgNVHSMEgdcwgdSAFDSljCNmTN5b+CDujJLlyDal
+WFPaoYGwpIGtMIGqMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTES
+MBAGA1UEBxMJU3Vubnl2YWxlMRkwFwYDVQQKFBBKdW5pcGVyX05ldHdvcmtzMR0w
+GwYDVQQLFBRDZXJ0aWZpY2F0ZV9Jc3N1YW5jZTEZMBcGA1UEAxQQVFBNX1RydXN0
+X0FuY2hvcjEdMBsGCSqGSIb3DQEJARYOY2FAanVuaXBlci5jb22CCQDUbsEdTn5v
+MjAOBgNVHQ8BAf8EBAMCAgQwQgYDVR0fBDswOTA3oDWgM4YxaHR0cDovL2NybC5q
+dW5pcGVyLm5ldD9jYT1KdW5pcGVyX1RydXN0X0FuY2hvcl9DQTANBgkqhkiG9w0B
+AQsFAAOCAQEAOuD7EBilqQcT3t2C4AXta1gGNNwdldLLw0jtk4BMiA9l//DZfskB
+2AaJtiseLTXsMF6MQwDs1YKkiXKLu7gBZDlJ6NiDwy1UnXhi2BDG+MYXQrc6p76K
+z3bsVwZlaJQCdF5sbggc1MyrsOu9QirnRZkIv3R8ndJH5K792ztLquulAcMfnK1Y
+NTOufhQsD2t4TYpEkzLEiZqSswdBOaPxPcJLQNW8Bw2xN+A9GX7WJzEbT/G7MUfo
+Sb+U2PVsQTDWEzUjVnG7vNWYxirnAOZ0OXEWWYxHUJntx6DsbXYuX7D1PkkNr7ir
+96DpOPtX7h8pxxGSDPBXIyvg02aFMphstQ==
+        </X509Certificate>
+      </X509Data>
+    </KeyInfo>
+  </Signature>
+</configlet>
