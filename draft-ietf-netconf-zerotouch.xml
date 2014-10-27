@@ -144,7 +144,7 @@
     |                 ^                           |
     |                 |                           V
     | call home       | manufactures         +----------+
-    |                 | with neceassary      |  Config  |
+    |                 | with necessary       |  Config  |
     |                 | default state        |  Server  |<----+
     |                 | for ZeroTouch        +----------+     |
     |                 |                                       |
@@ -288,10 +288,10 @@
           </figure>
           </t>
           <t>When accessing the Configuration Server, the HTTP
-          Accept-Type MUST be set to either "application/zerotouch-config"
+          Accept-Type MUST be set to either "application/zerotouch-configlet"
           or "application/zerotouch-bootimage".  Please see 
           <xref target="zerotouch-media-types"/>. A wildcard Accept-Type
-          (e.g., */*) SHOULD default to "application/zerotouch-config".</t>
+          (e.g., */*) SHOULD default to "application/zerotouch-configlet".</t>
         </section>
         <section title="Interactive Interface">
           <t>The Configuration server SHOULD provide a
@@ -643,7 +643,7 @@
           URI that it was shipped with (i.e. not discovered 
           while initializing its networking), it MUST do so by 
           appending its UID to the URI string and using the
-          Accept-Type "application/zerotouch-config", as described in 
+          Accept-Type "application/zerotouch-configlet", as described in 
           <xref target="config-server"/>.  For URIs discovered 
           via the ZeroTouch Information option, the device
           MAY also try the raw URI after trying the permutation
