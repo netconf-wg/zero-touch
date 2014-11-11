@@ -591,13 +591,13 @@
           protocol to obtain a dynamic assignment for its networking
           stack.  When broadcasting the DISCOVERY request, the device 
           may provide any DHCP options to identify itself or the type
-          of device it is (e.g. IPV4 options 60 or 61).</t>
+          of device it is (e.g. DHCPv4 options 60 or 61).</t>
           <t>If the DHCP servers reside on a locally administered network
           (see <xref target="use-cases"/>), then their OFFER responses
           MAY include the ZeroTouch Information DHCP option defined in
           <xref target="zerotouch-info-option"/>, as well as the legacy
           DHCP options for TFTP server name, bootfile name, and/or
-          vendor specific information (e.g. IPv4 options 43, 66, 67).</t>
+          vendor specific information (e.g. DHCPv4 options 43, 66, 67).</t>
           <t>If a DHCP server provides both the ZeroTouch Information 
           and the vendor specific information DHCP options, then the
           ZeroTouch Information option MUST be processed first.  After
