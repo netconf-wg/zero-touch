@@ -531,55 +531,55 @@
           <t>
             <figure>
               <artwork><![CDATA[
-    DEVICE           DHCP                         CONFIGURATION   NMS
-      |          SERVER/RELAY                        SERVERS       |
-      |                |                                |          |
-  +-->|                |                                |          |
-  |   |                |                                |          |
-  |   |--[if running config != factory default, boot normally]--+  |
-  |   |                |                                |       |  |
-<---------------------------------------------------------------+  |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |--(discovery)-->| [if no dhcp server found, boot normally]  |
-  |   |                |                                |          |
-  |   |  +---(offer)---|                                |          |
-  |   |  |             |                                |          |
-  |   |  +--[add any listed config servers to built-in list]--+    |
-  |   |                |                                |     |    |
-  |   |<------------------------------------------------------+    |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   | (iterate until match, else boot normally)       |          |
-  |   |------------------------------------------------>|          |
-  |   |                |                                |          |
-  |   |<------------------------------(zerotouch info)--|          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |--[if current image != expected, get image]----->|          |
-  |   |                |                                |          |
-  |   |  +-------------------------------------(image)--|          |
-  |   |  |             |                                |          |
-  |   |  +--[if image valid, install & reboot]--+       |          |
-  |   |                |                        |       |          |
-  +---------------------------------------------+       |          |
-      |                |                                |          |
-      |                |                                |          |
-      |                |                                |          |
-      |--[get config]---------------------------------->|          |
-      |                |                                |          |
-      |  +------------------------------------(config)--|          |
-      |  |             |                                |          |
-      |  +--[if config valid, merge into running]--+    |          |
-      |                |                           |    |          |
-      |     +--------------------------------------+    |          |
-      |     |          |                                |          |
-      |     +--[per new configuration, call home]----------------->|
-      |                |                                |          |
-      |                |                                |          |
+    DEVICE           DHCP                         CONFIGURATION      NMS
+      |          SERVER/RELAY                        SERVERS          |
+      |                |                                |             |
+  +-->|                |                                |             |
+  |   |                |                                |             |
+  |   |--[1. if running config != factory default, boot normally]--+  |
+  |   |                |                                |          |  |
+<------------------------------------------------------------------+  |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   |--(discovery)-->| [2. if no dhcp server found, boot normally]  |
+  |   |                |                                |             |
+  |   |  +---(offer)---|                                |             |
+  |   |  |             |                                |             |
+  |   |  +--[3. add any listed config servers to built-in list]--+    |
+  |   |                |                                |     |       |
+  |   |<------------------------------------------------------+       |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   | (4. iterate until match, else boot normally)    |             |
+  |   |------------------------------------------------>|             |
+  |   |                |                                |             |
+  |   |<---------------------------(5. zerotouch info)--|             |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   |                |                                |             |
+  |   |--[6. if current image != expected, get image]-->|             |
+  |   |                |                                |             |
+  |   |  +-------------------------------------(image)--|             |
+  |   |  |             |                                |             |
+  |   |  +--[7. if image valid, install & reboot]--+    |             |
+  |   |                |                        |       |             |
+  +---------------------------------------------+       |             |
+      |                |                                |             |
+      |                |                                |             |
+      |                |                                |             |
+      |--[8. get config]------------------------------->|             |
+      |                |                                |             |
+      |  +------------------------------------(config)--|             |
+      |  |             |                                |             |
+      |  +--[9. if config valid, merge into running]--+ |             |
+      |                |                           |    |             |
+      |     +--------------------------------------+    |             |
+      |     |          |                                |             |
+      |     +--[10. per new configuration, call home]---------------->|
+      |                |                                |             |
+      |                |                                |             |
 ]]></artwork>
             </figure>
           </t>
