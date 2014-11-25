@@ -30,7 +30,7 @@
                 <email>kwatsen@juniper.net</email>
             </address>
         </author>
-        <author initials="J.M.C." surname="Clarke" fullname="Joe Marcus Clarke">
+        <author initials="J.C." surname="Clarke" fullname="Joe Clarke">
             <organization>Cisco Systems</organization>
             <address>
                 <email>jclarke@cisco.com</email>
@@ -525,173 +525,179 @@
           <t>
             <figure>
               <artwork><![CDATA[
-    DEVICE           DHCP                         CONFIGURATION   NMS
-      |          SERVER/RELAY                        SERVERS       |
-      |                |                                |          |
-  +-->|                |                                |          |
-  |   |                |                                |          |
-  |   |--[if running config != factory default, boot normally]--+  |
-  |   |                |                                |       |  |
-<---------------------------------------------------------------+  |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |--(discovery)-->| [if no dhcp server found, boot normally]  |
-  |   |                |                                |          |
-  |   |  +---(offer)---|                                |          |
-  |   |  |             |                                |          |
-  |   |  +--[add any listed config servers to built-in list]--+    |
-  |   |                |                                |     |    |
-  |   |<------------------------------------------------------+    |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   | (iterate until match, else boot normally)       |          |
-  |   |------------------------------------------------>|          |
-  |   |                |                                |          |
-  |   |<------------------------------(zerotouch info)--|          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |                |                                |          |
-  |   |--[if current image != expected, get image]----->|          |
-  |   |                |                                |          |
-  |   |  +-------------------------------------(image)--|          |
-  |   |  |             |                                |          |
-  |   |  +--[if image valid, install & reboot]--+       |          |
-  |   |                |                        |       |          |
-  +---------------------------------------------+       |          |
-      |                |                                |          |
-      |                |                                |          |
-      |                |                                |          |
-      |--[get config]---------------------------------->|          |
-      |                |                                |          |
-      |  +------------------------------------(config)--|          |
-      |  |             |                                |          |
-      |  +--[if config valid, merge into running]--+    |          |
-      |                |                           |    |          |
-      |     +--------------------------------------+    |          |
-      |     |          |                                |          |
-      |     +--[per new configuration, call home]----------------->|
-      |                |                                |          |
-      |                |                                |          |
+    DEVICE           DHCP                         CONFIGURATION         NMS
+      |          SERVER/RELAY                        SERVERS             |
+      |                |                                |                |
+  +-->|                |                                |                |
+  |   |                |                                |                |
+  |   |--[1. if running config != factory default, boot normally]--+     |
+  |   |                |                                |          |     |
+<------------------------------------------------------------------+     |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   |--(2. discovery)-->| [3. if no dhcp server found, boot normally]  |
+  |   |                |                                |                |
+  |   |  +--(4. offer)-|                                |                |
+  |   |  |             |                                |                |
+  |   |  +--[5. add any listed config servers to built-in list]--+       |
+  |   |                |                                |        |       |
+  |   |<---------------------------------------------------------+       |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   | (6. iterate until match, else boot normally)    |                |
+  |   |------------------------------------------------>|                |
+  |   |                |                                |                |
+  |   |<---------------------------(zerotouch info)-----|                |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   |                |                                |                |
+  |   |--[7. if current image != expected, get image]-->|                |
+  |   |                |                                |                |
+  |   |  +-------------------------------------(image)--|                |
+  |   |  |             |                                |                |
+  |   |  +--[8. if image valid, install & reboot]--+    |                |
+  |   |                |                           |    |                |
+  +------------------------------------------------+    |                |
+      |                |                                |                |
+      |                |                                |                |
+      |                |                                |                |
+      |--[9. get config]------------------------------->|                |
+      |                |                                |                |
+      |  +------------------------------------(config)--|                |
+      |  |             |                                |                |
+      |  +--[10. merge configuration into running]----+ |                | 
+      |                |                              | |                |
+      |     +-----------------------------------------+ |                |
+      |     |          |                                |                |
+      |     +--[11. per new configuration, call home]------------------->|
+      |                |                                |                |
+      |                |                                |                |
 ]]></artwork>
             </figure>
           </t>
-          <t>Whenever a device boots with its factory default
-          settings, it initiates ZeroTouch with the goal of
-          finding a configuration that will enable it to call home  
-          to its deployment-specific NMS.</t>
-          <t>The process begins with the device using the DHCP
-          protocol to obtain a dynamic assignment for its networking
-          stack.  When broadcasting the DISCOVERY request, the device 
-          may provide any DHCP options to identify itself or the type
-          of device it is (e.g. IPV4 options 60 or 61).</t>
-          <t>If the DHCP servers reside on a locally administered network
-          (see <xref target="use-cases"/>), then their OFFER responses
-          MAY include the ZeroTouch Information DHCP option defined in
-          <xref target="zerotouch-info-option"/>, as well as the legacy
-          DHCP options for TFTP server name, bootfile name, and/or
-          vendor specific information (e.g. IPv4 options 43, 66, 67).</t>
-          <t>If a DHCP server provides both the ZeroTouch Information 
-          and the vendor specific information DHCP options, then the
-          ZeroTouch Information option MUST be processed first.  After
-          exhausting all ZeroTouch options without being able to call
-          home, a device MAY then process the information provided by
-          the legacy DHCP options.</t>
-          <t>The ZeroTouch Information option <xref target="zerotouch-info-option"/>
-          provides a set of Configuration Server URIs.  If returned by
-          the DHCP server, the device MUST append each URI to the end 
-          of one of its two sets of Configuration Server URIs, depending
-          on if the URI's scheme is secure or not.  URIs added this way
-          MUST remain distinguishable from those URIs the device was 
-          shipped with, for reasons discussed next.</t>
-
-<!--
-          <t>Before trying any of the Configuration Server URIs,
-          the device SHOULD first try to load a configuration
-          through local means that assert physical presence.
-          For instance, a removable USB flash drive or 
-          near-field communication mechanism.  Configurations 
-          obtained through an assertion of physical presence 
-          do not have to be signed or contain the device's
-          unique identifier (e.g., serial number).  If a 
-          Configlet is found, the device MUST use it without
-          trying any of the Configuration Server URIs.</t>
--->
-          <t>The device then iterates over its two sets of Configuration 
-          Server URIs.  The device MUST first try all the URIs
-          from the set having secure schemes before trying any
-          of the URIs from the set having insecure schemes.  For
-          each URI, until a match is found and successfully loaded,
-          the device attempts to initialize itself from the URI.
-          If the URI uses a secure scheme (e.g., https), the device
-          MUST validate the Configuration Server's certificate 
-          using one of its Configuration Server trust anchors.
-          If the device is unable to verify the server's certificate,
-          the device MUST skip that URI.  If the device reaches the
-          end of all its URIs without finding a usable match,
-          it SHOULD continue its normal boot sequence using its
-          factory default configuration.</t>
-    
-          <t>When the device is accessing a Configuration Server
-          URI that it was shipped with (i.e. not discovered 
-          while initializing its networking), it MUST do so by 
-          appending its UID to the URI string and using the
-          Accept-Type "application/zerotouch-configlet", as described in 
-          <xref target="config-server"/>.  For URIs discovered 
-          via the ZeroTouch Information option, the device
-          MAY also try the raw URI after trying the permutation
-          using its UID.</t>
-
-          <t>If the Configuration Server returns a configuration,
-          the device MUST first verify it before use.  Configuration
-          verification entails both verifying the configuration's
-          signature using the device's list of Configuration Signer
-          trust anchors, and also verifying that the unique identifier 
-          within the Configlet matches the device's unique identifier.</t>
-    
-          <t>Once the configuration is authenticated, the device MUST
-          compare its software image version with the expected
-          version specified within the configuration.  If there is a
-          mismatch, the device MUST download the correct image
-          version from the Configuration Server, by appending
-          its UID to the Configuration Server's URI string
-          and using the Accept-Type "application/zerotouch-bootimage", as described in  
-          <xref target="config-server"/>.  For URIs discovered  
-          via the ZeroTouch Information option, the device
-          MAY also try the raw URI after first trying the permutation
-          using its UID.  Once the image has been downloaded, the
-          device MUST install it and reboot, still with the 
-          factory default settings configured, so that ZeroTouch
-          restarts when the device comes back up.</t>
-
-          <t>If the device is running the correct software image
-          version, it merges the Configlet's contents into its running 
-          configuration.  This step effectively modifies the device
-          so that it is no longer having its factory default setting.
-          Thus, at this point, a reboot is no longer expected to 
-          start the ZeroTouch process.</t>
-          
-          <t>Though not technically required, the Configlet is presumed 
-          to have configured the device to "call home".  As soon as
-          this configuration is merged into the running configuration,
-          the device SHOULD immediately begin trying to establish the 
-          call home connection, as specified by the Configlet.</t>
-
-          <t>If configured to establish a SSH connection,
-          the the device MUST use its IDevID and associated
-          intermediate X.509 certificates as its host key per 
-          RFC 6187 <xref target="RFC6187"/>.  If configured to
-          establish a TLS connection, the device MUST use its
-          IDevID and associated intermediate X.509 certificates
-          as its server-side certificate for the TLS connection.</t>
-    
-          <t>In order to facilitate troubleshooting, the device
-          SHOULD record into a log information relating
-          to its stepping through the ZeroTouch sequence of
-          steps.  This draft does not define any specific
-          log messages, for instance, for Syslog or SNMP.</t>
-
+          <t>
+            <list style="format (%d)">
+                 <t>Whenever a device boots with its factory default settings,
+                      it initiates ZeroTouch with the goal of finding a
+                      configuation that will enable it to call home to its
+                      deployment-specific NMS.  Else, if the configuration
+                      has been changed from the factory default, it will
+                      boot normally.
+                 </t>
+                 <t>The discovery process begins with the device using the
+                      DHCP protocol to obtain a dynamic assignment for its
+                      networking stack.  When broadcasting the DISCOVERY
+                      request, the device may provide any DHCP options to
+                      identify itself or the type of device it is
+                      (e.g. DHCPv4 options 60 or 61).
+                 </t>
+                 <t>If the no DHCP offer is received, then the device will
+                      continue to boot normally.
+                 </t>
+                 <t>If the DHCP servers reside on a locally administered
+                      network (see <xref target="use-cases"/>), then their
+                      OFFER responses MAY include the ZeroTouch Information
+                      DHCP option defined in <xref target="zerotouch-info-option"/>,
+                      as well as the legacy vendor specific information (e.g.
+                      DHCPv4 options 43, 66, and 67).  If a DHCP server provides both
+                      ZeroTouch Information and the vendor specific information DHCP
+                      options, then the ZeroTouch information option MUST be processed 
+                      first.
+                 </t>
+                 <t>The ZeroTouch Information option <xref target="zerotouch-info-option"/>
+                      provides a set of Configuration Server URIs.  If returned by the DHCP
+                      server, the device MUST append each URI to the end of one of its two
+                      sets of Configuration Server URIs, depending on if the URI's scheme
+                      is secure or not.  URIs added this way MUST remain distinguishable
+                      from those URIs with which the device shipped for reasons discussed next.
+                 </t>
+                 <!--
+                 <t>Before trying any of the Configuration Server URIs,
+                      the device SHOULD first try to load a configuration
+                      through local means that assert physical presence.
+                      For instance, a removable USB flash drive or 
+                      near-field communication mechanism.  Configurations 
+                      obtained through an assertion of physical presence 
+                      do not have to be signed or contain the device's
+                      unique identifier (e.g., serial number).  If a 
+                      Configlet is found, the device MUST use it without
+                      trying any of the Configuration Server URIs.</t>
+                 -->
+                 <t>The device then iterates over its two sets of Configuration
+                      Server URIs.  The device MUST first try all of the URIs from
+                      the set having secure schemes before trying any of the URIs
+                      from the set having insecure schemes.  For each URI, until a
+                      match is found and successfully loaded, the device attempts to
+                      initialize itself from the URI.  If the URI uses a secure scheme
+                      (e.g. https), the device MUST validate the Configuration Server's
+                      certificate using one of its Configuration Server trust anchors.
+                      If the device is unable to verify the server's certificate, the
+                      device MUST skip that URI.  If the device reaches the end of all
+                      its URIs without finding a usable match, it SHOULD continue its
+                      normal boot sequence using its factory default configuration.
+                      <vspace/>
+                      When the device is accessing a Configuration Server URI with
+                      which it was shipped (i.e. not discovered while initializing
+                      its networking), it MUST do so by appending its UID to the
+                      URI string and using the Accept-Type "application/zerotouch-configlet",
+                      as described in <xref target="config-server"/>.  For URIs discovered
+                      via the ZeroTouch Information option, the device MAY also try
+                      the raw URI after trying the permutation using its UID.
+                      <vspace/>
+                      If the Configuration Server returns a configuration, the device
+                      MUST first verify it before use.  Configuration verification entails
+                      both verifying the configuration's signature using the device's list
+                      of Configuration Signer trust anchors, and also verifying that the
+                      unique identifier within the Configlet [JC: Should this be configuration?] matches the device's
+                      unique identifier.
+                 </t>
+                 <t>Once the configuration is authenticated, the device MUST compare
+                      its software image version with the expected version specified
+                      within the configuration.  If there is a mismatch, the device MUST
+                      download the correct image version from the Configuration Server
+                      by appending its UID to the Configuration Server's URI string
+                      and using the Accept-Type "application/zerotouch-bootimage", as
+                      described in <xref target="config-server"/>.  For URIs discovered
+                      via the ZeroTouch Information option, the device MAY also try the
+                      raw URI after first trying the permutation using its UID.
+                 </t>
+                 <t>Once the image has been downloaded, the device MUST first validate
+                      the image integrity, and if valid [JC: How?  Out of scope, but what
+                      should we say here?] install it and reboot,
+                      still with the factory default settings configured, so that ZeroTouch
+                      restarts when the device comes back up.
+                 </t>
+                 <t>When the device is running the correct software image version, it moves
+                      on to the configuration contents of the Configlet obtained in step 6.
+                 </t>
+                 <t>The device merges the Configlet's [JC: should this be configuration?] contents into
+                      its running configuration.  This step effectively modifies the
+                      device so that it is no longer having its factory default
+                      configuration.  Thus, at this point, a reboot is no longer
+                      expected to start the ZeroTouch process.
+                 </t>
+                 <t>Though not technically required, the Configlet is presumed to have
+                      configured the device to "call home."  As soon as this
+                      configuration is merged into the running configuration, the
+                      device SHOULD immediately begin trying to establish the call
+                      home connection as specified by the Configlet.
+                      <vspace/>
+                      If configured to establish a SSH connection, the device MUST
+                      use its IDevID and associated intermediate X.509 certificates
+                      as its host key per RFC 6187 <xref target="RFC6187"/>.  If
+                      configured to establish a TLS connection, the device MUST use its
+                      IDevID and associated intermediate X.509 certificates as its
+                      server-side certificate for the TLS connection.
+                 </t>
+            </list>
+          </t>
+          <t>In order to facilitate troubleshooting, the device SHOULD
+               record into a log information relating to its stepping through
+               the ZeroTouch sequence.  This draft does not define any specific
+               log messages, for instance, for Syslog or SNMP.
+          </t>
         </section>
       </section>
 
@@ -709,7 +715,7 @@
             <figure>
                 <artwork><![CDATA[
   +------------------------------------------------------------------+
-  |                              <nsm>                               |
+  |                              <nms>                               |
   |                                                                  |
   |     +------------------------------------------------------+     |
   |     |                <immutable storage>                   |     |
