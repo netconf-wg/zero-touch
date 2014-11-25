@@ -612,7 +612,7 @@
                       options, then the ZeroTouch information option MUST be processed 
                       first.
                  </t>
-                 <t>The ZeroTouch Information option <xref target="zero-touch-info-option"/>
+                 <t>The ZeroTouch Information option <xref target="zerotouch-info-option"/>
                       provides a set of Configuration Server URIs.  If returned by the DHCP
                       server, the device MUST append each URI to the end of one of its two
                       sets of Configuration Server URIs, depending on if the URI's scheme
