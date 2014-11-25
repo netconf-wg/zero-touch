@@ -30,12 +30,6 @@
                 <email>kwatsen@juniper.net</email>
             </address>
         </author>
-        <author initials="S.H." surname="Hanna" fullname="Stephen Hanna">
-            <organization>Juniper Networks</organization>
-            <address>
-                <email>shanna@juniper.net</email>
-            </address>
-        </author>
         <author initials="J.M.C." surname="Clarke" fullname="Joe Marcus Clarke">
             <organization>Cisco Systems</organization>
             <address>
@@ -1146,15 +1140,16 @@ INSERT_TEXT_FROM_FILE(ietf-netconf-zerotouch-configlet.xsd)
         David Harrington,
         Dean Bogdanovic,
         Martin Bjorklund,
+        Stephen Hanna,
         Wes Hardaker,
         Russ Mundy,
         Reinaldo Penno,
         Randy Presuhn,
         Juergen Schoenwaelder.</t>
           
-        <t>Special thanks goes to Russ Mundy and Wes Hardaker
-        for brainstorming the original I-D's solution during
-        the IETF 87 meeting in Berlin.</t>
+        <t>Special thanks goes to Steve Hanna, Russ Mundy, and 
+        Wes Hardaker for brainstorming the original I-D's solution 
+        during the IETF 87 meeting in Berlin.</t>
       </section>
     </middle>
 
