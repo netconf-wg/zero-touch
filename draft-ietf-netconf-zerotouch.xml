@@ -698,11 +698,12 @@
                       server-side certificate for the TLS connection.
                  </t>
             </list>
-            <t>In order to facilitate troubleshooting, the device SHOULD
-                 record into a log information relating to its stepping through
-                 the ZeroTouch sequence.  This draft does not define any specific
-                 log messages, for instance, for Syslog or SNMP.
-            </t>
+          </t>
+          <t>In order to facilitate troubleshooting, the device SHOULD
+               record into a log information relating to its stepping through
+               the ZeroTouch sequence.  This draft does not define any specific
+               log messages, for instance, for Syslog or SNMP.
+          </t>
         </section>
       </section>
 
