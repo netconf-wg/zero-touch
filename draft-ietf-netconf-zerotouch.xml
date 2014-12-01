@@ -643,7 +643,7 @@
                       device MUST skip that URI.  If the device reaches the end of all
                       its URIs without finding a usable match, it SHOULD continue its
                       normal boot sequence using its factory default configuration.
-                      <vspace/>
+                      <vspace blanklines="2"/>
                       When the device is accessing a Configuration Server URI with
                       which it was shipped (i.e. not discovered while initializing
                       its networking), it MUST do so by appending its UID to the
@@ -651,7 +651,7 @@
                       as described in <xref target="config-server"/>.  For URIs discovered
                       via the ZeroTouch Information option, the device MAY also try
                       the raw URI after trying the permutation using its UID.
-                      <vspace/>
+                      <vspace blanklines="2"/>
                       If the Configuration Server returns a configuration, the device
                       MUST first verify it before use.  Configuration verification entails
                       both verifying the configuration's signature using the device's list
@@ -689,7 +689,7 @@
                       configuration is merged into the running configuration, the
                       device SHOULD immediately begin trying to establish the call
                       home connection as specified by the Configlet.
-                      <vspace/>
+                      <vspace blanklines="2"/>
                       If configured to establish a SSH connection, the device MUST
                       use its IDevID and associated intermediate X.509 certificates
                       as its host key per RFC 6187 <xref target="RFC6187"/>.  If
