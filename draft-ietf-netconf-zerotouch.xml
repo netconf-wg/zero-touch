@@ -650,8 +650,8 @@
                       MUST first verify it before use.  Configuration verification entails
                       both verifying the configuration's signature using the device's list
                       of Configuration Signer trust anchors, and also verifying that the
-                      unique identifier within the Configlet [JC: Should this be configuration?] matches the device's
-                      unique identifier.
+                      unique identifier within the Configlet that contains the configuration
+                      matches the device's unique identifier.
                  </t>
                  <t>Once the configuration is authenticated, the device MUST compare
                       its software image version with the expected version specified
@@ -664,16 +664,18 @@
                       raw URI after first trying the permutation using its UID.
                  </t>
                  <t>Once the image has been downloaded, the device MUST first validate
-                      the image integrity, and if valid [JC: How?  Out of scope, but what
-                      should we say here?] install it and reboot,
+                      the image integrity.  This can be done using any vendor-specific
+                      integrity check that currently exists; however, some type of cryptographic
+                      validation MUST be done to prevent a trivial attack vector.  If the image
+                      is valid, the device then installs it and reboots,
                       still with the factory default settings configured, so that ZeroTouch
                       restarts when the device comes back up.
                  </t>
                  <t>When the device is running the correct software image version, it moves
                       on to the configuration contents of the Configlet obtained in step 6.
                  </t>
-                 <t>The device merges the Configlet's [JC: should this be configuration?] contents into
-                      its running configuration.  This step effectively modifies the
+                 <t>The device merges the Configlet's configuration contents into
+                      its own running configuration.  This step effectively modifies the
                       device so that it is no longer having its factory default
                       configuration.  Thus, at this point, a reboot is no longer
                       expected to start the ZeroTouch process.
