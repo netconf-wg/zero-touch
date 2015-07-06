@@ -1,0 +1,7 @@
+module: ietf-zerotouch-ownership-voucher
+   +--rw voucher
+      +--rw unique-id*    string
+      +--rw owner-id      string
+      +--rw created-on    yang:date-and-time
+      +--rw expires-on?   yang:date-and-time
+      +--rw signature     string
