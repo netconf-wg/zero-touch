@@ -2,7 +2,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY rfc6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
-<!ENTITY rfc6187 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6187.xml">
+<!ENTITY rfc6241 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml">
 <!ENTITY rfc7317 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7317.xml">
 ]>
 
@@ -24,7 +24,7 @@
      ipr="trust200902"
      docName="draft-ietf-netconf-zerotouch-latest">
     <front>
-        <title abbrev="ZeroTouch">Zero Touch Provisioning for NETCONF Call Home (ZeroTouch)</title>
+        <title abbrev="Zero Touch">Zero Touch Provisioning for NETCONF Call Home</title>
         <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
             <organization>Juniper Networks</organization>
             <address>
@@ -49,8 +49,8 @@
         <keyword>zerotouch</keyword>
         <abstract>
             <t>This draft presents a technique for establishing a
-            secure NETCONF connection between a newly deployed 
-            IP-based device, configured with just its factory 
+            secure NETCONF or RESTCONF connection between a newly deployed 
+            device, configured with just its factory 
             default settings, and its rightful owner's network
             management system (NMS).</t>
         </abstract>
@@ -59,57 +59,54 @@
     <middle>
       <section title="Introduction">
 
-          <t>A fundamental business requirement is to reduce 
-          costs where possible.  For network operators, deploying
-          devices to many locations can be a significant cost, as
-          sending trained specialists to each site to do installations
-          is both cost prohibitive and does not scale.</t>
+        <t>A fundamental business requirement is to reduce 
+        costs where possible.  For network operators, deploying
+        devices to many locations can be a significant cost, as
+        sending trained specialists to each site to do installations
+        is both cost prohibitive and does not scale.</t>
 
-          <t>The solution presented herein enables a device to 
-          securely obtain a bootstrapping configuration from the network
-          without any operator input.  Significantly, this configuration
-          may configure the device to securely call home using
-          NETCONF Call Home <xref target="draft-ietf-netconf-call-home"/>.</t>
+        <t>This document defines bootstrapping strategies enabling a device to 
+        securely obtain bootstrapping data with no installer input beyond racking
+        the device and applying power.  This bootstrapping data directs
+        the device to install a boot image and an initial configuration,
+        which enables the establishment of a NETCONF <xref target="RFC6241"/>
+        or RESTCONF <xref target="draft-ietf-netconf-restconf"/>
+        connection to its rightful owner's network management system (NMS).</t>
 
-          <t>Central to this solution is the device being able to
-          process a set of files locally, without any need to reach
-          out to the network again.   As consequence, how the files
-          are obtained is not critical to the security of the
-          solution.  The files can be read over any networking layer
-          or medium.  By example, the files could be loaded using a
-          USB flash drive physically plugged into a device.</t>
+        <t>In order to enable a NETCONF or RESTCONF connection to be
+        established,  the initial configuration should include
+        settings such as enabling the NETCONF/RESTCONF service,
+        including parameters needed to support an NMS-initiated
+        or device-initiated connection, and configuring a local
+        administrator account.  Examples used in this draft 
+        illustrate this using models defined by <xref target="RFC7317"/>
+        and <xref target="draft-ietf-netconf-server-model"/>.</t>
 
-          <t>The solution presented below focuses on supporting IP
-          networks that may have a DHCP server.  Solutions for other
-          deployment scenarios may be defined by drafts in the future.</t>
-<!--
-          <t><vspace blankLines="3"/></t>
--->
         <section title="Use Cases" anchor="use-cases">
           <t>
             <list style="symbols">
               <t>Connecting to a remotely administered network
                 <list style="empty">
                   <t>This use-case involves scenarios, such as a remote
-                  branch office or convenience store, whereby the device
-                  connects an access gateway device to an ISP's network.
-                  In this case, the device receives only generic networking
-                  settings provided by the ISP's DHCP server, with 
-                  no site-specific customizations possible.  In such a 
-                  case, the device has no recourse but to reach out to 
-                  the public Internet its initial configuration.</t>
+                  branch office or convenience store, whereby a device
+                  connects as an access gateway to an ISP's network.
+                  Assuming it is not possible to customize the ISP's
+                  network, and with no other nearby device to leverage,
+                  the device has no recourse but to reach out to the
+                  public Internet for a well-known service it can
+                  bootstrap off of.</t>
                 </list>
               </t>
               <t>Connecting to a locally administered network
                 <list style="empty">
-                  <t>This use-case covers all other scenarios and 
-                  differs only in that the device may additionally
-                  receive site-specific information from the network,
-                  which could direct it to use a local server for its
-                  initial configuration.  If no site-specific information
-                  is provided, or the device is unable to use the 
-                  information provided, it can then reach out to network
-                  just as it would for a remotely administered network.</t>
+                  <t>This use-case covers all other scenarios
+                  and differs only in that the device may
+                  additionally leverage nearby devices, which may direct 
+                  it to use a local service to bootstrap off of. 
+                  If no such site-specific information is available, or
+                  the device is unable to use the information provided,
+                  it can then reach out to network just as it would for
+                  the remotely administered network use-case.</t>
                 </list>
               </t>
             </list>
@@ -120,14 +117,67 @@
         </section>
 
 
-        <section title="Terminology">
+        <section title="Terminology" anchor="terminology">
           <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
           "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
           and "OPTIONAL" in the sections below are to be interpreted
           as described in RFC 2119 <xref target="RFC2119"/>.</t>
+
+          <t>This document defines the following terms:
+            <list style="hanging" hangIndent="4">
+              <t hangText="Artifact:">The term "artifact" is used throughout to represent
+              bootstrapping data that can be encoded outside of the RESTCONF protocol.  For example,
+              an artifact may be a file on disk or a message in another protocol.  Unless
+              used inside a secure protocol, artifacts must be signed and need to be
+              provided along with an Owner Certificate and an Ownership Voucher (see terms),
+              so the a device can validate the artifact's signature to its Rightful Owner (see term).</t>
+              <t hangText="Bootstrap Server:">The term "bootstrap server" is used within
+              this document to mean any RESTCONF server implementing the YANG module
+              defined in <xref target="yang-module"/>.</t>
+              <t hangText="Device:">The term "device" is used throughout this document
+              to refer to the network element that needs to be bootstrapped.  The device
+              is the RESTCONF client to a Bootstrap Server (see above) and, at the end of
+              bootstrapping process, the device is the NETCONF or RESTCONF server to a
+              deployment-specific NMS.  See <xref target="device-details"/> for more
+              information about devices.</t>
+              <t hangText="Network Management System (NMS):">The acronym "NMS" is used
+              throughout this document to refer to the deployment specific management
+              system that the bootstrapping process ultimately connects the devices to.
+              From a device's perspective, when the bootstrapping process has completed,
+              the NMS is a NETCONF or RESTCONF client.</t>
+              <t hangText="Owner:">See Rightful Owner.</t>
+              <t hangText="Owner Certificate:">An owner certificate, signed by the
+              device's manufacturer or delegate, binds an owner identity to the owner's private
+              key, which the owner can subsequently use to sign artifacts.  The owner
+              certificate is an X.509 certificate encoding the owner's identity
+              in the Subject field of the X.509 certificate.  The owner certificate
+              is used by devices only when validating owner signatures on Signed Data (see term).</t>
+              <t hangText="Ownership Voucher:">An ownership voucher, signed by the
+              device's manufacturer or delegate, binds an owner identity to one or more
+              device identities (e.g., serial numbers).  The ownership voucher is used
+              by devices only when validating owner signatures on Signed Data (see term).</t>
+              <t hangText="Redirect Server:">The term "redirect server" is used to refer to
+              a Bootstrap Server (see above) that only returns Redirect Information (<xref
+              target="information-types"/>).</t>
+              <t hangText="Rightful Owner:">The rightful owner of a device is the person or
+              organization that purchased the device.  How ownership can be conveyed to a
+              device is described in <xref target="ownership"/>.</t>
+              <t hangText="Secure Redirect:">Secure redirect is like an HTTP Redirect
+              except that it also returns TLS certificates that can be used as trust anchors
+              to validate the secure connection to the Bootstrap Server the device is being redirected to.</t>
+              <t hangText="Signed Data:">The term "signed data" is used throughout to mean
+              data that has been signed by a device's Rightful Owner's private key.  Any time
+              data is signed, it must be presented along with an Owner Certificate and
+              Ownership Voucher (see terms).</t>
+              <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
+              data that has not been signed by a device's Rightful Owner's private key.  The
+              option to use unsigned data is available only when the data is obtained over a
+              secure connection, such as to a Redirect Server or a Bootstrap Server (see terms).</t>
+            </list>
+          </t>
         </section>
 
-        <section title="Tree Diagrams">
+        <section title="Tree Diagrams" anchor="tree-diagram">
           <t>A simplified graphical representation of the data models
           is used in this document.  The meaning of the symbols in
           these diagrams is as follows:
@@ -152,331 +202,486 @@
 
       </section>  <!-- end Introduction -->
 
-      <section title="High-level Design">
-        <section title="Design Overview" anchor="com-diag">
-          <t>The following diagram illustrates the overall solution
-          presented in this draft.  Note that some of the interactions 
-          illustrated below occur at different times, only the 
-          numbered interactions (1-3) occur at the time a device is
-          bootstrapping itself.</t>
-          <t>
-            <figure>
-              <artwork><![CDATA[
-         manufactures
-      +----------------------------------+
-      |                                  |
-      |              1.discover          |
-      |                bootstrap         |   2.fetch bootstrap
-      |                information       v     data and provide    
-      |                (optional)    +------+  confirmation       
-      |              +---------------|Device|----------------+
-      |              |               +------+                |
-      |              |                   |                   |
-      |              v                   |                   v
-   +------+       +------+               |              +---------+
-   |Vendor|       | DHCP |               |3.netconf     |Bootstrap|
-   +------+       |Server|               | callhome     | Server  |
-     |  ^         +------+               |              +---------+
-     |  |            ^                   |                   ^
-     |  |            | stage             |                   |
-     |  |            | bootstrap         |      stage        |
-     |  |            | information       v      bootstrap    |
-     |  |            | (optional)    +-------+  data         |
-     |  |            +---------------|  NMS  |---------------+
-     |  |                            +-------+
-     |  |  imports trust anchor,        | ^
-     |  |  signups for owner cert,      | |
-     |  |  and orders devices           | |
-     |  +-------------------------------+ |
-     +------------------------------------+
-       ships devices, provides 
-       serial-numbers and/or IDevID
-       certs, and ownership vouchers
-]]></artwork>
-            </figure>
-          </t>
-          <t>The boxes in this diagram are described next.  A sequence diagram
-          explaining the various calls follows in <xref target="seq-diag"/>.</t>
-          <t>
-          <list style="symbols">
-            <t>Vendor
-              <list style="empty">
-                <t>Vendors manufacture the devices supporting NETCONF ZeroTouch.
-                To support this solution, Vendors must support a one-time enrollment
-                process per business organization owning the NMS.  Vendors must also support
-                sending additional information to the business organization about the 
-                devices that have been shipped for device orders it places.</t>
-<!--
-                More information about Vendors is in <xref target="vendor"/>.</t>
--->
-               </list>
-            </t>
-            <t>Device
-              <list style="empty">
-                <t>The devices supporting NETCONF ZeroTouch will only attempt the
-                bootstrapping process when booting with its factory default 
-                configuration.  As illustrated above, the bootstrapping process
-                consists of three interactions:
-                  <list style="numbers">
-                    <t>When joining the network, the device will attempt to configure
-                    IP networking from a DHCP server.  If the device is able to reach
-                    a DHCP server, it may discover additional bootstrapping information.
-                    The additional bootstrapping information consists of one or more additional
-                    Bootstrap Servers the device should try to connect to.</t>
-                    <t>The device sequentially processes its list of Bootstrap Servers,
-                    prioritizing any that might have been learned from the DHCP
-                    server.  Once the device has successfully configured itself using
-                    the bootstrapping information, it notifies the bootstrapping 
-                    server for monitoring purposes.</t>
-                    <t>Assuming the bootstrapping information configures the device
-                    appropriately, the device will initiate a NETCONF Call Home
-                    connection <xref target="draft-ietf-netconf-call-home"/>.</t>
-                  </list>
-                </t>
-                <t>More information about Devices is in <xref target="device"/>.</t>
-              </list>
-            </t>
-            <t>DHCP Server
-              <list style="empty">
-                <t>This draft assumes the use of a DHCP server but, in reality, the
-                solution is not intrinsically tied to using a DHCP server.  Any
-                mechanism or combination of mechanisms that can provide dynamic
-                networking assignment would equally do.</t>
-                <t>Assuming the use of DHCP, this draft defines a specific DHCP
-                Option for the discovering of addition bootstrapping information.
-                More information about the ZeroTouch DHCP Option is in
-                <xref target="zerotouch-info-option"/>.</t>
-              </list>
-            </t>
-            <t>Bootstrap Server
-              <list style="empty">
-                <t>Bootstrap Servers host the bootstrapping information staged by
-                NMSs for the devices to find.  The Bootstrap Server presents a
-                simple REST interface for devices to obtain both their bootstrapping
-                information as well as notify the Bootstrapping Server when it has
-                successfully completed the bootstrapping process.</t>
-                <t>Bootstrap Servers may be deployed on the public Internet or on
-                a local network.  Devices may be preconfigured with a list of well-known
-                Bootstrap Servers.  Additional Bootstrap Servers (i.e. not in the
-                device's preconfigured list) must be discovered from a DHCP server.</t>
-                <t>How Bootstrap Servers are deployed is out of scope of this draft,
-                but there are a couple points worth noting.  Firstly, it is expected
-                that Internet based Bootstrap Servers will initially be hosted by 
-                Vendors, whilst waiting for 3rd-party servers to become available.
-                Secondly, it is expected that locally administrated networks with
-                in-house solutions might bundle the Bootstrap Server into another
-                system (e.g., the NMS), where having the features integrated can
-                streamline various workflows.</t>
-                <t>More information about Bootstrap Servers is 
-                in <xref target="bootstrap-server"/>.</t>
-              </list>
-            </t>
-            <t>Network Management System
-              <list style="empty">
-                <t>The NMS is a term used here loosely to represent any system,
-                or collection of systems, deployed by a business organization to 
-                manage its devices.  An NMS being able to establish a secure NETCONF 
-                connection with devices purchased by its organization is the ultimate
-                goal of this solution presented by this draft.  More information about
-                the Network Management System is in <xref target="nms"/>.</t>
-              </list>
-            </t>
-          </list>
-          </t>
-<!--
-          <t>Not captured in the diagram, but is described in sections
-          below, the solution presented herein is totally secure.  Every
-          networking connection is encrypted and authenticated, and all
-          of the bootstrapping information is cryptographically signed
-          and verified.</t>
--->
+      <section title="Guiding Principles" anchor="guiding-principles">
+        <t>This section provides overarching principles guiding the solution presented in this document.</t>
+        <section title="Trust Anchors" anchor="trust-anchors">
+          <t>A device in its factory default state can only trust remote keys for which it has preconfigured trust 
+          anchors.  For instance, the device may have a trust anchor (e.g., a X.509 certificate) for
+          when authenticating a very specific HTTPS server, and another trust anchor for when validating
+          boot-image files, and yet another trust anchor for when verifying software licenses.</t>
         </section>
+        <section title="Conveying Trust">
+          <t>Trust can be conveyed by either transport level security or artifact signing.  For instance, if a device
+          connects to an HTTPS server, authenticating the TLS certificate to a known trust anchor, then any data
+          the device receives from the HTTPS server can also be trusted.  Likewise, if a device
+          can authenticate the signature over some data to a known trust anchor, then that data can also be
+          trusted.  In general, any data obtained from a trusted source MAY be trusted and, any data obtained
+          from an untrusted source MUST NOT be trusted.</t>
+          <t>It is possible but unnecessary to provide signed data over a secure connection.  For instance,
+          a device connecting to a trusted HTTPS server may retrieve data that has been signed by its rightful
+          owner, but this is not required, as the device is already assured by the server that its data was
+          staged by its rightful owner.  That said, when an insecure connection is used (e.g., DHCP), the 
+          device has no choice but to require that the data be signed, in order to trust the data.</t> 
+        </section>
+        <section title="Ownership" anchor="ownership">
+          <t>The goal of this document is to enable a device to connect with its rightful owner's NMS.   This entails
+          the manufacturer being able to track who owns which devices (out of the scope of this document), as well
+          as an ability to convey that information to devices (in scope).  Matching the two ways to convey trust, this 
+          document provides both a protocol-oriented solution as well as an artifact based solution for conveying ownership.</t>
+          <t>The protocol based solution conveys ownership by API contract, in that
+          the server asserts that it will only return data that it is sure was staged by that device's rightful
+          owner.  How ownership for a device is assured is out of scope of this document.</t>
+          <t>The artifact based solution involves the manufacturer signing an owner
+          key and then later, when the ownership for devices is established, the manufacturer signing a voucher
+          that assigns those devices to the owner, and then the owner using their private key to sign the artifacts.
+          Thus, from the device's perspective, it can use the presented "ownership voucher" to validate the
+          presented "owner certificate", which it can then use to validate the signature over the presented
+          artifact.</t>
+          <t>The YANG module in <xref target="yang-module"/> includes grouping statements defining the
+          format for the owner certificates and ownership vouchers used by the bootstrapping solution
+          presented in this document.</t>
+        </section>
+        <section title="Information Types" anchor="information-types">
+          <t>This document presumes there exists two types of zero touch information: redirect information and bootstrapping
+          information.  Either type of data may by accessed as unsigned data over a secure connection to a 
+          trusted server (e.g., HTTPS), or as signed artifacts obtained via an insecure method (DHCP server, 
+          removable storage device, etc.).</t> 
+          <t>The redirect information type of data provides two bits of information: bootstrap server 
+          locations and trust anchors.  The trust anchors are provided to enable the device to 
+          authentic the specified bootstrap servers (TLS certificate-based authentication).
+          This is what distinguishes this technique from a standard HTTP Redirect and why it
+          may sometimes be called "secure redirect".</t>
+          <t>The bootstrap information type of data provides information describing the
+          boot-image and configuration the device should be running, in order to be considered
+          bootstrapped.  The boot-image information is optional but, if it is provided, the
+          device should install the boot image prior to installing the configuration.</t> 
+          <t>The YANG module in <xref target="yang-module"/> includes grouping statements defining the
+          format for redirect and bootstrap information types  used by the bootstrapping solution
+          presented in this document.</t>
+        </section>
+      </section>   <!-- end guiding principles -->
 
-        <section title="Interactions" anchor="seq-diag">
+      <section title="Sources for Bootstrapping Data" anchor="sources">
+        <t>Following are the sources of bootstrapping data that are referenced by the
+        workflow presented in <xref target="device-powers-on"/>.  Other sources for
+        bootstrapping information may be described in other documents, so long as the principles
+        for when the bootstrapping data needs to be signed or not are enforced.</t>
+        <t>Each of the descriptions below show how the bootstrapping data needs to be handled in a manner
+        consistent with the guiding principles in <xref target="guiding-principles"/>.</t>
+        <t>For devices supporting more than one source for bootstrapping data, no particular sequencing
+        order has to be observed, as each source is equally secure, in that the chain of trust
+        always goes back to the same root of trust, the manufacturer.</t>
+        <section title="Removable Storage">
+          <t>A device may attempt to read bootstrapping information from a directly attached
+          removable storage device.  This information would most likely have to be signed, as
+          removable storage devices are generally not trustworthy.</t>
+          <t>The information loaded from a removable storage device may redirect the device to a
+          bootstrap server (i.e., redirect information) or it may provide the boot image and 
+          configuration (i.e., bootstrapping information) directly.  For when providing the
+          information directly, even the raw boot image file could be on the removable
+          storage device, making it a fully self-standing solution.</t>
+        </section>
+        <section title="DHCP Server">
+          <t>A device may attempt to read bootstrapping information from a DHCP server (e.g., DHCP
+          options).  This information would have to be signed, as the DHCP protocol is not a secure protocol.</t>
+          <t>The information may again be either redirect or bootstrapping information.  If bootstrapping 
+          information is provided, the URI to the boot image would have to specify a file server 
+          (e.g., ftp://, tftp://, etc.), as DHCP servers do not themselves distribute files.
+          Note that it is acceptable for boot images to be fetched using an insecure protocol
+          when having an embedded signature, as is commonly the case.</t>
+        </section>
+        <section title="Internet Based Service">
+          <t>A device may attempt to read bootstrapping information from a trusted Internet based
+          service.  The hosted information would not have to be signed, as the device would authenticate
+          the service when establishing a secure connection to it, using trust anchors the device
+          is manufactured with in its factory default state.</t>
+          <t>This document defines a RESTCONF API for a bootstrap server that may be hosted on the
+          Internet.  The YANG module describing this API is provided in <xref target="yang-module"/>.</t>
+          <t>The information may again redirect the device to a bootstrap server (i.e., redirect information) or it
+          may direct the device to load a boot image and a configuration (i.e., bootstrapping information).
+          If bootstrapping information is provided, the URI to the boot image would not have to be
+          to a server the device has a trust anchor for, assuming the boot image has an embedded signature,
+          as is commonly the case.</t>
+        </section>
+      </section>
 
-          <t>The following diagram illustrates the interactions between
-          the entities described in the previous section.  Note that the
-          interactions can be roughly categorized as those that occur
-          before a device powers on and those that occur after a device
-          powers on.</t>
+<!--
+      <section title="Actors and Roles" anchor="actors-and-roles">
+        <section title="Bootstrap Server" anchor="bootstrap-server">
+          <t>A Bootstrap Server hosts bootstrapping information staged by the
+          rightful owner of a device.  A Bootstrap Server MAY return Redirect
+          Information or Bootstrap Information (see <xref target="information-types"/>).</t>
+          <t>In practice, Internet-based servers will most likely (for privacy
+          reasons) only return Redirect Information, pointing devices to deployment-specific
+          servers that would only return Bootstrap Information.</t>
+        </section>
+        <section title="Device" anchor="device">
+          <t>Devices supporting Zero Touch will only attempt the
+          bootstrapping process when booting with its factory default
+          configuration.</t>
+          <t>See <xref target="device-details"/> for details on devices.</t>
+
+            <t>The devices supporting NETCONF Zero Touch will only attempt the
+            bootstrapping process when booting with its factory default 
+            configuration.  As illustrated above, the bootstrapping process
+            consists of three interactions:
+              <list style="numbers">
+                <t>When joining the network, the device will attempt to configure
+                IP networking from a DHCP server.  If the device is able to reach
+                a DHCP server, it may discover additional bootstrapping information.
+                The additional bootstrapping information consists of one or more additional
+                Bootstrap Servers the device should try to connect to.</t>
+                <t>The device sequentially processes its list of Bootstrap Servers,
+                prioritizing any that might have been learned from the DHCP
+                server.  Once the device has successfully configured itself using
+                the bootstrapping information, it notifies the bootstrapping 
+                server for monitoring purposes.</t>
+                <t>Assuming the bootstrapping information configures the device
+                appropriately, the device will initiate a NETCONF Call Home
+                connection <xref target="draft-ietf-netconf-call-home"/>.</t>
+              </list>
+            </t>
+            <t>More information about Devices is in <xref target="device"/>.</t>
+        </section>
+        <section title="DHCP Server">
+            <t>This draft assumes the use of a DHCP server but, in reality, the
+            solution is not intrinsically tied to using a DHCP server.  Any
+            mechanism or combination of mechanisms that can provide dynamic
+            networking assignment would equally do.</t>
+            <t>Assuming the use of DHCP, this draft defines a specific DHCP
+            Option for the discovering of addition bootstrapping information.
+            More information about the Zero Touch DHCP Option is in
+            <xref target="zerotouch-info-option"/>.</t>
+        </section>
+        <section title="Network Management System">
+            <t>The NMS is a term used here loosely to represent any system,
+            or collection of systems, deployed by a business organization to 
+            manage its devices.  An NMS being able to establish a secure NETCONF 
+            connection with devices purchased by its organization is the ultimate
+            goal of this solution presented by this draft.  More information about
+            the Network Management System is in <xref target="nms"/>.</t>
+        </section>
+        <section title="Manufacturer">
+            <t>Manufacturers manufacture the devices supporting NETCONF Zero Touch.
+            To support this solution, Manufacturers must support a one-time enrollment
+            process per business organization owning the NMS.  Manufacturers must also support
+            sending additional information to the business organization about the 
+            devices that have been shipped for device orders it places.</t>
+        </section>
+        <section title="Redirect Server" anchor="redirect-server">
+        </section>
+        <section title="Rightful Owner" anchor="rightful-owner">
+        </section>
+      </section>
+-->
+      <section title="Workflow Overview">
+
+        <t>The zero touch solution presented in this document is conceptualized
+        to be composed of the workflows described in this section.  Implementations
+        MAY vary in details.</t>
+
+        <section title="Onboarding and Ordering Devices" anchor="onboarding-and-ordering">
+          <t>The following diagram illustrates key interactions that occur from when
+          a manufacturer or delegate onboards a prospective device owner to when the manufacturer
+          ships devices for an order placed by the prospective device owner.</t>
           <t>
             <figure>
               <artwork><![CDATA[
-+------+        +------+         +---+        +---------+       +------+
-|Vendor|        |Device|         |NMS|        |Bootstrap|       | DHCP |
-+------+        +------+         +---+        | Server  |       |Server|
-   |               |               |          +---------+       +------+
-   |               |               |               |               |
-   |  1. imports trust anchor      |               |               |
-   |<------------------------------|               |               |
-   |               |               |               |               |
-   |  2. signs up for owner cert   |               |               |
-   |<------------------------------|               |               |
-   |               |               |               |               |
-   |  3. orders devices            |               |               |
-   |<------------------------------|               |               |
-   |               |               |               |               |
-   |  4. ships     |               |               |               |
-   |-------------->|               |               |               |
-   |               |               |               |               |
-   |  5. provides serial-numbers   |               |               |
-   |     and/or IDevID cert(s),    |               |               |
-   |     and ownership vouchers    |               |               |
-   |------------------------------>|               |               |
-   |               |               |  6.stage      |               |
-   x               |               |    bootstrap  |               |
-                   |               |    data       |               |
-                   |               |-------------->|               |
-                   |               |               |               |
-                   |               |  7. stage bootstrap           |
-                   |               |     info (optional)           |
-                   |               |------------------------------>|
-     8. power on   |               |               |               |
-    -------------->|               |               |               |
-                   | 9. get networking settings and|               |
-                   |    staged bootstrap info (if any)             |
-                   |---------------------------------------------->|
-                   |               |               |               |
-                   |               |               |               x
-                   | 10. update boot-image, if     |
-                   |     needed, and install       |
-                   |     config, if valid          |
-                   |------------------------------>|
-                   |               |               |
-                   |               |               x
-                   | 11. netconf   |
-                   |     call-home |
-                   |+------------->|
-                   |               |
-                   v               v
+                              +-----------+
++------------+                |Prospective|                  +---+
+|Manufacturer|                |   Owner   |                  |NMS|
++------------+                +-----------+                  +---+
+      |                             |                          |
+      |                             |                          |
+      |  1. enroll me please        |                          |
+      #<----------------------------|                          |
+      #                             |                          |
+      #  account credentials and/or |                          |
+      #  and/or owner certificate   |                          |
+      #---------------------------->|                          |
+      |                             |                          |
+      |                             |                          |
+      |                             |                          |
+      |  2. get IDevID trust anchor |                          |
+      |<----------------------------#  set IDevID trust anchor |
+      |                             #------------------------->|
+      |                             |                          |
+      |                             |                          |
+      |  3. place device order      |                          |
+      |<----------------------------#  model devices           |
+      |                             #------------------------->|
+      |                             |                          |
+      |  4. ship devices and send   |                          |
+      |     device identifiers and  |                          |
+      |     ownership vouchers      |                          |
+      |---------------------------->#  set device identifiers  |
+      |                             #  and ownership vouchers  |
+      |                             #------------------------->|
+      |                             |                          |
+      |                             |                          |
 ]]></artwork>
             </figure>
           </t>
-          <t>These interactions are described below.
+          <t>The interactions in the above diagram are described below.
             <list style="numbers">
-              <t>An organization, upon deciding to deploy a Vendor's
-              devices for NETCONF ZeroTouch, would import into its NMS
-              the IDevID trust anchor certificate from the Vendor.  This 
-              certificate is later used by the NMS to authenticate
-              device identities during NETCONF call home connections.</t>
-              <t>An organization needs to sign up to a Vendor-provided
-              ZeroTouch program.  This program entails the Vendor 
-              providing a signed Owner certificate to the organization
-              (depicted here), as well as a commitment to sign
-              Ownership Vouchers for future device orders (interaction #5).</t>
-              <t>Subsequently, the organization may place orders
-              to the Vendor for devices supporting ZeroTouch.  The
-              ordering process may entail an explicit request for
-              ZeroTouch support, as the Vendor providing the files
-              in step #5  may not be enabled by default.</t>
-              <t>The Vendor ships the devices to the various addresses
-              specified in the device order.  For example, to an organization's
-              inventory warehouse, where the devices are stored in batches
-              to supply internal requests.  In another example,  the devices
-              may be shipped to their final deployment destinations.</t>
-              <t>In order to support ZeroTouch, the Vendor sends to the
-              organization information about the devices it shipped.
-              This information may be sent to the organization via email
-              or a portal site.  The information includes the serial-number
-              and/or IDevID certificate, for each device, as well as one
-              more Ownership Vouchers, assigning ownership for the devices
-              to the organization.</t>
-              <t>In anticipation for the devices performing the ZeroTouch
-              process, the NMS configures the Bootstrap Server.  This
-              This configuration includes everything a device needs to 
-              securely connect to the NMS.</t>
-              <t>For deployments where the DHCP server can be customized, the
-              NMS may configure the DHCP server to provide the device a list of
-              additional Bootstrap Servers to consider, in addition to those
-              the device knows of by default.  This customization can be configured
-              at a global level in the DHCP server, as it is not dependent on
-              the type of device in any way.</t>
-              <t>At some point, the device powers on and, when having its
-              factory default configuration, initiates the ZeroTouch 
-              process.</t>
-              <t>The device obtains from the DHCP server a dynamic network
-              assignment.  The device may also at this time discover a list
-              of additional bootstrap servers, as optionally configured by
-              the NMS in step #7.</t>
-              <t>The device iterates over its list of Bootstrap Servers,
-              until it can successfully bootstrap its initial configuration. 
-              If it is unable to bootstrap an initial configuration, the
-              device boots as normal.  If the staged information directs
-              the device to load a new image, it does so and reboots.  If the
-              device reboots, it continues to have a factory default configuration
-              state, which then bring it back to this state, when it would
-              then have the correct image.  The device then loads the staged
-              configuration into its running datastore, after validating that
-              the configuration was signed by its rightful owner, as designated
-              by the Ownership Voucher.</t>
-              <t>Assuming the bootstrapping information configures the device
-              appropriately, the device will initiate a NETCONF Call Home
-              <xref target="draft-ietf-netconf-call-home"/> connection to the NMS, which
-              then takes over the on-going management of the device.</t>
+              <t>A prospective owner establishes a trust relationship
+              with a manufacturer in order to place zero touch orders.
+              Assuming the manufacturer or delegate hosts a secure redirect
+              server, this onbording interaction might entail the creation of
+              an online account that the owner can use to configure
+              redirect information for future device orders.  Alternatively,
+              the onbording interaction may include the manufacturer signing
+              an owner certificate (see <xref target="terminology"/>), to be used 
+              for bootstrapping devices not using the manufacturer's redirect
+              server.  The onboarding interaction may also do both, giving
+              the choice to the owner for how specific devices should
+              bootstrap.</t>
+              <t>The prospective owner downloads from the manufacturer the X.509
+              based trust anchor certificate that can be used to validate
+              the IDevID certificate <xref target="Std-802.1AR-2009"/> the
+              devices will present as their SSH host key or TLS server certificate,
+              when establishing a NETCONF or RESTCONF connection with the
+              prospective owner's deployment-specific NMS.</t>
+              <t>Some time later, the prospective owner places an order
+              with the manufacturer, perhaps with a special flag checked
+              for zero touch handling.  At this time, perhaps before
+              placing the order, the owner may model the devices in their
+              NMS. That is, create virtual objects for the devices with no
+              real-world device associations.  For instance the model can
+              be used to simulate the device's location in the network and
+              the configuration it should have when fully operational.</t>
+              <t>When the manufacturer ships the devices for the order,
+              the manufacturer notifies the owner of the devices' unique identifiers
+              and shipping destinations, which the owner can use to stage the
+              network for when the devices powers on.  Additionally,  the
+              manufacturer may send a ownership voucher assigning ownership
+              of those devices to the rightful owner and/or configure backend
+              systems so the secure redirect service can associate the 
+              redirect information to the devices.  The owner sets this
+              information on the NMS, perhaps binding specific device identifiers
+              and ownership vouchers (if supported) to specific modeled devices.</t>
             </list>
           </t>
         </section>
 
 
-      </section>
-      <section title="Bootstrap Server" anchor="bootstrap-server">
-
-        <t>A Bootstrap Server MUST implement the southbound interface
-        defined below.  In order to support the southbound interface,
-        the Bootstrap Server will also need to have a northbound interface,
-        which is described in general terms below.</t>
-
-        <section title="Northbound Interface">
-          <t>The Bootstrap Server will need to provide a northbound interface
-          of some sort to enable configuration of the bootstrapping information
-          for the devices.  Defining this interface is out of scope for this
-          document, but it northbound interface is generally expected to:
-          <list style="symbols">
-            <t>Enable listing, creation, modification, and deletion of entries</t>
-            <t>Enable determining a device's current bootstrapping state</t>
-            <t>Enable alerting external systems when a device sends notifications</t>
-          </list>
+        <section title="Owner Stages the Network for Bootstrap">
+          <t>The following diagram illustrates how an owner stages the
+          network for bootstrapping devices.</t> 
+          <t>
+            <figure>
+              <artwork><![CDATA[
+                   +----------+   +------------+           
+                   |Deployment|   |Manufacturer|   +------+
+                   | Specific |   |   Hosted   |   | Local|   +---------+
+          +---+    |Bootstrap |   |  Redirect  |   | DHCP |   |Removable|
+          |NMS|    |  Server  |   |   Server   |   |Server|   | Storage |
+          +---+    +----------+   +------------+   +------+   +---------+
+            |           |               |             |            |
+   activate |           |               |             |            |
+   modeled  |           |               |             |            |
+1. device   |           |               |             |            |
+----------->|           |               |             |            |
+            |           |               |             |            |
+            | 2. stage bootstrap        |             |            |
+            |    information            |             |            |
+            |---------->|               |             |            |
+            |           |               |             |            |
+            | 3. (optional) configure   |             |            |
+            |    redirect server        |             |            |
+            |-------------------------->|             |            |
+            |           |               |             |            |
+            |           |               |             |            |
+            | 4. (optional) configure DHCP server     |            |
+            |---------------------------------------->|            |
+            |           |               |             |            |
+            |           |               |             |            |
+            | 5. (optional) store bootstrapping artifacts on media |
+            |----------------------------------------------------->|
+            |           |               |             |            |
+            |           |               |             |            |
+]]></artwork>
+            </figure>
+          </t>
+          <t>The interactions in the above diagram are described below.
+            <list style="numbers">
+              <t>Having previously modeled the devices, including setting their
+              fully operational configurations, associating device identifiers
+              and ownership vouchers (if supported), the owner may "activate"
+              one or more modeled devices.  That is, tell the NMS to perform
+              the steps necessary to prepare for when the real-world devices
+              are powered up.</t>
+              <t>One thing the NMS must do is configure the deployment specific
+              bootstrap server.  Illustrated here as an external component, the
+              bootstrap server may be implemented as an internal component of the NMS itself.
+              Configuring the bootstrap server may occur via a programmatic API
+              not defined by this document.  This step sets signed or unsigned
+              bootstrap information, as shown in <xref target="api-examples"/>,
+              for the devices being activated.   The configuration set MUST be
+              at least enough to enable a secure NETCONF or RESTCONF connection
+              to be established and MAY be the device's fully operational
+              configuration.</t>
+              <t>If it is desired to use a manufacturer or delegate hosted
+              redirect service to supply the bootstrapping information,
+              the redirect server would need to be configured to supply the redirect
+              information to the devices.  Configuring the redirect server may
+              occur via a programmatic API not defined by this document.
+              This step sets signed or unsigned redirect information, as shown
+              in <xref target="api-examples"/>, for the devices being activated. 
+              The redirect information MUST set the IP address or hostname of the
+              deployment specific bootstrap server and MAY set the X.509
+              trust anchor certificate to authenticate the bootstrap server's
+              TLS certificate.</t>
+              <t>If it is desired to use a DHCP server to supply bootstrapping
+              information, the DHCP server would need to be configured to supply the redirect
+              information to the devices.  Configuring the DHCP server may
+              occur via a programmatic API (not defined by this document). Since
+              DHCP is an insecure protocol, the information would have to be
+              signed.  That is, either signed redirect or signed bootstrap
+              information, as shown in <xref target="api-examples"/>.</t>
+              <t>If it is desired to use a removable storage device (e.g., USB
+              flash drive) to supply bootstrapping information, the information
+              would need to be placed onto it.  Since a removable storage device
+              is insecure, the information would have to be signed.  That is,
+              either signed redirect or signed bootstrap information, as shown
+              in <xref target="api-examples"/>.</t>
+            </list>
           </t>
         </section>
 
-        <section title="Southbound Interface">
-          <t>The Bootstrap Server's southbound interface is a REST API that is
-          described by the YANG <xref target="RFC6020"/> module defined in this
-          section and presented using RESTCONF <xref target="draft-ietf-netconf-restconf"/>.
-          Example usage of this API is provided in <xref target="ex-bootstrap-api"/>.</t>
-
-            <t>A tree digram describing the Bootstrap Server's southbound interface follows:</t>
+        <section title="Device Powers On" anchor="device-powers-on">
+          <t>The following diagram illustrates how a device might behave
+          when powered on.  Note that this is merely exemplary, subject to
+          which bootstrapping strategies the device supports, which may be
+          more or less than depicted below.</t>
+          <t>This example sequences the sources of information (see
+          <xref target="sources"/>) based on locality, or how "close" to the
+          device the data is.  Whether this sequence makes sense for a
+          specific type of device needs to be determined by the manufacturer.</t>
+          <t>
             <figure>
               <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
+
+                                    +------------+   +----------+
+                         +------+   |Manufacturer|   |Deployment|
+           +---------+   | Local|   |   Hosted   |   | Specific |
++------+   |Removable|   | DHCP |   |  Redirect  |   |Bootstrap |   +---+
+|Device|   | Storage |   |Server|   |   Server   |   |  Server  |   |NMS|
++------+   +---------+   +------+   +------------+   +----------+   +---+
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   | 1. if not factory default, then exit. |               |          |
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   | 2. check   |            |             |               |          |
+   #----------->|            |             |               |          |
+   # if signed redirect information found  |               |  web-    |
+   #------------------------------------------------------>#    hook  |
+   #    either NMS-initiated connection    |               #--------->#
+   #<-----------------------------------------------------------------#
+   #    or device-initiated connection     |               |          |
+   #----------------------------------------------------------------->|
+   # else if signed bootstrap information found (call home)|          |
+   #----------------------------------------------------------------->|
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   | 3. Get IP assignment    |             |               |          |
+   #------------------------>|             |               |          |
+   # if signed redirect information found                  |  web-    |
+   #------------------------------------------------------>#    hook  |
+   #    either NMS-initiated connection    |               #--------->#
+   #<-----------------------------------------------------------------#
+   #    or device-initiated connection     |               |          |
+   #----------------------------------------------------------------->|
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   |            |            |             |               |          |
+   | 4. check   |            |             |               |          |
+   #-------------------------------------->|               |          |
+   # if signed or unsigned redirect information found      |  web-    |
+   #------------------------------------------------------>#    hook  |
+   #    either NMS-initiated connection    |               #--------->#
+   #<-----------------------------------------------------------------#
+   #    or device-initiated connection     |               |          |
+   #----------------------------------------------------------------->|
+   |            |            |             |               |          |
+   |
+   | 5. loop or wait for manual provisioning.
+   | 
 ]]></artwork>
             </figure>
-            <t>In the above diagram, notice that the entire data model is read-only,
-            as devices can only pull data from the Bootstrap Server.  The data model
-            also defines a single RPC, which is used by the device to provide
-            asynchronous notifications.</t>
-            <t>The Bootstrap Server's southbound interface is normatively defined
-            by the following YANG module:</t>
-            <figure>
-              <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
-
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
-
-<CODE ENDS>
-
-]]></artwork>
-            </figure>
-
+          </t>
+          <t>The interactions in the above diagram are described below.
+            <list style="numbers">
+              <t>Upon power being applied, the device's bootstrapping logic
+              first checks to see if it is running in its factory default
+              state.  If it has a modified state, then the bootstrapping
+              logic would exit and none to the following interactions
+              would occur.</t>
+              <t>If the device is able to load bootstrapping data from a removable
+              storage device (e.g., USB flash drive), it might choose to do so
+              first.  The removable storage may have either signed redirect
+              information or signed bootstrap information, as shown in 
+              <xref target="artifact-examples"/>.
+                <list style="dash">
+                  <t>In the case that signed redirect
+                  information is found, the device would use it to established
+                  a connection to the deployment-specific bootstrap server, which
+                  would set its boot image and configure it to enable connections
+                  with the deployment-specific NMS to be established.  If the
+                  bootstrap supports notifying (e.g., via a web-hook) external systems when a device
+                  sends its bootstrap-complete notification (<xref target="yang-module"/>),
+                  it would be possible for the NMS to initiate a NETCONF or RESTCONF
+                  connection to the device.  Otherwise the configuration could configure the
+                  device it initiate a NETCONF or RESTCONF call home <xref
+                  target="draft-ietf-netconf-call-home"/> connection to the
+                  deployment-specific NMS.</t>
+                  <t>In the case that signed bootstrap
+                  information is found, the device would use it to set its boot
+                  image and initial configuration, which would have to direct it to
+                  initiate a NETCONF or RESTCONF call home connection to the 
+                  deployment-specific NMS.</t>
+                  <t>If the device is unable to bootstrap
+                  using any of the information on the removable storage device, it would
+                  proceed to the next source of bootstrapping information, if any.</t>
+                </list>
+              </t>
+              <t>If the device is able to load bootstrapping data from a DHCP
+              server, when obtaining a DHCP assignment, it may receive signed
+              redirect information in a DHCP Option (<xref target="iana-considerations"/>).
+              The device would process the signed redirect information in the same
+              manner as described above for when it's loaded from a removable storage
+              device.  If the device is unable to bootstrap using information provided
+              by a DHCP server, it would proceed to the next source of bootstrapping
+              information, if any.</t>
+              <t>If the device is able to obtain a routable address to the Internet,
+              it may attempt to establish a connection to a redirect server that is
+              set by its factory default state (<xref target="factory-defaults"/>).
+              These connections would use the RESTCONF API described in this document
+              and would be secured using trust anchors also set in the device's factory
+              default state.  The redirect server may provide signed or unsigned
+              redirect information.  In either case, the device would process the
+              redirect information in the same manner as described above for when it's
+              loaded from a removable storage device.  If the device is unable to
+              bootstrap using information provided by any redirect servers, it
+              would proceed to the next source of bootstrapping information, if any.</t> 
+              <t>If no more sources of bootstrapping information are available, the device
+              may fall into a loop to try again or it may provide manageability
+              interfaces for manual configuration (e.g., CLI, HTTP, NETCONF, etc.).</t>
+            </list>
+          </t>
         </section>
       </section>
 
-      <section title="Device" anchor="device">
-        <t>Devices supporting ZeroTouch MUST have the preconfigured
-        factory default state and bootstrapping logic described
-        in the following sections.</t>
 
-        <section title="Factory Default State" anchor="device-precondition">
+      <section title="Device Details" anchor="device-details">
+
+          <t>Devices supporting Zero Touch MUST have the preconfigured
+          factory default state and bootstrapping logic described
+          in the following sections.</t>
+
+          <section title="Factory Default State" anchor="factory-defaults">
             <figure>
                 <artwork><![CDATA[
   +------------------------------------------------------------------+
@@ -501,46 +706,40 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
   +------------------------------------------------------------------+
 ]]></artwork>
             </figure>
-          <t>
-          <list style="numbers">
-            <t>Devices MUST be manufactured with a list of default Bootstrap
-            Servers.  Each Bootstrap Server may be identified via a hostname
-            or an IP address.  This may be an empty list if for some reason
-            the Vendor prefers to force its devices to have to discover Bootstrap
-            Servers from a DHCP server.</t>
-            <t>Devices MUST be manufactured with a list of trust anchor
-            certificates that can be used to authenticate Bootstrap Server 
-            connections with.  To support Bootstrap Servers discovered
-            from a DHCP server, these certificates SHOULD include public certificate
-            authorities, such as those that are included in a web browser.</t>
-            <t>Devices MUST be manufactured with the trust anchor certificate
-	    for Owner certificates that the Vendors provide to business organizations
-	    when they enroll in the Vendor's ZeroTouch program.  This trust
-	    anchor certificate is later used by the device to validate the Owner
-	    certificate it downloads from the Bootstrap Server.</t>
-            <t>Devices MUST be manufactured with the trust anchor certificate
-	    for the device ownership vouchers that the Vendors provide to organizations
-	    when it ships out an order of ZeroTouch devices.  This trust anchor
-	    certificate is later used by the device to validate the Ownership Vouchers it
-	    downloads from the Bootstrap Server.</t>
-            <t>Devices MUST be manufactured with an initial
-            device identifier (IDevID), as defined in <xref target="Std-802.1AR-2009"/>.
-            The IDevID is an X.509 certificate, encoding a globally unique device
-            identifier (e.g., serial number).  The device MUST also possess any
-            intermediate certificates between the IDevID certificate and the Vendor's
-            IDevID trust anchor certificate.  These certificates are later used by
-            the device to identify itself when it calls home.  In particular, these
-            certificates are to be used by the device's NETCONF server, either as its
-            SSH host-key or its TLS server certificate.  Please see NETCONF Call Home
-            <xref target="draft-ietf-netconf-call-home"/> for more information.</t>
-            <t>Device MUST be manufactured with a private key that corresponds to the
-            public key encoded in its IDevID certificate.  This private key SHOULD be
-            securely stored, ideally by a cryptographic processor (e.g., a TPM).</t>
-          </list>
+            <t>
+            <list style="numbers">
+              <t>Devices that support loading bootstrapping information from the Internet
+              (see <xref target="sources"/>) MUST be manufactured with a
+              list of default Bootstrap Servers.  Each Bootstrap Server may be identified
+              via a hostname or an IP address.</t>
+              <t>Devices that support loading bootstrapping information from the Internet
+              (see <xref target="sources"/>) SHOULD be manufactured with a list of trust anchor
+              certificates that can be used to authenticate the Bootstrap Server 
+              connections with.</t> 
+              <t>Devices that support loading owner signed data (see <xref target="terminology"/>)
+              MUST be manufactured with the trust anchor certificate for the Owner Certificates
+              that the Manufacturer provides to prospective owners when they enroll in the
+              Manufacturer's Zero Touch program (see <xref target="onboarding-and-ordering"/>).</t>
+              <t>Devices that support loading owner signed data (see <xref target="terminology"/>)
+              MUST also be manufactured with the trust anchor certificate for the device
+              Ownership Vouchers that the Manufacturer provides to prospective owners when
+              it ships out an order of Zero Touch devices (see <xref target="onboarding-and-ordering"/>).</t>
+              <t>Devices MUST be manufactured with an initial
+              device identifier (IDevID), as defined in <xref target="Std-802.1AR-2009"/>.
+              The IDevID is an X.509 certificate, encoding a globally unique device
+              identifier (e.g., serial number).  The device MUST also possess any
+              intermediate certificates between the IDevID certificate and the Manufacturer's
+              IDevID trust anchor certificate.</t>
+              <t>Device MUST be manufactured with a private key that corresponds to the
+              public key encoded in the device's IDevID certificate.  This private key SHOULD be
+              securely stored, ideally by a cryptographic processor (e.g., a TPM).</t>
+            </list>
           </t>
         </section>
 
         <section title="Boot Sequence" anchor="dev-boot-seq">
+          <t>A device claiming to support Zero Touch MUST support the boot sequence described in
+          this section.</t>
           <t>
             <figure>
               <artwork><![CDATA[
@@ -550,312 +749,420 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
  1. Running default config?   -------->  Boot normally
         |
         | Yes
-        v                          No
- 2. Able to reach DHCP server?  -------->  Boot normally
+        v 
+ 2. For each supported source for bootstrapping information,
+    try to load bootstrapping data from the source
         |
-        | Yes
+        |
+        v                               Yes
+ 3. Able to bootstrap off any source?  -----> Run with new configuration
+        |
+        | No
         v
- 3. Prepend any additional Bootstrap Servers discovered
-        |
-        v                                           No
- 4. Able to bootstrap off any Bootstrap Server?  -------> Boot normally
-    (see next diagram for drill-down details)
-        |
-        | Yes
-        v
- 5. Run with new configuration
+ 4. Loop or wait for manual provisioning.
+
 ]]></artwork>
             </figure>
           </t>
+
           <t>These interactions are described next.
             <list style="numbers">
               <t>When the device powers on, it first checks to see if
               it is running the factory default configuration.  If it is
               running a modified configuration, then it boots normally.</t>
-              <t>The device tries to obtain a dynamic network assignment
-              from a DHCP server.  If it is unable to reach a DHCP
-              server, it boots normally.</t>
-              <t>If the DHCP server's offer includes the ZeroTouch
-              Information DHCP option defined in <xref target="zerotouch-info-option"/>,
-              the device prepends the specified Bootstrap Servers to its factory
-              default list.</t>
-              <t>The device iterates over its list of Bootstrap Servers, as
-              described in the next section.  If it is unable to bootstrap
-              itself off any of the servers, it boots normally.</t>
-              <t>If the device was able to bootstrap itself off any of 
-              the Bootstrap Servers, it runs with the new configuration
-              merged into its running datastore.</t>
+              <t>The device iterates over its list of sources for bootstrapping
+              information.  Details for handling different types of sources
+              are provided in subsequent sections.</t>
+              <t>If the device is able to bootstrap itself off any of 
+              the sources for bootstrapping information, it runs with the new
+              bootstrapped configuration merged into its running datastore.</t>
+              <t>Otherwise the device MAY loop back through the list of
+              bootstrapping sources again or wait for manual provisioning.</t>
             </list>
           </t>
 
-          <t>Following are the actions performed by the device when bootstrap off a
-	  Bootstrap Server (step #4 the in previous diagram).</t>
-          <t>
+          <t>When the source is a removable storage device, the device MUST be
+          able to read from it signed data (see term) and validate that the
+          data was signed by its rightful owner, using the algorithm in
+          <xref target="validating-signed-data"/>.</t>
+
+          <t>When the source is a DHCP server, the device MUST be
+          able to read from it signed data (see term) and validate that the
+          data was signed by its rightful owner, using the algorithm in
+          <xref target="validating-signed-data"/>.</t>
+
+          <t>When the source is a bootstrap server, that is, using the RESTCONF
+          API presented in <xref target="yang-module"/>, the device MUST be
+          able to authenticate the server using one of the the device's preconfigured
+          trust anchors.  Once done authenticating the bootstrap server, the device MUST 
+          attempt to fetch the bootstrapping data hosted for it there, using
+          its unique identifier (e.g., serial number) as the key into the
+          "device" list.  If bootstrapping data is found and it is signed,
+          then the device MUST first validate that the data was signed by its
+          rightful owner using the algorithm in <xref target="validating-signed-data"/>.
+          The device then processes the bootstrapping data as described in
+          <xref target="processing-bootstrap-data"/>.  The device MAY post 
+          progress notification messages to the server, but SHOULD only do
+          so if it has first authenticated itself to the server (e.g., client
+          authentication).</t>
+        </section>  <!-- end boot sequence -->
+
+        <section title="Validating Signed Data" anchor="validating-signed-data">
+          <t>If the device is ever presented signed data, it MUST validate the
+          signed data as described in this section.</t>
+          <t>Whenever there is signed data, the device MUST also be provided
+          an Ownership Voucher and an Owner Certificate.</t>
+          <t>The device MUST first authenticate the Ownership Voucher by validating
+          the signature on it to one of its preconfigured trust anchors (see
+          <xref target="factory-defaults"/>) and verify that the voucher contains
+          the device's unique identifier (e.g., serial number).  If the
+          authentication of the voucher is successful, the device extracts the
+          Rightful Owner's identity from the voucher for use in the next step.</t>
+          <t>Next the device MUST authenticate the Owner Certificate by performing
+          X.509 certificate path validation on it to one of its preconfigured trust
+          anchors (see <xref target="factory-defaults"/>) and by verifying that the
+          Subject contained in the certificate matches the Rightful Owner identity
+          extracted from the voucher in the previous step.  If the authentication
+          of the certificate is successful, the device extracts the Owner's public
+          key from the certificate for use in the next step.</t>
+          <t>Finally the device MUST authenticate the signed data by verifying the
+          signature on it was generated by the private key matching the public
+          key extracted from the Owner Certificate in the previous step.</t>
+          <t>If any of these steps fail, then the device MUST mark the data as
+          invalid and not perform any of the subsequent steps.</t>
+        </section>  <!-- end validating signed data -->
+
+        <section title="Processing Bootstrap Data" anchor="processing-bootstrap-data">
+          <t>In order to process bootstrapping data, the device MUST follow the
+          steps presented in this section.</t>
+          <t>If the data is redirect-information (see <xref target="information-types"/>),
+          the device MUST immediately attempt to establish a RESTCONF connection
+          to the provided bootstrap server IP address or hostname.  If a hostname is
+          provided and DNS resolves it to more than one IP address, the device MUST
+          attempt to try to connect to all of them, until it is able to successfully
+          bootstrap off one of them.  The device MUST authenticate the bootstrap server's
+          TLS certificate using the X.509 certificate provided by the redirect information.</t>
+          <t>If the data is bootstrap-information (see <xref target="information-types"/>),
+          the device MUST first check if it contains any boot-image information and, if
+          so, check to see if it differs from what the device is currently running and,
+          if so, install the boot-image using the provided URI and reboot (Note, it is
+          assumed that the boot-image contains an embedded signature that the installation
+          step will verify).  This will cause the device's
+          bootstrap logic to restart, which will again come to this point, though
+          with a matching boot-image, thus letting the device to proceed past this step.
+          Next the device MUST process the configuration contained in the bootstrapping
+          information, by merging it into its running configuration.</t>
+          <t>At this point, the device has completely processed the bootstrapping
+          data and is "bootstrap complete".  If the configuration configured the
+          device it initiate a call home connection, it would proceed to do so now.
+          Otherwise, the device would wait for a NETCONF or RESTCONF client to connect
+          to it.</t>
+        </section>  <!-- end processing bootstrap data -->
+
+<!--
+        <section title="Conformance">
+          <t>In order for a device to claim it supports the zero touch solution presented in this document,
+          it MUST support loading bootstrap information from an Internet-based bootstrap server using
+          the RESTCONF API described by the YANG module in <xref target="yang-module"/>.</t>
+        </section> 
+--> <!-- end conformance -->
+
+      </section>  <!-- end device details -->
+
+      <section title="YANG-defined API and Artifacts" anchor="api-and-artifacts">
+        <t>Central to the solution presented in this document is the use of a YANG module
+        <xref target="RFC6020"/> to simultaneously define a RESTCONF based API for a bootstrap/redirect
+        server as well as the encoding for signed artifacts that can be conveyed outside of the RESTCONF
+        protocol (DHCP, FTP, TFTP, etc.).</t>
+        <section title="Module Overview">
+          <t>The following tree diagram <xref target="tree-diagram"/> provides an overview for both the
+          API and artifacts that can be used outside of RESTCONF.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
+]]></artwork>
+          </figure>
+          <t>In the above diagram, notice that all of the protocol accessible node are read-only,
+          to assert that devices can only pull data from the bootstrap server.</t>
+          <t>Also notice that the module defines an action statement, which devices may use to provide
+          progress notifications to the Bootstrap Server.</t>
+        </section>
+
+        <section title="API Examples" anchor="api-examples">
+  
+          <t>This section presents some examples illustrating device interactions with a Bootstrap
+          Server to access Redirect and Bootstrap information, both unsigned and signed, as well
+          as to send a progress notification.</t>
+
+          <section title="Unsigned Redirect Information">
+  
+            <t>The following example illustrates a device using the API to fetch its
+            bootstrapping data.  In this example, the device receives unsigned
+            redirect information.  This example is representative of a response a well-known
+            Internet facing redirect service might return.</t>
             <figure>
               <artwork><![CDATA[
-    Connect to port 443
-        |
-        v                                  No
- 1. Able to validate server certificate? ------> Exit
-        |
-        | Yes
-        v                                   No
- 2. Able to validate ownership voucher?  ------> Post notification and exit
-        |
-        | Yes
-        v                                  No
- 3. Able to validate owner certificate?  ------> Post notification and exit
-        |
-        | Yes
-        v                                No
- 4. Able to validate boot image info?  ------> Post notification and exit
-        |
-        | Yes
-        v                          No
- 5. Need to install boot image?  ------> Install and reboot
-        |
-        | Yes
-        v                              No
- 6. Able to validate configuration?  ------> Post notification and exit
-        |
-        | Yes
-        v
- 7. Merge configuration into running datastore
-        |
-        v
- 8. Post bootstrap complete notification and exit
+REQUEST
+-------
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+HOST: example.com
+Accept: application/yang.data+xml
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-unsigned.xml)
 ]]></artwork>
             </figure>
-          </t>
-          <t>These interactions are described next.
-            <list style="numbers">
-              <t>As part of the HTTPS connection, the device will need to
-              authenticate the server certificate presented by the
-              Bootstrap Server.  The device authenticates the server
-              certificate using path-validation to one of its preconfigured
-              Bootstrap Server trust anchors.  If the device is unable to
-              authenticate the server's certificate, it abandons this
-              Bootstrap Server and exits.</t>
-              <t>The device downloads the ownership voucher from the 
-              Bootstrap Server.  The device validates the voucher is signed
-              by its Vendor, using its preconfigured trust anchor for
-              device ownership vouchers.  The device also validates that its
-              unique identifier is listed by the voucher.  If the device is
-              unable to validate the voucher or can not find its unique
-              identifier listed, it posts a notification message to
-              that effect and abandons this Bootstrap Server.</t>
-              <t>The device downloads the owner certificate from the
-              Bootstrap Server.  The device validates that this certificate
-              is signed by its Vendor, using path-validation to its 
-              preconfigured trust anchor for owner certificates.  The
-              device also validates that the organization identifier 
-              is the same as listed in the ownership voucher, validated in
-              step #2.  If the device is unable to validate the certificate
-              or the owner identifier does not match, it posts a notification 
-              message to that effect and abandons this Bootstrap Server.</t>
-              <t>The device tries to download the boot image information.
-              If no boot image information is available, it skips the 
-              remainder of this step.  Otherwise, the device validates the
-              boot image information using the public key from the 
-              owner certificate obtained in step #3.  If it is unable to
-              authenticate the boot image information, it posts a notification
-              message to that effect and abandons this Bootstrap Server.</t>
-              <t>The device checks if the specified boot-image name matches 
-              what the device is currently running.  If there is a mismatch,
-              device downloads the new image from the Bootstrap Server and
-              installs it.  It is expected that the device will reboot itself
-              in order to activate the new image and, further, that doing so
-              preserves its factory default state such that it will return
-              to this same check again, but then running the correct image.
-              If the device is unable to install the boot-image, it posts a
-              notification message to that effect and abandons this Bootstrap
-              Server.</t>
-              <t>The device downloads the configuration from the Bootstrap
-              Server and validates the configuration using the public key from the
-              owner certificate obtained in step #3.  If it is unable to
-              authenticate the configuration, it posts a notification message
-              to that effect and abandons this Bootstrap Server.</t>
-              <t>The device merges the configuration into its running datastore.
-              It is expected that this configuration will provide the information
-              necessary for the device to establish a secure NETCONF connection to its
-              NMS using NETCONF Call Home (<xref target="draft-ietf-netconf-call-home"/>).</t>
-              <t>The device posts a bootstrap completion notification message to
-              the Bootstrap Server and exits.</t>
-            </list>
-          </t>
-
-<!-- 
-          <t>In order to facilitate troubleshooting, the device SHOULD
-               record into a log information relating to its stepping through
-               the ZeroTouch sequence.  This draft does not define any specific
-               log messages, for instance, for Syslog or SNMP.
-          </t>
--->
-        </section>
-      </section>
-
-      <section title="Network Management System (NMS)" anchor="nms">
-        <section title="Overview">
-          <t>It is expected that the bootstrapping configuration will guide
-          the device to initiate a secure NETCONF connection to the NMS
-          using NETCONF Call Home <xref target="draft-ietf-netconf-call-home"/>.
-          This section describes what the NMS needs to do to ensure
-          security for the device's connection.</t>
-        </section>
-        <section title="Precondition">
-          <t>
+  
+          </section>
+  
+          <section title="Signed Redirect Information">
+  
+            <t>The following example illustrates a device using the API to fetch its
+            bootstrapping data.  In this example, the device receives signed
+            redirect information.  This example is representative of a response
+            that redirect service might return if concerned the device might not
+            be able to authenticate its TLS certificate.</t>
             <figure>
-                <artwork><![CDATA[
-  +-----------------------------------------------------------------+
-  |                              <nms>                              |
-  |                                                                 |
-  |     +-----------------------------------------------------+     |
-  |     |                 <read-only storage>                 |     |
-  |     |                                                     |     |
-  |     |  1. list of IDevID trust anchor certificates        |     |
-  |     +-----------------------------------------------------+     |
-  |                                                                 |
-  |     +-----------------------------------------------------+     |
-  |     |                   <configuration>                   |     |
-  |     |                                                     |     |
-  |     |  2. list of expected device unique identifiers      |     |
-  |     +-----------------------------------------------------+     |
-  |                                                                 |
-  |     +-----------------------------------------------------+     |
-  |     |                  <secure storage>                   |     |
-  |     |                                                     |     |
-  |     |  3. map of device identifiers to login credentials  |     |
-  |     +-----------------------------------------------------+     |
-  |                                                                 |
-  +-----------------------------------------------------------------+
+             <artwork><![CDATA[
+REQUEST
+-------
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+HOST: example.com
+Accept: application/yang.data+xml
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-signed.xml)
 ]]></artwork>
             </figure>
-          </t>
-          <t>
-            <list style="numbers">
-              <t>In order to authenticate a device, the NMS MUST possess
-              the IDevID trust anchor provided by its Vendor to enable 
-              verification of the device's IDevID certificate.  Specifically, 
-              the NMS uses this certificate to validate the identity certificate 
-              a device presents when negotiating the SSH or TLS transport
-              for the NETCONF Call Home connection 
-              <xref target="draft-ietf-netconf-call-home"/>.  Because an NMS may
-              interoperate with multiple vendors, and a vendor may have
-              more than one trust anchor for signing its devices IDevID
-              certificates, this generalizes into the NMS needing a list
-              of trust anchor certificates.  These certificates SHOULD be
-              stored in a way that prevents tampering, which is why they
-              are shown in read-only storage in the diagram.</t>
-              <t>In order for the NMS to validate that a specific
-              device connecting to it is legitimate, it MUST have a list
-              of expected unique device identifiers (e.g., serial-numbers).
-              The unique identifier encoded into the device's IDevID 
-              certificate MUST match one of the expected identifiers in
-              order for a device to be considered legitimate.</t>
-              <t>The NMS must have login credentials for each device.
-              These credentials may be, for instance, a private key used 
-              for SSH or TLS client authentication.  It is expected that
-              a device is able to authenticate the NMS's credentials by 
-              virtue of the configuration it downloads from the Bootstrap Server.
-              These private-keys SHOULD be stored securely, such that
-              they can not be easily compromised.</t>
-            </list>
-          </t>
-        </section>
-        <section title="Connection Handling">
-          <t>When receiving a NETCONF call home connection from a
-          device, the NSM completes the connection as specified 
-          NETCONF Call Home <xref target="draft-ietf-netconf-call-home"/>.</t>
-<!-- KENT, fill this in with a nice diagram... -->
+  
+          </section>
+  
+          <section title="Unsigned Bootstrap Information">
+ 
+            <t>The following example illustrates a device using the API to fetch its
+            bootstrapping data.  In this example, the device receives unsigned
+            bootstrapping information.  This example is representative of a response
+            a locally deployed bootstrap server might return.</t>
+            <figure>
+              <artwork><![CDATA[
+REQUEST
+-------
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+HOST: example.com
+Accept: application/yang.data+xml
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-unsigned.xml)
+]]></artwork>
+            </figure>
+  
+          </section>
+  
+          <section title="Signed Bootstrap Information">
+  
+            <t>The following example illustrates a device using the API to fetch its
+            bootstrapping data.  In this example, the device receives signed
+            bootstrapping information.  This example is representative of a response
+            that bootstrap service might return if concerned the device might not
+            be able to authenticate its TLS certificate.</t>
+            <figure>
+              <artwork><![CDATA[
+REQUEST
+-------
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+HOST: example.com
+Accept: application/yang.data+xml
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-signed.xml)
+]]></artwork>
+            </figure>
+  
+          </section>
+
+          <section title="Progress Notifications">
+            <t>The following example illustrates a device using the API to post
+            a notification to the server.  The device may send more than one
+            notification to the server (e.g., to provide status updates).  The
+            YANG module defines only one notification type, bootstrap-complete.
+            Other notification types may be defined through YANG augmentation.</t>
+
+            <t>The bootstrap server MUST NOT process a notification from a
+            device without first authenticating the device.  This is in contrast
+            to when a device is fetching data from the server, a read-only
+            operation, in which case device authentication is not strictly
+            required.</t>
+
+            <t>In this example, the device sends a notification indicating that
+            it has completed bootstrapping off the data provided by the server.
+            This example also illustrates the device sending its SSH host keys
+            to the bootstrap server, which it might, for example, forward onto
+            a downstream NMS component, so that it can subsequently authenticate
+            the device when establishing a NETCONF over SSH connection to it.</t>
+
+            <t>A device providing its SSH host key or TLS server certificate is
+            not needed when the device has an IDevID certificate
+            <xref target="Std-802.1AR-2009"/> and is able to present the IDevID
+            certificate as its SSH host key or TLS server certificate, when
+            establishing a NETCONF or RESTCONF connection.</t>
+            <figure>
+              <artwork><![CDATA[
+REQUEST
+-------
+POST https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456/notification HTTP/1.1
+HOST: example.com
+Content-Type: application/yang.data+xml
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-notification.xml)
+
+
+RESPONSE
+--------
+HTTP/1.1 204 No Content
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+]]></artwork>
+            </figure>
+ 
+          </section>
+
+        </section> <!-- API Examples -->
+
+        <section title="Artifact Examples" anchor="artifact-examples">
+
+          <t>This section presents some examples for how the same information provided by the
+          API can be packaged into stand alone artifacts.  The encoding for these artifacts is
+          the same as if an HTTP GET request had been sent to the RESTCONF URL for the specific
+          resource.</t>
+
+          <t>Encoding these artifacts for use outside of the RESTCONF protocol extends their
+          utility for other deployment scenarios, such as when a local DHCP server or a
+          removable storage device is used.  By way of example, this may be done to address an
+          inability for the device to access an Internet facing bootstrap/redirect server, or
+          just for a preference to use locally deployed infrastructure.</t>
+
+          <section title="Signed Redirect Information">
+            <t>The following example illustrates how a redirect can be encoded into an artifact
+            for use outside of the RESTCONF protocol.  The redirect information is signed so
+            that it is secure even when no transport-level security is provided.</t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
+]]></artwork>
+            </figure>
+          </section>
+
+          <section title="Signed Bootstrap Information">
+            <t>The following example illustrates how bootstrapping data can be encoded into an artifact
+            for use outside of the RESTCONF protocol.  The bootstrapping information is signed so
+            that it is secure when no transport-level security is provided.</t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
+]]></artwork>
+            </figure>
+          </section>
+
+          <section title="Owner Certificate" anchor="ex-owner-certificate">
+            <t>The following example illustrates how the owner certificate, along with its CRL, can be
+            encoded into an artifact for use outside of the RESTCONF protocol.  As the Owner Certificate
+            and CRL are already signed by the manufacturer, an additional owner signature is unnecessary.</t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-owner-certificate.xml)
+]]></artwork>
+            </figure>
+          </section>
+
+          <section title="Ownership Voucher" anchor="ex-ownership-voucher">
+            <t>The following example illustrates how the ownership voucher, along with its CRL, can be
+            encoded into an artifact for use outside of the RESTCONF protocol.  As the Ownership Voucher
+            and CRL are already signed by the manufacturer, an additional owner signature is unnecessary.</t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-ownership-voucher.xml)
+]]></artwork>
+            </figure>
+          </section>
+
+        </section> <!-- Artifact Examples -->
+
+        <section title="YANG Module" anchor="yang-module">
+          <t>The bootstrap server's device-facing interface is normatively defined
+          by the following YANG module:</t>
+          <figure>
+            <artwork><![CDATA[
+<CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
+
+<CODE ENDS>
+
+]]></artwork>
+          </figure>
+
         </section>
       </section>
 
-<!--
-      <section title="Vendor" anchor="vendor">
-        <section title="Order Information" anchor="order-information">
-          <t>In order for a Vendor's customers to configure their 
-          NMSs with what devices are expected, as well as to know how to
-          set the "unique-identifier" field within a Configlet
-          when requesting a signing, Vendors need to provide a 
-          mechanism for customers to obtain the unique 
-          identifier value for the devices they have
-          ordered.  For instance, customers could receive emails
-          containing shipping information for their devices.</t>
-          <t>Additionally, to facilitate workflows where the
-          devices are initially received by a customer-specific
-          warehouse, or moved after having been unboxed, it is 
-          ideal for the unique identifier to be easily tracked
-          through labels affixed to the device as well as the box
-          it is packaged in.  A device's serial number is commonly
-          treated this way and would be suitable for this purpose,
-          so long as it is directly related to its IDevID identity.</t>
-        </section>
-        <section title="Ownership Validation">
-          <t>In order for Configuration Signers to validate that a
-          requestor is the true owner of a device (i.e. its IDevID
-          identity), Vendors need to provide a mechanism enabling
-          a near real-time lookup.  The interface used to implement
-          this lookup is outside the scope of this document.</t>
-        </section>
-      </section>
--->
+
       <section title="Security Considerations" anchor="sec-con">
-<!--
+
         <section title="Immutable storage for trust anchors">
-          <t>Devices SHOULD ensure that all its trust anchor 
-          certificates, including those for the Configuration 
-          Signer and Configuration Server, are protected from
-          external modification.  It is for this reason that
-          the diagram in <xref target="device-precondition"/>
-          shows them in immutable storage.</t>
-          <t>However, it may be necessary to update these 
-          certificates over time (e.g., the vendor wants to
+          <t>Devices MUST ensure that all their trust anchor 
+          certificates, including those for the Owner Certificate 
+          and Ownership Voucher, are protected from
+          external modification.</t>
+          <t>It may be necessary to update these 
+          certificates over time (e.g., the manufacturer wants to
           delegate trust to a new CA).  It is therefore expected
           that devices MAY update these trust anchors when 
           needed through a verifiable process, such as a 
           software upgrade using signed software images.</t>
         </section>
-        <section title="Substitutions">
-          <t>It is generally not possible to substitute a 
-          Configlet created for a different device, since 
-          devices assert that the Configlet contains their 
-          unique identifier (e.g., serial number).</t>
-          <t>However, it is possible to substitute a Configlet 
-          created for a device with a different Configlet 
-          created for the same device.  Generally, unless 
-          imposed by the Configuration Signers, there is no
-          limit to the number of Configlets that may be
-          generated for a given device.  This could be resolved, in 
-          part, by placing a timestamp into the Configlet and 
-          ensuring devices do not load Configlets older than some 
-          amount, but this requires the devices have an accurate 
-          clock when validating a Configlet and for Configuration 
-          Signers to not sign a Configlet when another Configlet
-          is still active.</t>
+        <section title="Real time clock">
+          <t>The solution for signed data includes validating
+          Owner Certificates and Ownership Vouchers, each of which
+          may contain expirations.  Further, the solution includes
+          using a CRLs, which also require freshness.  Device
+          implementations should take care to ensure the devices
+          have a reliable clock when processing signed data.</t>
         </section>
-        <section title="Confidentiality">
-          <t>This draft allows devices to use insecure schemes when
-          doing a Configuration Server lookup.  This is deemed 
-          acceptable because the Configlet is tamper-proof, since
-          it MUST be signed, only confidentiality is lost.</t>
-          <t>Confidentiality of a Configlet's contents is assured
-          when either the Configlet is encrypted or when the a 
-          secure scheme is used when accessing the Configuration Server.</t>
-          <t>Some confidentiality is lost when an insecure scheme is
-          used to access a Configuration Server, as then the device's
-          unique identifier is in the clear.</t>
-          <t>Given the fairly regular format for unique identifiers,
-          it is possible that an adversary to guess unique identifiers
-          and access a device's Configlet.  Configlets that have been
-          encrypted do not disclose any confidential information.</t>
-        </section>
--->
         <section title="Entropy loss over time">
           <t>Section 7.2.7.2 of the IEEE Std 802.1AR-2009 standard says
           that IDevID certificate should never expire (i.e. having a
           notAfter 99991231235959Z).  Given the long-lived
           nature of these certificates, it is paramount to use a 
-          strong key length (e.g., 512-bit ECC).   Vendors SHOULD
+          strong key length (e.g., 512-bit ECC).   Manufacturers SHOULD
           deploy Online Certificate State Protocol (OCSP) responders 
           or CRL Distribution Points (CDP) to revoke certificates in 
           case necessary.</t>
@@ -870,19 +1177,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           manufacture date, and/or sequence number.  Knowledge of this
           information may provide an adversary with details needed 
           to launch an attack.</t>
-<!--      To address this concern, the 
-          certificate could contain the hash of the serial number
-          instead, which the NMS could also compute, but doing so 
-          is much less intuitive and raises questions if it is just
-          security through obscurity.
--->
         </section>
       </section>
 
-      <section title="IANA Considerations">
-        <section title="ZeroTouch Information DHCP Options" anchor="zerotouch-info-option">
+      <section title="IANA Considerations" anchor="iana-considerations">
+        <t>Editor Note: this section needs to be rewritten to use the
+        redirect and bootstrap information types (see <xref target="information-types"/>).</t>
+        <section title="Zero Touch Information DHCP Options" anchor="zerotouch-info-option">
           <t>The following registrations are in accordance to RFC 2939 for
-          "BOOTP Vendor Extensions and DHCP Options" registry maintained at
+          "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
           http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
           <section title="DHCP v4 Option">
             <figure>
@@ -932,6 +1235,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         David Harrington,
         Dean Bogdanovic,
         Martin Bjorklund,
+        Max Pritikin,
         Stephen Hanna,
         Wes Hardaker,
         Russ Mundy,
@@ -949,30 +1253,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         <references title="Normative References">
             &rfc2119;
             &rfc6020;
-            &rfc6187;
 
-            <!-- &rfc7317;  - why isn't this working!  below is the same as fetched by the URL! -->
-<!--
-<reference anchor="RFC7317">
-<front>
-<title>A YANG Data Model for System Management</title>
-<author initials="A." surname="Bierman" fullname="A. Bierman">
-<organization/>
-</author>
-<author initials="M." surname="Bjorklund" fullname="M. Bjorklund">
-<organization/>
-</author>
-<date year="2014" month="August"/>
-<abstract>
-<t>
-This document defines a YANG data model for the configuration and identification of some common system properties within a device containing a Network Configuration Protocol (NETCONF) server. This document also includes data node definitions for system identification, time-of-day management, user management, DNS resolver configuration, and some protocol operations for system management.
-</t>
-</abstract>
-</front>
-<seriesInfo name="RFC" value="7317"/>
-<format type="TXT" octets="60119" target="http://www.rfc-editor.org/rfc/rfc7317.txt"/>
-</reference>
--->
             <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
                 <front>
                     <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
@@ -1024,18 +1305,45 @@ This document defines a YANG data model for the configuration and identification
         </reference>
 
         </references>
-<!--
+
         <references title="Informative References">
-        </references>
+
+            &rfc6241;
+            &rfc7317;
+
+<!--
+          <reference anchor='draft-pritikin-anima-bootstrapping-keyinfra' target="https://tools.ietf.org/html/draft-pritikin-anima-bootstrapping-keyinfra">
+            <front>
+              <title>Bootstrapping Key Infrastructures</title>
+              <author initials='M.P.' surname='Pritikin'
+                 fullname='Max Pritikin'>
+                <organization>Cisco</organization>
+              </author>
+              <author initials='M.B.' surname='Behringer'
+                 fullname='Micheal Behringer'>
+                <organization>Cisco</organization>
+              </author>
+              <author initials='S.B.' surname='Bjarnason'
+                 fullname='Steinthor Bjarnason'>
+                <organization>Cisco</organization>
+              </author>
+              <date year='2015' />
+            </front>
+            <seriesInfo name='Internet-Draft'
+                   value='draft-pritikin-anima-bootstrapping-keyinfra-01' />
+          </reference>
 -->
+
+        </references>
+
         <section title="Examples" anchor="examples">
           <section title="Ownership Voucher" anchor="ex-owner-voucher">
 
             <t>Following describes an example data-model for an Ownership 
             Voucher.  Real vouchers are expected to be encoded in a 
-            Vendor-specific format outside the of scope for this draft.</t>
+            Manufacturer-specific format outside the of scope for this draft.</t>
 
-            <t>A tree digram describing an Ownership Voucher:</t>
+            <t>A tree diagram describing an Ownership Voucher:</t>
             <figure>
               <artwork><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-ownership-voucher-tree.txt)
@@ -1053,90 +1361,6 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
 ]]></artwork>
             </figure>
           </section>
-          <section title="Bootstrap Server's API" anchor="ex-bootstrap-api">
-            <figure>
-              <artwork><![CDATA[
-['\' line wrapping added for formatting only]
-
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
-devices/device=123456/ownership-voucher
-
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
-devices/device=123456/owner-certificate
-
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
-devices/device=123456/boot-image
-
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
-devices/device=123456/configuration
-
-POST https://example.com/restconf/operations/ietf-zerotouch-bootstrap-\
-server:notification
-
-]]></artwork>
-            </figure>
-          </section>
-
-          <section title="Bootstrap Configuration" anchor="ex-bootstrap-config">
-            <t>
-              <figure>
-                <preamble>
-                  This example illustrates a configuration enabling secure
-                  NETCONF call-home using standards-based YANG modules.
-                </preamble>
-                <artwork><![CDATA[
-<?xml version="1.0"?>
-<configuration>
-
-  <!-- from ietf-system.yang -->
-  <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
-    <authentication>
-      <user>
-        <name>admin</name>
-        <ssh-key>
-          <name>admin's rsa ssh host-key</name>
-          <algorithm>ssh-rsa</algorithm>
-          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRC
-          jCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2Mwj
-          E1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcC
-          WAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5
-          vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWq
-          EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6
-          gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
-        </ssh-key>
-      </user>
-    </authentication>
-  </system>
-
-  <!-- from ietf-netconf-server.yang -->
-  <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
-    <call-home>
-      <application>
-        <name>config-mgr</name>
-        <ssh>
-          <endpoints>
-            <endpoint>
-              <name>east-data-center</name>
-              <address>11.22.33.44</address>
-            </endpoint>
-            <endpoint>
-              <name>west-data-center</name>
-              <address>55.66.77.88</address>
-            </endpoint>
-          </endpoints>
-          <host-keys>
-            <host-key>my-call-home-x509-key</host-key>
-          </host-keys>
-        </ssh>
-      </application>
-    </call-home>
-  </netconf-server>
-
-</configuration>
-]]></artwork>
-              </figure>
-            </t>
-          </section>
         </section>
 
         <section title="Change Log">
@@ -1151,7 +1375,7 @@ server:notification
               the "Device Boot Sequence" diagram</t>
               <t>Removed support for physical presence or any
               ability for Configlets to not be signed.</t>
-              <t>Defined the ZeroTouch Information DHCP option</t>
+              <t>Defined the Zero Touch Information DHCP option</t>
               <t>Added an ability for devices to also download
               images from Configuration Servers</t>
               <t>Added an ability for Configlets to be encrypted</t>
@@ -1169,7 +1393,7 @@ server:notification
                  current use of anyxml.</t>
               <t>Added encrypted and signed-encrypted examples</t>
               <t>Replaced YANG module with XSD schema</t>
-              <t>Added IANA request for the ZeroTouch Information DHCP Option</t>
+              <t>Added IANA request for the Zero Touch Information DHCP Option</t>
               <t>Added IANA request for media types for boot-image and configuration</t>
             </list>
             </t>
@@ -1179,7 +1403,7 @@ server:notification
             <list style="symbols">
               <t>Replaced the need for a Configuration Signer with the
               ability for each NMS to be able to sign its own configurations,
-              using Vendor signed Ownership Vouchers and Owner certificates.</t>
+              using Manufacturer signed Ownership Vouchers and Owner certificates.</t>
               <t>Renamed Configuration Server to Bootstrap Server, a more
               representative name given the information devices download from it.</t>
               <t>Replaced the concept of a Configlet by defining a southbound 
@@ -1189,7 +1413,26 @@ server:notification
             </list>
             </t>
           </section>
-
+          <section title="02 to 03">
+            <t>
+            <list style="symbols">
+              <t>Minor update, mostly just to add an Editor's Note to show how this
+              draft might integrate with the draft-pritikin-anima-bootstrapping-keyinfra.</t>
+            </list>
+            </t>
+          </section>
+          <section title="03 to 04">
+            <t>
+            <list style="symbols">
+              <t>Major update formally introducing unsigned data and support for
+              Internet-based redirect servers.</t>
+              <t>Added many terms to Terminology section.</t>
+              <t>Added all new "Guiding Principles" section.</t>
+              <t>Added all new "Sources for Bootstrapping Data" section.</t>
+              <t>Rewrote the "Interactions" section and renamed it "Workflow Overview".</t>
+            </list>
+            </t>
+          </section>
         </section>
     </back>
 </rfc>

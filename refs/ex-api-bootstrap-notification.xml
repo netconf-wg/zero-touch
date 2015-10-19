@@ -1,0 +1,14 @@
+<input xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+  <notification-type>bootstrap-complete</notification-type>
+  <message>example message</message>
+  <ssh-host-keys>
+    <ssh-host-key>
+      <format>ssh-rsa</format>
+      <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRCjCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2MwjE1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcCWAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWqEIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
+    </ssh-host-key>
+    <ssh-host-key>
+      <format>ssh-dsa</format>
+      <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRCjCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2MwjE1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcCWAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWqEIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
+    </ssh-host-key>
+  </ssh-host-keys>
+</input>

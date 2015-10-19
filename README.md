@@ -78,3 +78,52 @@ process, as documented in Best Current Practices RFCs and IESG Statements.
 
 A participant in any IETF activity acknowledges that written, audio and video
 records of meetings may be made and may be available to the public.
+
+## Issue Tracking
+
+
+Issues are tracked using the following states:
+
+```
+               GitHub Status
+   +----------------+----------------+
+   |      Open      |     Closed     |
+   |                |                |
+   |                |                |
+   |                |                |
+   |      New -----------> Dead      |
+   |       |        |                |
+   |       V        |                |
+   |      Open      |                |
+   |       |        |                |
+   |       V        |                |
+   |     Verify     |                |
+   |       |        |                |
+   |       V        |                |
+   |      Edit      |                |
+   |       |        |                |
+   |       V        |                |
+   |     Review --------> Done       |
+   |                |                |
+   |                |                |
+   |                |                |
+   |   Editorial -------> Editorial  |
+   |                |                |
+   |                |                |
+   +----------------+----------------+
+```
+
+Where the states are defined as follows:
+
+State | Description
+----- | -----------
+NEW | A submitted issue starts in the NEW state.
+OPEN | A first discussion of the issue took place and it was accepted to be a real issue.
+VERIFY | The issue was discussed and a resolution emerged that needs to be verified on the mailing list.
+EDIT | The issue is waiting for the document editor to make the corresponding changes.
+REVIEW | The edits have been done and the changes in the I-D need to be reviewed.
+DONE | The edits have been reviewed an the issue has been resolved.
+DEAD | The issue was declared dead, e.g., because it is considered outside of the scope or the issue does not seem to require a solution.
+Editorial | The issue is a placeholder for an editorial fix that does not require WG discussion to fix.
+
+

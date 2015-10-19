@@ -1,0 +1,67 @@
+<devices xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+  <device>
+    <unique-id>123456789</unique-id>
+    <bootstrap-information>
+      <boot-image>
+        <name>
+          boot-image-v3.2R1.6.img
+        </name>
+        <md5>
+          SomeMD5String
+        </md5>
+        <sha1>
+          SomeSha1String
+        </sha1>
+        <path>
+          /some/path/to/raw/file
+        </path>
+      </boot-image>
+      <configuration>
+        <config>
+          <!-- from ietf-system.yang -->
+          <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
+            <authentication>
+              <user>
+                <name>admin</name>
+                <ssh-key>
+                  <name>admin's rsa ssh host-key</name>
+                  <algorithm>ssh-rsa</algorithm>
+                  <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRC
+                  jCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2Mwj
+                  E1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcC
+                  WAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5
+                  vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWq
+                  EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6
+                  gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
+                </ssh-key>
+              </user>
+            </authentication>
+          </system>
+          <!-- from ietf-netconf-server.yang -->
+          <netconf-server xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
+            <call-home>
+              <application>
+                <name>config-mgr</name>
+                <ssh>
+                  <endpoints>
+                    <endpoint>
+                      <name>east-data-center</name>
+                      <address>11.22.33.44</address>
+                    </endpoint>
+                    <endpoint>
+                      <name>west-data-center</name>
+                      <address>55.66.77.88</address>
+                    </endpoint>
+                  </endpoints>
+                  <host-keys>
+                    <host-key>my-call-home-x509-key</host-key>
+                  </host-keys>
+                </ssh>
+              </application>
+            </call-home>
+          </netconf-server>
+        </config>
+      </configuration>
+    </bootstrap-information>
+  </device>
+</devices>

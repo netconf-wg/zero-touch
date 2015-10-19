@@ -1,6 +1,7 @@
 module ietf-zerotouch-ownership-voucher {
 
-  namespace "urn:ietf:params:xml:ns:yang:ietf-zerotouch-ownership-voucher";
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-zerotouch-ownership-voucher";
   prefix "ztov";
 
   import ietf-yang-types { prefix yang; }
@@ -48,6 +49,19 @@ module ietf-zerotouch-ownership-voucher {
 
   // top-level container
   container voucher {
+    description
+      "A voucher, containing the owner's identifier, a list of 
+       device's unique identifiers, information on when the
+       voucher was created, when it might expire, and the
+       vendor's signature over the above values.";
+    leaf owner-id {
+      type string;
+      mandatory true;
+      description
+        "A Vendor-assigned value for the rightful owner of the
+         devices enumerated by this voucher.  The owner-id value
+         must match the value in the owner-certificate below";
+    }
     leaf-list unique-id {
       type string;
       min-elements 1;
@@ -56,14 +70,6 @@ module ietf-zerotouch-ownership-voucher {
          The value must match the value in the device's IDevID
          certificate.  A device uses this value to determine if
          the voucher applies to it.";
-    }
-    leaf owner-id {
-      type string;
-      mandatory true;
-      description
-        "A Vendor-assigned value for the rightful owner of the
-         devices enumerated by this voucher.  The owner-id value
-         must match the value in the owner-certificate below";
     }
     leaf created-on {
       type yang:date-and-time;
@@ -74,7 +80,9 @@ module ietf-zerotouch-ownership-voucher {
     leaf expires-on {
       type yang:date-and-time;
       description
-        "The date this voucher expires, if any";
+        "The date this voucher expires, if at all.  Use of this
+         value requires that the device has access to a trusted
+         real time clock";
     }
     leaf signature {
       type string;
