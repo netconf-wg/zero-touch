@@ -48,8 +48,8 @@
         <workgroup>NETCONF Working Group</workgroup>
         <keyword>zerotouch</keyword>
         <abstract>
-            <t>This draft presents a technique for establishing a
-            secure NETCONF or RESTCONF connection between a newly deployed 
+            <t>This draft presents a secure technique for establishing a
+            NETCONF or RESTCONF connection between a newly deployed 
             device, configured with just its factory 
             default settings, and its rightful owner's network
             management system (NMS).</t>
@@ -904,7 +904,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
               <artwork><![CDATA[
 REQUEST
 -------
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:devices/device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
 
@@ -933,7 +933,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-unsigned.xml)
              <artwork><![CDATA[
 REQUEST
 -------
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:devices/device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
 
@@ -962,7 +962,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-signed.xml)
               <artwork><![CDATA[
 REQUEST
 -------
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:devices/device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
 
@@ -992,7 +992,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-unsigned.xml)
               <artwork><![CDATA[
 REQUEST
 -------
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456 HTTP/1.1
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:devices/device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
 
@@ -1039,7 +1039,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-signed.xml)
               <artwork><![CDATA[
 REQUEST
 -------
-POST https://example.com/restconf/data/ietf-zerotouch-bootstrap-server::devices/device=123456/notification HTTP/1.1
+POST https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:devices/device=123456/notification HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 

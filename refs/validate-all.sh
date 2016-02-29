@@ -1,4 +1,4 @@
-pyang --strict ../ietf-zerotouch-bootstrap-server\@*.yang
+pyang --ietf --strict ../ietf-zerotouch-bootstrap-server\@*.yang
 
 ./validate.sh ietf-zerotouch-bootstrap-server\@*.yang ex-file-redirect-information.xml
 ./validate.sh ietf-zerotouch-bootstrap-server\@*.yang ex-file-bootstrap-information.xml

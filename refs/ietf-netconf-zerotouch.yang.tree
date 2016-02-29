@@ -1,6 +1,0 @@
-module: ietf-netconf-zerotouch
-   +--rw configlet
-      +--rw target-requirements
-      |  +--rw unique-identifier    string
-      |  +--rw software-version     string
-      +--rw configuration          
