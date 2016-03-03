@@ -127,7 +127,7 @@ module ietf-zerotouch-bootstrap-server {
         mandatory true;
         description
           "An absolute path to the boot-image file hosted on this 
-           Bootstrap server.";
+           Bootstrap server.   ***KENT*** needs to be a URL for LDAP/USB cases?";
       }
       leaf signature {
         type string;
