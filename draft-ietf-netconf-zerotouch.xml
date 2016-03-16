@@ -2,13 +2,17 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc1035 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml">
 <!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY rfc2315 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2315.xml">
 <!ENTITY rfc2782 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2782.xml">
+<!ENTITY rfc2939 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2939.xml">
+<!ENTITY rfc5280 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml">
 <!ENTITY rfc6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
 <!ENTITY rfc6125 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6125.xml">
 <!ENTITY rfc6241 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml">
 <!ENTITY rfc6698 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6698.xml">
 <!ENTITY rfc6762 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6762.xml">
 <!ENTITY rfc6763 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6763.xml">
+<!ENTITY rfc6991 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6991.xml">
 <!ENTITY rfc7317 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7317.xml">
 ]>
 
@@ -1127,6 +1131,9 @@
         <xref target="RFC6020"/> to simultaneously define a RESTCONF based API for a bootstrap/redirect
         server as well as the encoding for signed artifacts that can be conveyed outside of the RESTCONF
         protocol (DHCP, FTP, TFTP, etc.).</t>
+        <t>The module defined in this section makes extensive use of data types defined in
+        <xref target="RFC2315"/>, <xref target="RFC5280"/>, <xref target="RFC6991"/>, and
+        <xref target="RFC5280"/>.</t>
         <section title="Module Overview">
           <t>The following tree diagram <xref target="tree-diagram"/> provides an overview for both the
           API and artifacts that can be used outside of RESTCONF.</t>
@@ -1420,7 +1427,6 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         </section>
       </section>
 
-
       <section title="Security Considerations" anchor="sec-con">
 
         <section title="Immutable storage for trust anchors">
@@ -1492,8 +1498,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         <t>Editor Note: this section needs to be rewritten to use the
         redirect and bootstrap information types (see <xref target="information-types"/>).</t>
         <section title="Zero Touch Redirect Information DHCP Options" anchor="dhcp-options">
-          <t>The following registrations are in accordance to RFC 2939 for
-          "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
+          <t>The following registrations are in accordance to RFC 2939 <xref target="RFC2939"/>
+          for "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
           http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
           <section title="DHCP v4 Option">
             <figure>
@@ -1538,6 +1544,13 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         </section>
       </section>
 
+      <section title="Other Considerations">
+        <t>Both this document and <xref target="draft-pritikin-anima-bootstrapping-keyinfra"/>
+        define bootstrapping mechanisms.  The authors have collaborated on both solutions
+        and believe that each solution has merit and, in fact, can work together.  That is,
+        it is possible for a device to support both solutions simultaneously.</t>
+      </section>
+
       <section title="Acknowledgements">
         <t>The authors would like to thank for following for
         lively discussions on list and in the halls (ordered
@@ -1568,11 +1581,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         <references title="Normative References">
             &rfc1035;
             &rfc2119;
+            &rfc2315;
             &rfc2782;
+            &rfc5280;
             &rfc6020;
             &rfc6125;
             &rfc6762;
             &rfc6763;
+            &rfc6991;
 
             <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
                 <front>
@@ -1592,18 +1608,20 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                     </author>
                     <date month="December" year="2015"/>
                 </front>
+                <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-restconf-10' />
             </reference>
-            <reference anchor="draft-ietf-netconf-server-model" target="http://tools.ietf.org/html/draft-ietf-netconf-server-model-06">
+            <reference anchor="draft-ietf-netconf-server-model" target="http://tools.ietf.org/html/draft-ietf-netconf-call-home-17">
                 <front>
                     <title>NETCONF Server Model (work in progress)</title>
                     <author initials="K.W." surname="Watsen"
                             fullname="Kent Watsen">
                         <organization>Juniper Networks</organization>
                     </author>
-                    <date month="September" year="2014"/>
+                    <date month="March" year="2016"/>
                 </front>
+           <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-server-model-09'/>
             </reference>
-         <reference anchor='draft-ietf-netconf-restconf' target="https://tools.ietf.org/html/draft-ietf-netconf-restconf-04">
+         <reference anchor='draft-ietf-netconf-restconf' target="https://tools.ietf.org/html/draft-ietf-netconf-restconf-10">
            <front>
              <title>RESTCONF Protocol</title>
              <author initials='A.B.' surname='Bierman'
@@ -1618,21 +1636,19 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 fullname='Kent Watsen'>
                <organization>Juniper Networks</organization>
              </author>
-             <date year='2014' />
+             <date year='2016' />
            </front>
            <seriesInfo name='Internet-Draft'
-                  value='draft-ieft-netconf-restconf-04' />
+                  value='draft-ieft-netconf-restconf-10' />
         </reference>
 
         </references>
 
         <references title="Informative References">
-
+            &rfc2939;
             &rfc6241;
             &rfc6698;
             &rfc7317;
-
-<!--
           <reference anchor='draft-pritikin-anima-bootstrapping-keyinfra' target="https://tools.ietf.org/html/draft-pritikin-anima-bootstrapping-keyinfra">
             <front>
               <title>Bootstrapping Key Infrastructures</title>
@@ -1648,13 +1664,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                  fullname='Steinthor Bjarnason'>
                 <organization>Cisco</organization>
               </author>
-              <date year='2015' />
+              <date year='2016' />
             </front>
-            <seriesInfo name='Internet-Draft'
-                   value='draft-pritikin-anima-bootstrapping-keyinfra-01' />
+            <seriesInfo name='Internet-Draft' value='draft-pritikin-anima-bootstrapping-keyinfra-03' />
           </reference>
--->
-
         </references>
 
         <section title="Examples" anchor="examples">
@@ -1766,6 +1779,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
               <t>Security Considerations expanded</t>
               <t>Filled in enumerations for notification types</t>
              </list>
+            </t>
+          </section>
+          <section title="05 to 06">
+            <t>
+            <list style="symbols">
+              <t>Minor update</t>
+              <t>Added a bunch of references.</t>
+              <t>Added new section Other Considerations.</t>
+            </list>
             </t>
           </section>
         </section>
