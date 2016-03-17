@@ -5,6 +5,7 @@
 <!ENTITY rfc2315 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2315.xml">
 <!ENTITY rfc2782 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2782.xml">
 <!ENTITY rfc2939 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2939.xml">
+<!ENTITY rfc3688 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3688.xml">
 <!ENTITY rfc5280 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml">
 <!ENTITY rfc6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
 <!ENTITY rfc6125 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6125.xml">
@@ -58,6 +59,39 @@
             default settings, and its deployment specific network
             management system (NMS).</t>
         </abstract>
+        <note title="Editorial Note (To be removed by RFC Editor)">
+          <t>This draft contains many placeholder values that need to be replaced
+          with finalized values at the time of publication.  This note summarizes
+          all of the substitutions that are needed.  Please note that no other
+          RFC Editor instructions are specified anywhere else in this document.</t>
+          <t>This document contains references to other drafts in progress, both in
+          the Normative References section, as well as in body text throughout.
+          Please update the following references to reflect their final RFC assignments:
+            <list style="symbols">
+              <t>draft-ietf-netconf-call-home</t>
+              <t>draft-ietf-netconf-restconf</t>
+              <t>draft-ieft-netconf-server-model</t>
+              <t>draft-pritikin-anima-bootstrapping-keyinfra</t>
+            </list>
+          </t>
+          <t>Artwork in this document contains shorthand references to drafts in
+          progress.  Please apply the following replacements:
+            <list  style="symbols">
+              <t><spanx style="verb">XXXX</spanx> --&gt; the assigned RFC value for this draft</t>
+            </list>
+          </t>
+          <t>Artwork in this document contains placeholder values for the date of publication of this
+          draft.  Please apply the following replacement:
+            <list  style="symbols">
+              <t><spanx style="verb">YYYY-MM-DD</spanx> --&gt; the publication date of this draft</t>
+            </list>
+          </t>
+          <t>The following one Appendix section is to be removed prior to publication:
+            <list  style="symbols">
+              <t>Appendix A.  Change Log</t>
+            </list>
+          </t>
+        </note>
     </front>
 
     <middle>
@@ -1495,9 +1529,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
       </section>
 
       <section title="IANA Considerations" anchor="iana-considerations">
-        <t>Editor Note: this section needs to be rewritten to use the
-        redirect and bootstrap information types (see <xref target="information-types"/>).</t>
-        <section title="Zero Touch Redirect Information DHCP Options" anchor="dhcp-options">
+        <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry" anchor="dhcp-options">
           <t>The following registrations are in accordance to RFC 2939 <xref target="RFC2939"/>
           for "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
           http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
@@ -1541,6 +1573,37 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
               </artwork>
             </figure>
           </section>
+        </section>
+        <section title="The IETF XML Registry">
+          <t>This document registers one URI in the IETF XML
+          registry <xref target="RFC3688"/>.  Following the format in
+          <xref target="RFC3688"/>, the following registration is
+          requested:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+   URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
+   Registrant Contact: The NETCONF WG of the IETF.
+   XML: N/A, the requested URI is an XML namespace.
+]]></artwork>
+            </figure>
+          </t>
+        </section>
+        <section title="The YANG Module Names Registry">
+          <t>This document registers one YANG module in the
+          YANG Module Names registry <xref target="RFC6020"/>.
+          Following the format defined in <xref target="RFC6020"/>, the
+          the following registration is requested:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+   name:         ietf-zerotouch-bootstrap-server
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
+   prefix:       ztbs
+   reference:    RFC XXXX
+]]></artwork>
+          </figure>
+        </t>
         </section>
       </section>
 
@@ -1646,6 +1709,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
         <references title="Informative References">
             &rfc2939;
+            &rfc3688;
             &rfc6241;
             &rfc6698;
             &rfc7317;
@@ -1785,8 +1849,17 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
             <t>
             <list style="symbols">
               <t>Minor update</t>
-              <t>Added a bunch of references.</t>
+              <t>Added many Normative and Informative references.</t>
               <t>Added new section Other Considerations.</t>
+            </list>
+            </t>
+          </section>
+          <section title="06 to 07">
+            <t>
+            <list style="symbols">
+              <t>Minor update</t>
+              <t>Added an Editorial Note section for RFC Editor.</t>
+              <t>Updated the IANA Considerations section.</t>
             </list>
             </t>
           </section>

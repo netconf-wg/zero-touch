@@ -366,8 +366,9 @@ module ietf-zerotouch-bootstrap-server {
            This signature is generated using the owner's private
            private key and an owner-selected digest algorithm over
            the redirect-information or the bootstrap-information
-           fields, which ever is present, and in whatever encoding
+           nodes, which ever is present, and in whatever encoding
            they are presented in (e.g., XML, JSON, etc.).";
+           // is there a canonical format?
         reference
           "RFC 2315:
               PKCS #7: Cryptographic Message Syntax Version 1.5
