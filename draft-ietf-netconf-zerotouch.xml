@@ -150,6 +150,9 @@
           <t>This document uses the following terms:
             <list style="hanging" hangIndent="4">
 
+              <t hangText="ABS:">artifact based solution.  A solution in which the artifacts
+              are signed, and may be retrieved by insecure channels.</t>
+
               <t hangText="Artifact:">The term "artifact" is used throughout to represent the
               encoded form of any of Bootstrap Information, Redirect Information,
               Owner Certificate, and Ownership Voucher.  The Bootstrap Server defined in this
@@ -211,6 +214,15 @@
               ownership voucher is used by devices only when validating owner signatures
               on signed data. This data is formally defined by the "ownership-voucher"
               container in the YANG module defined in <xref target="yang-module"/>.</t>
+
+              <t hangText="PBS:">protocol based solution.  A solution in which the artifacts
+              need not be signed, but must be retrieved by secure channels only.</t>
+
+              <t hangText="POV:">presented ownership voucher.</t>
+
+              <t hangText="POV:">Presented Owner Certificate.</t>
+
+              <t hangText="PA">presented artifact</t>
 
               <t hangText="Redirect Information:">The term "redirect information" is used herein
               to refer to bootstrapping data that redirects a device to connect to another
@@ -303,25 +315,31 @@
           of this document), as well as an ability to convey that information to devices (in scope).
           Matching the two ways to convey trust, this document provides both a protocol oriented
           solution as well as an artifact based solution for conveying ownership.</t>
-          <t>The protocol based solution conveys ownership by the device first authenticating a secure
+
+          <section title="Protocol Based Solution (PBS)">
+          <t>The protocol based solution (PBS) conveys ownership by the device first authenticating a secure
           connection to a bootstrap server and then trusting that the server would only provide
           data that its rightful owner staged for it to find.  In the case of a manufacturer-hosted
           bootstrap server, the manufacturer takes the onus of ensuring that only data configured by
-          the device's rightful owner is made available to the device.  With this approach, the
-          assignment of a device to an owner is ephemeral, with the manufacturer being able is
-          reassign the device at any time.</t>
-          <t>The artifact based solution, which is ideal for when a secure connection
-          cannot be established (e.g., loading data off a removable storage device),
-          involves the manufacturer signing an owner certificate and then later, when
-          the ownership for devices is established, the manufacturer signing a voucher
-          that assigns those devices to the owner, and then the owner using their
-          private key to sign the artifacts.  Thus, from the device's perspective,
-          it can use the presented ownership voucher to validate the presented owner
-          certificate, which it can then use to validate the signature over the
-          presented artifact.  With this approach, the assignment of a device to
-          an owner is somewhat permanent, as the ability for the manufacturer to
-          reliably distribute CRLs to revoke assignments not possible when the
-          devices do not contain a real time clock (see <xref target="sec-con"/>
+          the device's rightful owner is made available to the device.  With the PBS approach, the
+          assignment of a device to an owner is ephemeral. The manufacturer being able is
+          able to reassign the device at any time.</t>
+          </section>
+          <section title="Artifact Based Solution (ABS)">
+          <t>The artifact based solution (ABS) is ideal for when a secure connection
+          cannot be established (e.g., loading data off a removable storage device).
+          The ABS method has the manufacturer signing an owner certificate and then later, when
+          the ownership for devices is established, the manufacturer sign a voucher
+          to assign those devices to the owner.
+          The owner uses their private key to sign the artifacts.
+          Thus, from the device's perspective,
+          it can use the Presented Ownership Voucher (POV) to validate the Presented Owner
+          Certificate (POC), which it can then use to validate the signature over the
+          presented artifact (PA).  With this approach, the assignment of a device to
+          an owner is somewhat permanent; while the manufacturer could
+          attempt to revoke the signature via a Certificate Revocation List
+          (CRL), this would depend upon the device having a secure real time
+          clock (see <xref target="sec-con"/>
           for information about this).</t>
         </section>
       </section>   <!-- end guiding principles -->
