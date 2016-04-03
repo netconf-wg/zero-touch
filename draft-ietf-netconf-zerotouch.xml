@@ -435,10 +435,13 @@
               statement provided in the YANG module defined in <xref target="yang-module"/>.</t>
             </list>
           </t>
-          <t>Bootstrap information may be signed or unsigned.  If the device is accessing
+
+          <t>It is always permitted for bootstrap information to be signed,
+          even if it was obtained in a secure fashion. If the device is accessing
           the bootstrap server in an unsecured manner (e.g., from a removable storage device
-          or from an untrusted server), then the bootstrap information MUST be signed,
-          otherwise it MAY be signed.</t>
+          or from an untrusted server), then the bootstrap information MUST
+          be signed.</t>
+
           <t>Devices MUST process bootstrap information as is specified in <xref
           target="process-bootstrap-information"/>.</t>
           <t>The bootstrap information type is formally defined by the "bootstrap-information"
@@ -466,58 +469,70 @@
           <t>A device MAY attempt to acquire bootstrapping data from a directly attached
           removable storage device.  The bootstrapping data MAY be either redirect information
           or bootstrap information.</t>
-          <t>If redirect information is provided, it SHOULD be signed, as removable storage
-          devices are not trustworthy.  However, if the redirect information is not signed,
-          then the device MUST NOT trust any included trust anchor certificates,
-          which means that the device would have to establish an unsecured connection to
+
+          <t>Redirect information found in removable storage MUST be treated
+          in the same manner as redirect information retrieved from an HTTPS
+          connection: trust anchors are to be ignored if unsigned as they
+          would cause the device to establish an unsecured connection to
           the specified bootstrap servers.  See <xref target="redirect-information"/> for
           more about this case.</t>
+
           <t>If bootstrap information is provided, it MUST be signed, as removable storage
           devices are not trustworthy and there is no option to process the data in a
           degraded manner, unlike as with redirect information.</t>
+
           <t>For the case when the signed bootstrap information is provided, it is notable
           that even the raw boot image file itself can be on the removable storage device,
           by letting the URL reference a local file (e.g., file:///path/to/file), making
-          use of the removable storage device a fully self-standing bootstrapping solution.</t>
+          use of the removable storage device a fully self-standing
+          bootstrapping solution.</t>
+
           <t>However, regardless if the boot image file resides on the local storage device
           or if the device must follow the URL to download it from a remote (and unsecured)
-          server, the device MUST authenticate the validity of the boot image file, either by
-          using the MD5 and SHA fingerprints supplied by the bootstrapping information, or by
-          virtual of the boot image containing an embedded signature, if any.</t>
+          server, the device MUST authenticate the validity of the boot image
+          file, such as by using MD5,SHA, or other cryptographic fingerprints
+          supplied in the bootstrapping information.
+          Some boot image formats can contain an embedded signature [XXXREF], if any.
+          </t>
         </section>
+
         <section title="DNS Server" anchor="dns-server">
           <t>A device MAY attempt to acquire bootstrapping data from a DNS server using
           DNS-based service discovery (DNS-SD) <xref target="RFC6763"/>.  Due to DNS packet
           size limitations the bootstrapping data provided using DNS-SD can only be
-          redirect information, no support for bootstrap information using DNS-SD is
+          redirect information: no definition bootstrap information using DNS-SD is
           provided by this document.</t>
-          <t>The redirect information provided SHOULD be signed, as this document does
+          <t>The redirect information provided via DNS-SD SHOULD be signed
+          internally (not via DNSSEC), as this document does
           not define a solution to secure the DNS records using DNSSEC <xref target="RFC6698"/>.
-          However, if the redirect information is not signed, then the device MUST NOT trust
-          any included trust anchor certificates, which means that the device would have to
-          establish an unsecured connection to the specified bootstrap servers.  See
+          As before, devices MUST disregard unsigned redirect information. See
           <xref target="redirect-information"/> for more about this case.</t>
+
           <t>To use this approach, the device MAY perform DNS-SD via multicast DNS
           <xref target="RFC6762"/> searching for the service "_zerotouch._tcp.local.".
           Alternatively the device MAY perform DNS-SD via normal DNS operation, using
           the domain returned to it from the DHCP server, searching for the service
           "_zerotouch._tcp.example.com".</t>
+
           <t>The mapping of redirect information onto DNS SRV <xref target="RFC2782"/> and
-          DNS TXT <xref target="RFC1035"/> records as follows:
-           is as follows:
+          DNS TXT <xref target="RFC1035"/> records is as follows:
+
             <list style="symbols">
               <t>The bootstrap server's hostname or IP address is returned by the "Target"
               component of the DNS SRV record.</t>
               <t>The bootstrap server's port is returned by the "Port" component of the
               DNS SRV record.</t>
+
               <t>The bootstrap server's trust anchor is returned using the key "anchor" in
               the DNS TXT record with the binary value being the `gzip` compression over the
               redirect-information's "trust-anchor" value. To save additional space, it is
               RECOMMENDED that the trust anchor certificate uses an elliptical curve
-              algorithm, rather than the seemingly ubiquitous RSA algorithm.</t>
+              algorithm, rather than the larger, more common RSA algorithm.</t>
+
               <t>The signature over the preceding three values is returned using the key
               "sig" in the DNS TXT record with the binary value being the `gzip` compression
               over the redirect-information's "signature" value.</t>
+
               <t>The owner certificate is returned using the key "cert" in the DNS TXT
               record with the binary value being the `gzip` compression over the
               redirect-information's "owner-certificate/certificate" value.  There isn't
@@ -550,10 +565,9 @@
           degraded manner, unlike as with redirect information.</t>
           <t>For the case when the signed bootstrap information is provided, it is notable
           that the URL would have to point to another file server (e.g., http://, ftp://, etc.),
-          as DHCP servers do not themselves distribute files.  In this case, the device MUST
-          authenticate the validity of the boot image file, either by using the MD5 and SHA
-          fingerprints supplied by the bootstrapping information, or by virtual of the boot
-          image containing an embedded signature, if any.</t>
+          as DHCP servers do not themselves distribute files.
+          [[Reference to end of section 4.1 here]]
+          </t>
           <t>It is expected that DHCP servers will provide redirect information more often than bootstrap
           information, since redirect information is more generic, potentially applicable to a large number
           of devices, with the number limited only by the number of devices listed by the associated
