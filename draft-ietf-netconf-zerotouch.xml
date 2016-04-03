@@ -407,14 +407,14 @@
 
         </section>
         <section title="Bootstrap Information" anchor="bootstrap-information">
-          <t>Bootstrap information provides all the data neccessary for the device
+          <t>Bootstrap information provides all the data necessary for the device
           to bootstrap itself, in order to be considered ready to be managed.
           This data includes criteria about the boot image the device MUST be running,
           an initial configuration the device MUST commit, and an optional script that,
           if specified, the device MUST successfully execute.  Descriptions for these
           follow:
             <list style="symbols">
-              <t>The boot image creteria is used to ensure the device is running a version
+              <t>The boot image criteria is used to ensure the device is running a version
               of software that will be able to understand the configuration and script, if
               any.  The criteria is flexible in that it allows for both an absolute
               specification of the boot image a device MUST be running, or just a list
