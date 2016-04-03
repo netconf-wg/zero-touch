@@ -293,21 +293,26 @@
         <section title="Conveying Trust">
           <t>A device in its factory default state possesses a limited set of manufacturer specified
           trust anchors.  In this document, there are two types of trust anchors of interest.
-          The first type of trust anchor is used to authenticate a secure connection to, for
+          The first type of trust anchor is used to authenticate a secure (HTTPS) connection to, for
           instance, a manufacturer-hosted Internet-based bootstrap server.  The second type of trust
           anchor is used to authenticate manufacturer-signed data, such as the owner certificate
           and ownership voucher described in this document.</t>
           <t>In the first case, trust is conveyed by the device first authenticating the secure
           connection to the server and then by the device trusting that the server would only provide
-          data that its rightful owner staged for it to find.  For instance, the staged data may
-          be redirect information that includes the IP address and another trust anchor certificate
+          data that its rightful owner staged for it to find. Actual end system data may be returned,
+          or a redirection may be returned.
+          The redirection will include
+          redirect information that includes the IP address and another trust anchor certificate
           for the deployment-specific bootstrap server.  The device can then use the discovered trust
           anchor to authenticate a secure connection to the deployment-specific bootstrap server.</t>
           <t>In the second case, trust is conveyed by the device first authenticating the owner
           certificate and ownership voucher and then, using the public key in the owner certificate,
           authenticate a signed artifact, such as redirect information.  And again the device can use
           the discovered trust anchor to authenticate a secure connection to the deployment-specific
-          bootstrap server.</t>
+          bootstrap server.
+          This mechanism lets the original manufacturer redirect to a customer provided bootstrap
+          server in a secure fashion.
+          </t>
         </section>
         <section title="Ownership" anchor="ownership">
           <t>The goal of this document is to enable a device to connect with its rightful owner's NMS.
@@ -363,22 +368,43 @@
           to the specified bootstrap servers, until finding one that it can bootstrap itself off of.
           Redirect information is primarily distinguished from standard HTTP redirect by its optional
           inclusion of trust anchors, in which case it may be referred to as a "secure redirect".</t>
-          <t>Redirect information may be signed or unsigned.  If the redirect information is not
-          signed, then the device MUST NOT trust any included trust anchor certificates, equivalent
-          to had they not been specified at all.</t>
+          <t>Redirect information may be signed or unsigned.
+
+          Included trust anchors MAY ONLY be trusted if the redirect is
+          signed.  Unsigned trust anchors MUST be discarded. </t>
+
           <t>When redirect information is signed, then the device MUST establish a secure
           connection to the specified bootstrap server using X.509 certificate path validation
           (<xref target="RFC6125"/>, Section 6) to the specified trust anchor, and MUST send
-          its IDevID certificate in the form of a client certificate, and MUST POST notifications
-          to the bootstrap server.  Furthermore, in this case, any data obtained from the bootstrap
-          server MAY NOT be signed, as it is already trusted by virtue of the secure connection.</t>
-          <t>When redirect information is unsigned, or doesn't specify a trust anchor certificate,
-          and the device connects to the bootstrap server by blindly accepting the bootstrap
-          server's TLS certificate, the device MUST NOT send its IDevID certificate in the form
-          of a client certificate, and MUST NOT POST notifications to the bootstrap server.
-          Furthermore, the device MUST assert that any data obtained from the bootstrap server
-          is signed, much as it would assert bootstrap information loaded from a removable
-          storage device is signed.</t>
+          its IDevID certificate in the form of a client certificate.
+          The client MUST use a POST method to send
+          notifications to the bootstrap server.
+          Furthermore, in this case, any data obtained from the bootstrap
+          server MAY be unsigned, as it is already trusted by virtue of the
+          secure connection.</t>
+
+          <t>A client MUST send it’s client certificate only in the case
+          where the redirect information is signed, and a trust anchor is
+          provided.  In all other cases, it MUST NOT send a client
+          certificate.  Sending client certificates in the insecure cases
+          permits MITM attacks.  The following cases are insecure:
+          <list style="hanging" hangIndent="4">
+
+            <t hangText="1.">When redirect information is unsigned</t>
+            <t hangText="2.">the redirect doesn't specify a trust</t>
+            <t hangText="3.">anchor certificate</t>
+            <t hangText="4.">the device connects to the bootstrap server by
+            blindly accepting the bootstrap server's TLS certificate.</t>
+          </list>
+
+          <t>
+          In all insecure cases, the device MUST assert that any data
+          obtained from the bootstrap server is signed, much as it would
+          assert bootstrap information loaded from a removable storage device
+          is signed.
+          </t>
+
+
         </section>
         <section title="Bootstrap Information" anchor="bootstrap-information">
           <t>Bootstrap information provides all the data neccessary for the device
