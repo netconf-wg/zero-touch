@@ -584,24 +584,19 @@
           has been staged for that one device.</t>
         </section>
         <section title="Bootstrap Server" anchor="bootstrap-server">
+
           <t>A device MAY attempt to acquire bootstrapping data from a trusted Internet-based
           bootstrap server, a server implementing the RESTCONF API defined by the YANG module
           provided in <xref target="yang-module"/>.  The bootstrapping data provided by the
-          server MAY be either redirect information or bootstrap information.</t>
-          <t>Actually, a bootstrap server is not only a source for bootstrapping data, but
+          server MAY be either redirect information or bootstrap
+          information.</t>
+
+          <t>As describe in section {TBD}, a bootstrap server is not only a source for bootstrapping data, but
           it is also the consumer of notification messages from devices.  These notification
-          messages both enable visability into the bootstrapping process (e.g., reporting
+          messages both enable visibility into the bootstrapping process (e.g., reporting
           warnings and errors) and well as provide potentially useful completion status
           information (e.g., the device's SSH host-keys).</t>
-          <t>If the device is able to authenticate the bootstrap server, using X.509
-          certificate path validation (<xref target="RFC6125"/>, Section 6) to a trust
-          anchor the device was manufactured with, or it securely learned from another
-          source of bootstrapping data, then the data the device obtains from the
-          bootstrap server MAY NOT be signed.  Notably, this is the only mechanism defined
-          in this document whereby unsigned bootstrap information (not redirect information)
-          can be used.  When the device is able to authenticate the bootstrap server's
-          TLS certificate, the device MUST send its IDevID certificate in the form of
-          client-certificate and it MUST POST notifications to the bootstrap server.</t>
+
           <t>If the device is unable to authenticate the bootstrap server's TLS certificate,
           for any reason, then any data it receives from the bootstrap server MUST be
           signed in order for the device to be able to make use of it.  When the device
