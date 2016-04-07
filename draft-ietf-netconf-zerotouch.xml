@@ -1846,6 +1846,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
             </list>
             </t>
           </section>
+          <section title="07 to 08">
+            <t>
+            <list style="symbols">
+              <t>Minor update</t>
+              <t>Updated to reflect review from Michael Richardson.</t>
+            </list>
+            </t>
+          </section>
         </section>
     </back>
 </rfc>
