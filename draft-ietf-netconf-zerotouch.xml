@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY rfc1035 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml">
+<!ENTITY rfc1951 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1951.xml">
 <!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY rfc2315 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2315.xml">
 <!ENTITY rfc2782 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2782.xml">
@@ -316,7 +317,7 @@
           administrator can reassign a device to another owner at any time.</t>
           <t>When a device is presented signed artifacts, it authenticates that its rightful
           owner provided the artifact by verifying the signature over the artifact using additional
-          artifacts, the owner certificate and ownership voucher.  With this approch, ownership
+          artifacts, the owner certificate and ownership voucher.  With this approach, ownership
           is conveyed by the the manufacturer (or delegate) taking the onus of ensuring that
           the ownership vouchers it issues are accurate.  With this approach, the assignment of
           a device to an owner may be permanent, as the ability to reassign a device to another
@@ -436,11 +437,8 @@
           that even the raw boot image file itself can be on the removable storage device,
           by letting the URL reference a local file (e.g., file:///path/to/file), making
           use of the removable storage device a fully self-standing bootstrapping solution.</t>
-          <t>However, regardless if the boot image file resides on the local storage device
-          or if the device must follow the URL to download it from a remote (and unsecured)
-          server, the device MUST authenticate the validity of the boot image
-          file, using both the MD5 and SHA fingerprints supplied by the bootstrapping
-          information.</t>
+          <t>Note: details such as the format of filesystem and the naming of the files are
+          left to the device's manufacturer to define.</t>
         </section>
 
         <section title="DNS Server" anchor="dns-server">
@@ -466,7 +464,8 @@
               <t>The bootstrap server's port is returned by the "Port" component of the
               DNS SRV record.</t>
               <t>The bootstrap server's trust anchor is returned using the key "anchor" in
-              the DNS TXT record with the binary value being the `gzip` compression over the
+              the DNS TXT record with the binary value being the `gzip` <xref target="RFC1951"/>
+              compression over the
               redirect-information's "trust-anchor" value. To save additional space, it is
               RECOMMENDED that the trust anchor certificate uses an elliptical curve
               algorithm, rather than the larger, more common RSA algorithm.</t>
@@ -832,8 +831,7 @@
               would occur.</t>
               <t>If the device is able to load bootstrapping data from a removable
               storage device (e.g., USB flash drive), it is RECOMMENDED that it try to do so
-              first.  Details such as the format of filesystem and the naming of the files are
-              left to the device's manufacturer to define.  Assuming a removable storage device
+              first.  Assuming a removable storage device
               is attached to the device, the device would check for bootstrapping data and, if
               found, validate that it has been signed using the procedure described in
               <xref target="validating-signed-data"/>.  The bootstrapping data MAY either be
@@ -873,20 +871,9 @@
               <t>If the device is able to load bootstrapping data from a DHCP
               server, when obtaining a DHCP assignment, it may receive a response that
               includes a Zero Touch Information DHCP option (<xref target="dhcp-options"/>).
-                <list style="symbols">
-                  <t>If the redirect information contained in the DHCP option is signed, then
-                  it is RECOMMENDED that the device establish a secure TLS connection to the
-                  bootstrap server, by authenticating its TLS server certificate using the
-                  provided trust anchor, and download any data that has been staged for
-                  it there, which MAY not be signed, since the server's certificate could
-                  be trusted.</t>
-                  <t>On the other hand, if the redirect information contained in the DHCP option is
-                  unsigned, then it is RECOMMENDED that the device establish a unsecured TLS
-                  connection to the bootstrap server, by blindly accepting its TLS server
-                  certificate, and download any data that has been staged for it there, which
-                  then MUST be signed, since the server's certificate could not be trusted.</t>
-                </list>
-              In either case, the remainder of the device's logic is the same as described
+              Details regarding how to process bootstrapping data received from a DHCP server
+              are discussed in <xref target="dhcp-server"/>.</t>
+              <t>The remainder of the device's logic is the same as described
               above for when using a removable storage device.  If the device is unable to
               bootstrap using information provided by a DHCP server, it would proceed to the
               next source of bootstrapping information, if any.</t>
@@ -1024,7 +1011,7 @@
           </t>
         </section>  <!-- end boot sequence -->
 
-        <section title="Processing a Source of Boostrapping Data" anchor="processing-a-source">
+        <section title="Processing a Source of Bootstrapping Data" anchor="processing-a-source">
           <t>This section describes a recursive algorithm that a device claiming to support
           Zero Touch MUST use to authenticate bootstrapping data.  A device enters this
           algorithm for each new source of bootstrapping data.  The first time the device
@@ -1130,8 +1117,10 @@
           proceed to the next step.</t>
 
           <t>First the device MUST determine if the image it is running satisfies the specified
-          "boot-image" criteria.  If it does not, the device MUST download and install the
-          specified boot image, and reboot.  Upon rebooting, the device MUST still be in its
+          "boot-image" criteria.  If it does not, the device MUST download, verify, and install the
+          specified boot image, and the reboot.  To verify the boot image, the device MUST check
+          that the boot image file matches both the MD5 and SHA fingerprints supplied by the
+          bootstrapping information.  Upon rebooting, the device MUST still be in its
           factory default state, causing the bootstrapping process to run again, which will
           eventually come to this very point, but this time the device's running image
           will satisfy the specified criteria, and thus the device moves to processing the
@@ -1319,9 +1308,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-signed.xml)
           <section title="Progress Notifications" anchor="api-ex-5">
             <t>The following example illustrates a device using the API to post
             a notification to the server.  The device may send more than one
-            notification to the server (e.g., to provide status updates).  The
-            YANG module defines only one notification type, bootstrap-complete.
-            Other notification types may be defined through YANG augmentation.</t>
+            notification to the server (e.g., to provide status updates).</t>
 
             <t>The bootstrap server MUST NOT process a notification from a
             device without first authenticating the device.  This is in contrast
@@ -1638,6 +1625,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
     <back>
         <references title="Normative References">
             &rfc1035;
+            &rfc1951;
             &rfc2119;
             &rfc2315;
             &rfc2782;
