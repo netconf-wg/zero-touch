@@ -1746,17 +1746,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             <t>A tree diagram describing an ownership voucher:</t>
             <figure>
               <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-ownership-voucher-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/example-zerotouch-ownership-voucher-tree.txt)
 ]]></artwork>
             </figure>
             <t>The YANG module for this example voucher:</t>
             <figure>
               <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang"
+file "example-zerotouch-ownership-voucher@YYYY-MM-DD.yang"
 
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
-
-<CODE ENDS>
+INSERT_TEXT_FROM_FILE(example-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
 
 ]]></artwork>
             </figure>

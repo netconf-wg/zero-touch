@@ -215,7 +215,7 @@ module ietf-zerotouch-bootstrap-server {
             }
           }
          
-          leaf config-handling {
+          leaf configuration-handling {
             type enumeration {
               enum merge {
                 description 
@@ -235,6 +235,9 @@ module ietf-zerotouch-bootstrap-server {
                   "Process configuration as a YANG Patch document.";
               }
             }
+            description
+              "This value indicates how the server should process the
+               provided configuration.";
           }
  
           leaf pre-configuration-script {
@@ -246,6 +249,7 @@ module ietf-zerotouch-bootstrap-server {
           }
 
           anyxml configuration { // pyang validation doesn't support anydata yet
+            must "../configuration-handling";
             description
               "Any configuration data model known to the device.  It may
                contain manufacturer-specific and/or standards-based data
