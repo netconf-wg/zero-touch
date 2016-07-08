@@ -201,16 +201,16 @@
               to represent an X.509 certificate, signed by the device's manufacturer or delegate,
               that binds an owner identity to the owner's private key, which the owner can
               subsequently use to sign artifacts.  The owner certificate
-              is used by devices only when validating owner signatures on signed data. This
-              data is formally defined by the "owner-certificate" container in the
+              is used by devices when validating owner signatures on signed data. The
+              owner certificate is formally defined by the "owner-certificate" container in the
               YANG module defined in <xref target="yang-module"/>.</t>
 
               <t hangText="Ownership Voucher:">The term "ownership voucher" is used in this
               document to represent manufacturer-specific artifact, signed by the device's
               manufacturer or delegate, binding an owner identity (same as in the Owner
               Certificate) to one or more device identities (e.g., serial numbers).  The
-              ownership voucher is used by devices only when validating owner signatures
-              on signed data. This data is formally defined by the "ownership-voucher"
+              ownership voucher is used by devices when validating owner signatures
+              on signed data. The ownership voucher is formally defined by the "ownership-voucher"
               container in the YANG module defined in <xref target="yang-module"/>.</t>
 
               <t hangText="Redirect Information:">The term "redirect information" is used herein
@@ -348,7 +348,7 @@
           inclusion of trust anchors, in which case it may be referred to as a "secure redirect".</t>
           <t>Redirect information may be trusted or untrusted.  That is, when the redirect information
           is obtained via a secure connection to a trusted bootstrap server or a signed artifact, it
-          is trusted.  In all other cases (e.g., an unsigned artifiact obtain via DHCP, DNS, or
+          is trusted.  In all other cases (e.g., an unsigned artifact obtain via DHCP, DNS, or
           removable storage), the redirect information is untrusted.</t>
           <t>Trusted redirect information is useful for enabling a device to establish a secure
           connection to a bootstrap server.  Untrusted redirect information is useful for directing
@@ -437,8 +437,11 @@
           that even the raw boot image file itself can be on the removable storage device,
           by letting the URL reference a local file (e.g., file:///path/to/file), making
           use of the removable storage device a fully self-standing bootstrapping solution.</t>
-          <t>Note: details such as the format of filesystem and the naming of the files are
-          left to the device's manufacturer to define.</t>
+          <t>Note: details such as the format of the filesystem and the naming of the files are
+          left to the device's manufacturer to define.  However, in order to facilitate 
+          interoperability, it is RECOMMENDED to support open/standards based filesystems and
+          to have a filenaming convention that is not likely to have collisions with files
+          from other vendors. </t>
         </section>
 
         <section title="DNS Server" anchor="dns-server">
@@ -1150,8 +1153,7 @@
         server as well as the encoding for signed artifacts that can be conveyed outside of the RESTCONF
         protocol (DHCP, FTP, TFTP, etc.).</t>
         <t>The module defined in this section makes extensive use of data types defined in
-        <xref target="RFC2315"/>, <xref target="RFC5280"/>, <xref target="RFC6991"/>, and
-        <xref target="RFC5280"/>.</t>
+        <xref target="RFC2315"/>, <xref target="RFC5280"/>, and <xref target="RFC6991"/>.</t>
         <section title="Module Overview">
           <t>The following tree diagram <xref target="tree-diagram"/> provides an overview for both the
           API and artifacts that can be used outside of RESTCONF.</t>
@@ -1370,7 +1372,7 @@ Server: example-server
           inability for the device to access an Internet facing bootstrap/redirect server, or
           just for a preference to use locally deployed infrastructure.</t>
 
-          <section title="Signed Redirect Information" anchor="art-ex-1">
+          <section title="Redirect Information" anchor="art-ex-1">
             <t>The following example illustrates how a redirect can be encoded into an artifact
             for use outside of the RESTCONF protocol.  The redirect information is signed so
             that it is secure even when no transport-level security is provided.</t>
@@ -1381,7 +1383,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
             </figure>
           </section>
 
-          <section title="Signed Bootstrap Information" anchor="art-ex-2">
+          <section title="Bootstrap Information" anchor="art-ex-2">
             <t>The following example illustrates how bootstrapping data can be encoded into an artifact
             for use outside of the RESTCONF protocol.  The bootstrap information is signed so
             that it is secure when no transport-level security is provided.</t>
@@ -1391,6 +1393,17 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
 ]]></artwork>
             </figure>
           </section>
+
+          <section title="Signature" anchor="art-ex-3">
+            <t>The following example illustrates how the signature can be encoded into an artifact
+            for use outside of the RESTCONF protocol.</t>
+            <figure>
+              <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-signature.xml)
+]]></artwork>
+            </figure>
+          </section>
+
 
           <section title="Owner Certificate" anchor="ex-owner-certificate">
             <t>The following example illustrates how the owner certificate, along
@@ -1515,6 +1528,11 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>The following registrations are in accordance to RFC 2939 <xref target="RFC2939"/>
           for "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
           http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
+
+          <t>EDITOR NOTE: This section needs to be fixed, it currently only supports unsigned
+          redirect information.  However the complete solution needs to support the full
+          matrix of redirect/bootstrap x signed/unsigned x IPv4/IPv6.</t>
+
           <section title="DHCP v4 Option">
             <figure>
               <artwork>
@@ -1614,6 +1632,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         Randy Presuhn,
         Max Pritikin,
         Michael Richardson,
+        Phil Shafer,
         Juergen Schoenwaelder.</t>
 
         <t>Special thanks goes to Steve Hanna, Russ Mundy, and
@@ -1645,7 +1664,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                     <date month="December" year="2009"/>
                 </front>
             </reference>
-            <reference anchor="draft-ietf-netconf-call-home" target="https://tools.ietf.org/html/draft-ietf-netconf-call-home-17">
+            <reference anchor="draft-ietf-netconf-call-home" target="https://datatracker.ietf.org/html/draft-ietf-netconf-call-home-17">
                 <front>
                     <title>NETCONF Call Home (work in progress)</title>
                     <author initials="K.W." surname="Watsen"
@@ -1656,7 +1675,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 </front>
                 <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-restconf-10' />
             </reference>
-            <reference anchor="draft-ietf-netconf-server-model" target="http://tools.ietf.org/html/draft-ietf-netconf-call-home-17">
+            <reference anchor="draft-ietf-netconf-server-model" target="https://datatracker.ietf.org/html/draft-ietf-netconf-call-home-17">
                 <front>
                     <title>NETCONF Server Model (work in progress)</title>
                     <author initials="K.W." surname="Watsen"
@@ -1667,7 +1686,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 </front>
            <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-server-model-09'/>
             </reference>
-         <reference anchor='draft-ietf-netconf-restconf' target="https://tools.ietf.org/html/draft-ietf-netconf-restconf-10">
+         <reference anchor='draft-ietf-netconf-restconf' target="https://datatracker.ietf.org/html/draft-ietf-netconf-restconf-10">
            <front>
              <title>RESTCONF Protocol</title>
              <author initials='A.B.' surname='Bierman'
@@ -1696,7 +1715,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             &rfc6241;
             &rfc6698;
             &rfc7317;
-          <reference anchor='draft-pritikin-anima-bootstrapping-keyinfra' target="https://tools.ietf.org/html/draft-pritikin-anima-bootstrapping-keyinfra">
+          <reference anchor='draft-pritikin-anima-bootstrapping-keyinfra' target="https://datatracker.ietf.org/html/draft-pritikin-anima-bootstrapping-keyinfra">
             <front>
               <title>Bootstrapping Key Infrastructures</title>
               <author initials='M.P.' surname='Pritikin'
@@ -1851,6 +1870,19 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-ownership-voucher@YYYY-MM-DD.yang)
             <list style="symbols">
               <t>Minor update</t>
               <t>Updated to reflect review from Michael Richardson.</t>
+            </list>
+            </t>
+          </section>
+          <section title="08 to 09">
+            <t>
+            <list style="symbols">
+              <t>Added in missing "Signature" artifact example.</t>
+              <t>Added recommendation for manufacturers to use interoperable
+              formats and file naming conventions for removable storage devices.</t>
+              <t>Added configuration-handling leaf to guide if config should be
+              merged, replaced, or processed like an edit-config/yang-patch document.</t>
+              <t>added a pre-configuration script, in addition to the 
+              post-configuration script from -05.</t>
             </list>
             </t>
           </section>

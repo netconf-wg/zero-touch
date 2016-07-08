@@ -178,6 +178,8 @@ module ietf-zerotouch-bootstrap-server {
                  running image cannot support any of the required YANG
                  modules.";
             }
+            // Please see https://github.com/netconf-wg/zero-touch/issues/17
+            // regarding the following two leafs!
             leaf md5 {
               type string;
               mandatory true;
@@ -212,48 +214,49 @@ module ietf-zerotouch-bootstrap-server {
                  both the MD5 and SHA1 fingerprints provided above.";
             }
           }
-          
-          anyxml configuration {   // pyang doesn't support anydata yet!
+         
+          leaf config-handling {
+            type enumeration {
+              enum merge {
+                description 
+                 "Merge configuration into existing running configuration.";
+              }
+              enum replace {
+                description
+                  "Replace existing running configuration with passed
+                   configuration.";
+              }
+              enum edit-config {
+                description
+                  "Process configuration as an <edit-config> document.";
+              }
+              enum yang-patch {
+                description
+                  "Process configuration as a YANG Patch document.";
+              }
+            }
+          }
+ 
+          leaf pre-configuration-script {
+            type script;
+            description
+              "A script that, when present, is executed after the 
+               boot-image is verified but before the configuration
+               has been processed.";
+          }
+
+          anyxml configuration { // pyang validation doesn't support anydata yet
             description
               "Any configuration data model known to the device.  It may
                contain manufacturer-specific and/or standards-based data
                models.";
           }
-      
-          leaf script {
-            type string;
+
+          leaf post-configuration-script {
+            type script;
             description
-              "A device specific script that enables the execution of
-               commands to perform actions not possible thru configuration
-               alone.  The script SHOULD be executed with 'root' level 
-               permissions.
-      
-               If a script is erroneously provided to a device that
-               does not support the execution of scripts, the device
-               SHOULD send a 'script-warning' notification message,
-               but otherwise continue processing the bootstrapping
-               data as if the script had not been present.
-      
-               The script would return exit status code '0' on success 
-               and non-zero on error, with accompanying stderr/stdout
-               for logging purposes.  In the case of an error, the exit
-               status code will specify what the device should do.  
-      
-               If the exit status code is greater than zero, then the 
-               device should assume that the script had soft failure 
-               that the script believes does not affect manageability.
-               If the device obtained the bootstrap information from 
-               a bootstrap server, it SHOULD send a 'script-warning'
-               notification message.
-      
-               If the exit status code is less than zero, the device 
-               should assume the script had a hard error that the
-               script believes will affect manageability.  In this
-               case, the device should try to send a 'script-error'
-               notification message followed by a reset that will 
-               force a new boot-image install (wiping out anything
-               the script may have done) and restart the entire
-               bootstrapping process again.";
+              "A script that, when present, is executed after the 
+               configuration has been processed.";
           }
         }
       }
@@ -269,6 +272,8 @@ module ietf-zerotouch-bootstrap-server {
            as a whole, as it contains values that need to be 
            processed together.";
 
+        // Please see https://github.com/netconf-wg/zero-touch/issues/16
+        // regarding the following leaf!
         leaf certificate {
           type binary;
           mandatory true;
@@ -379,8 +384,7 @@ module ietf-zerotouch-bootstrap-server {
               Encoding Rules (DER).";
       }
 
-
-      action notification {
+      action notification { // pyang validation doesn't support actions yet
         input {
           leaf notification-type {
             type enumeration {
@@ -578,4 +582,45 @@ module ietf-zerotouch-bootstrap-server {
 
     }
   }
+
+  typedef script {
+    type binary;
+    description
+      "A device specific script that enables the execution of
+       commands to perform actions not possible thru configuration
+       alone.  
+
+       No attempt is made to standardize the contents, running
+       context, or programming language of the script.  The 
+       contents of the script are considered specific to the
+       vendor, product line, and/or model of the device.
+ 
+       If a script is erroneously provided to a device that
+       does not support the execution of scripts, the device
+       SHOULD send a 'script-warning' notification message,
+       but otherwise continue processing the bootstrapping
+       data as if the script had not been present.
+
+       The script returns exit status code '0' on success 
+       and non-zero on error, with accompanying stderr/stdout
+       for logging purposes.  In the case of an error, the exit
+       status code will specify what the device should do.  
+
+       If the exit status code is greater than zero, then the 
+       device should assume that the script had a soft error,
+       which the script believes does not affect manageability.
+       If the device obtained the bootstrap information from 
+       a bootstrap server, it SHOULD send a 'script-warning'
+       notification message.
+
+       If the exit status code is less than zero, the device 
+       should assume the script had a hard error, which the
+       script believes will affect manageability.  In this
+       case, the device should try to send a 'script-error'
+       notification message followed by a reset that will 
+       force a new boot-image install (wiping out anything
+       the script may have done) and restart the entire
+       bootstrapping process again.";
+  }
+
 }

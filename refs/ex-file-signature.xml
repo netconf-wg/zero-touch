@@ -1,0 +1,16 @@
+<!-- '\' line wrapping added for formatting purposes only -->
+
+<signature
+   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+   MIIB3wYJKoZIhvcNAQcCoIIB0DCCAcwCAQExDzANBglghkgBZQMEAgEFADALBgkq\
+   hkiG9w0BBwExggGnMIIBowIBATB8MHcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApD\
+   YWxpZm9ybmlhMRkwFwYDVQQKDBBKdW5pcGVyX05ldHdvcmtzMR0wGwYDVQQLDBRD\
+   ZXJ0aWZpY2F0ZV9Jc3N1YW5jZTEZMBcGA1UEAwwQVFBNX1RydXN0X0FuY2hvcgIB\
+   AjANBglghkgBZQMEAgEFADANBgkqhkiG9w0BAQEFAASCAQCed5FbjBUKyryN8Zwq\
+   Oh+8dkwjVXa58uLP1ZCTnULsVkmRDrXBq1hHiGXEa9qyr4xizyXeXHaTfCHd1k0x\
+   fPnmMeWnfWdhZsCF4tBc07yDfTprjv7jlqEMd/79vdyh3cxvOLoc/Yq3MYLe2vq/\
+   84UkBvY2XVCB/d/l9QboeEMMsazEwCNeIOp+LYah7um+lCkAXtPmc8qg2B4D/Tx4\
+   xVqB4U0HR1JnobKuunjHQeiKtbJWeaa1/ORIWU2zdwUa7x4Bt0vNtCL1V7fIU/6n\
+   /nSjs6zqMklsayXNwp9bLjkoRP+mHDKDlf0umlqRN8ljWueBeSQTPUNFdVxtk3JF\
+   ocTw
+</signature>
