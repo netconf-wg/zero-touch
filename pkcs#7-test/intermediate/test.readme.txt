@@ -1,0 +1,28 @@
+
+How about using program to extract signature, alg info from ASN.1 and do the verification manually?
+
+  718  /usr/local/openssl-1.0.2g/bin/openssl dgst -sha256 -sign private_key.pem -out test-sig.dgst -binary test-data.txt
+  721  /usr/local/openssl-1.0.2g/bin/openssl x509 -pubkey -noout -in ca_cert.pem > test-pubkey.pem
+  722  /usr/local/openssl-1.0.2g/bin/openssl dgst -sha256 -verify test-pubkey.pem -signature test-sig.dgst
+
+
+
+This worked, but I don't want whole smime file!
+
+kwatsen-mbp:intermediate kwatsen$ /usr/local/openssl-1.0.2g/bin/openssl smime -sign -in test-data.txt -signer ca_cert.pem -inkey private_key.pem -noattr > test-sig.smime; cat test-sig.smime | awk '/Content-Disposition/,/-------/' | tail -n +3 | sed -e :a -e '$d;N;2,3ba' -e 'P;D' > test-sig.pem; cat test-sig.pem | base64 --decode > test-sig.der
+
+kwatsen-mbp:intermediate kwatsen$ /usr/local/openssl-1.0.2g/bin/openssl smime -verify -in test-sig.smime -CAfile ../root_ca/ca_cert.pem 
+hello world
+Verification successful
+
+Nothing else seems to work!  :(
+
+Like this:
+
+$ cat test-sig.pem 
+-----BEGIN PKCS7-----
+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
+-----END PKCS7-----
+
+kwatsen-mbp:intermediate kwatsen$ /usr/local/openssl-1.0.2g/bin/openssl smime -verify -inform PEM -in test-sig.pem -content test-data.txt -CAfile ../root_ca/ca_cert.pem 
+

@@ -16,13 +16,14 @@
       file:///some/path/to/raw/file
     </uri>
   </boot-image>
+  <configuration-handling>merge</configuration-handling>
   <configuration>
     <!-- from ietf-system.yang -->
     <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
       <authentication>
         <user>
           <name>admin</name>
-          <ssh-key>
+          <authorized-key>
             <name>admin's rsa ssh host-key</name>
             <algorithm>ssh-rsa</algorithm>
             <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRC\
@@ -32,7 +33,7 @@
             vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWq\
             EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6\
             gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
-          </ssh-key>
+          </authorized-key>
         </user>
       </authentication>
     </system>

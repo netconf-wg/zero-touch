@@ -1,5 +1,3 @@
-<!-- '\' line wrapping added for formatting purposes only -->
-
 <device
    xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
   <unique-id>123456789</unique-id>
@@ -18,14 +16,13 @@
         ftp://ftp.example.com/path/to/file
       </uri>
     </boot-image>
-    <configuration-handling>merge</configuration-handling>
     <configuration>
       <!-- from ietf-system.yang -->
       <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system">
         <authentication>
           <user>
             <name>admin</name>
-            <authorized-key>
+            <ssh-key>
               <name>admin's rsa ssh host-key</name>
               <algorithm>ssh-rsa</algorithm>
               <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsR\
@@ -35,7 +32,7 @@
               vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jW\
               EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf\
               gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
-            </authorized-key>
+            </ssh-key>
           </user>
         </authentication>
       </system>

@@ -1,0 +1,81 @@
+[ req ]
+default_bits            = 2048
+default_keyfile         = private_key.pem
+default_md              = sha256
+prompt                  = no
+distinguished_name      = distinguished_name
+req_extensions          = req_extensions
+
+[ distinguished_name ]
+0.organizationName      = Juniper Networks
+0.organizationalUnitName= Certificate Issuance
+commonName              = Owner Certificate CA
+
+[ req_extensions ]
+subjectKeyIdentifier    = hash
+basicConstraints        = critical, CA:true, pathlen:0
+keyUsage                = critical, keyCertSign
+
+[ ca ]
+default_ca              = CA_default
+
+[ CA_default ]
+private_key             = private_key.pem
+certificate             = ca_cert.pem
+new_certs_dir           = signed_keys/
+database                = index
+serial                  = serial
+name_opt                = ca_default
+cert_opt                = ca_default
+crlnumber               = crlnumber
+default_crl_days        = 30
+default_days            = 365
+default_md              = sha256
+preserve                = no
+policy                  = policy_match
+copy_extensions		= copy
+
+[ policy_match ]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = supplied
+organizationalUnitName  = optional
+commonName              = supplied
+
+
+# these extensions used when signing the CRL Issuer's cert
+[ crl_issuer_cert ]
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always, issuer:always
+basicConstraints        = critical, CA:FALSE
+keyUsage                = critical, cRLSign
+
+
+# these extensions used when signing chip certs
+[ tpm_chip_cert ]
+basicConstraints        = critical, CA:FALSE
+#keyUsage                = 
+#keyUsage                = critical, digitalSignature
+certificatePolicies     = critical,@certpolicy
+authorityKeyIdentifier  = keyid:always, issuer:always
+#subjectKeyIdentifier    = hash
+crlDistributionPoints   = crl_dp
+
+# FIXME: cert policy should be juniper's (not verisign's!)
+[certpolicy]
+policyIdentifier = 2.16.840.1.113733.1.7.47.1
+CPS.1="http://www.verisign.com/repository/index.html"
+userNotice.1=@notice
+
+[notice]
+explicitText="TCPA Trusted Platform Module Endorsement"
+
+
+[ crl_dp ]
+fullname = URI:http://crl.juniper.net?ca=Juniper_XXXXX_CA
+CRLissuer = dirName:crl_issuer_dn
+
+[ crl_issuer_dn ]
+0.organizationName      = TPM_Vendor
+commonName              = Juniper_XXXXX_CA
+

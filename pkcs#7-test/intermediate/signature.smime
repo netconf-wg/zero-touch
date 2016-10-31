@@ -1,0 +1,26 @@
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg="sha1"; boundary="----2F4FFECFDBF58543246A7A179C09B4E4"
+
+This is an S/MIME signed message
+
+------2F4FFECFDBF58543246A7A179C09B4E4
+hello world
+
+------2F4FFECFDBF58543246A7A179C09B4E4
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+MIIB1wYJKoZIhvcNAQcCoIIByDCCAcQCAQExCzAJBgUrDgMCGgUAMAsGCSqGSIb3
+DQEHATGCAaMwggGfAgEBMHwwdzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlm
+b3JuaWExGTAXBgNVBAoMEEp1bmlwZXJfTmV0d29ya3MxHTAbBgNVBAsMFENlcnRp
+ZmljYXRlX0lzc3VhbmNlMRkwFwYDVQQDDBBUUE1fVHJ1c3RfQW5jaG9yAgECMAkG
+BSsOAwIaBQAwDQYJKoZIhvcNAQEBBQAEggEAEuccwCNgRmJ0aMhNgivXkAA1FkMP
+jFthj7YDFejXic3WzYT5bHiLeIQitizdLYoP1fLtSI5NyoomuFcDnSMvN8IcHPJM
+oH2gmYRfaXFxqrCTZ2Zjyzom7yljyk8rtbZ313MHvMGZiT5eWJON25tU533Sz0pd
+Kzwo7Rf0qdktZ5mC4LWxzQxgYfpVX/fQ702wTeV9YRHzLiA5IqQ2gz7Vb1VfxHP5
+QW9GKSclQxIJmZ09MmexcwplifJoAVsniwcwSB1W9tcV6R6wJUZII8mSNOaILTcA
+YsP/PArRwuEP0QUbPxJmCWoaXmGbVUI307YxtfN45gdiA0lNB11t/POLFg==
+
+------2F4FFECFDBF58543246A7A179C09B4E4--
+
