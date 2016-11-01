@@ -2320,6 +2320,17 @@ INSERT  _TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
             </list>
             </t>
           </section>
+          <section title="10 to 11">
+            <t>
+            <list style="symbols">
+              <t>fixed yang validation issues found by IETFYANGPageCompilation.
+              note: these issues were NOT found by pyang --ietf or by the
+              submission-time validator...</t>
+              <t>fixed a typo in the yang module, someone the config false statement
+              was removed.</t>
+            </list>
+            </t>
+          </section>
         </section>
     </back>
 </rfc>

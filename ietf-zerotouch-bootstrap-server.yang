@@ -47,6 +47,7 @@ module ietf-zerotouch-bootstrap-server {
 
   list device {
     key unique-id;
+    config false;
 
     description
       "A device's record entry.  This is the only RESTCONF resource
@@ -218,7 +219,7 @@ module ietf-zerotouch-bootstrap-server {
 
     leaf signature {
       type binary;
-      must "../information-type" {
+      must "../redirect-information or ../bootstrap-information" {
         description
           "An information type must be present whenever an 
            signature is present.";
@@ -487,7 +488,7 @@ module ietf-zerotouch-bootstrap-server {
             "A list of SSH host keys an NMS may use to authenticate
              a NETCONF connection to the device with.";
           list ssh-host-key {
-            when "../type = bootstrap-complete" {
+            when "../notification-type = 'bootstrap-complete'" {
               description
                 "SSH host keys are only sent when the notification
                  type is 'bootstrap-complete'.";
@@ -517,7 +518,7 @@ module ietf-zerotouch-bootstrap-server {
              authenticate a NETCONF or RESTCONF connection to the
              device with.";
           list trust-anchor {
-            when "../type = bootstrap-complete" {
+            when "../notification-type = 'bootstrap-complete'" {
               description
                 "Trust anchors are only sent when the notification
                  type is 'bootstrap-complete'.";
