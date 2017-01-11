@@ -361,44 +361,45 @@ module ietf-zerotouch-bootstrap-server {
                  contain any additional information that the
                  manufacturer thinks might be useful.";
             }
-            enum validation-error {
+            enum parsing-warning {
               description
-                "Indicates that the device had an issue validating
-                 the response from the bootstrap server.  The
+                "Indicates that the device had a non-fatal error when
+                 parsing the response from the bootstrap server.  The
                  'message' field below SHOULD indicate the specific
-                 error.  This message also indicates that the device
-                 has abandoned trying to bootstrap off this bootstrap
-                 server.";
+                 warning that occurred.";
             }
-            enum signature-validation-error {
+            enum parsing-error {
               description
-                "Indicates that the device had an issue validating the
-                 bootstrapping data.  For instance, this could be due
-                 to the device expecting signed data, but only found
-                 unsigned data, or because the ownership voucher didn't
+                "Indicates that the device encountered a fatal error
+                 when parsing the response from the bootstrap server.
+                 For instance, this could be due to malformed encoding,
+                 the device expecting signed data when only unsigned
+                 data is provided, because the ownership voucher didn't
                  include the device's unique identifier, or because the
                  signature didn't match.  The 'message' field below
-                 SHOULD indicate the specific error.  This message also
-                 indicates that the device has abandoned trying to
+                 SHOULD indicate the specific error.  This notification
+                 also indicates that the device has abandoned trying to
                  bootstrap off this bootstrap server.";
             }
-            enum image-mismatch {
+            enum boot-image-warning {
               description
-                "Indicates that the device has determined that its
-                 running image does not match the specified criteria.
-                 The 'message' field below SHOULD indicate both what
-                 image the device is currently running.";
+                "Indicates that the device encountered a non-fatal
+                 error condition when trying to install a boot-image.
+                 A possible reason might include a need to reformat a
+                 partition causing loss of data.  The 'message' field
+                 below SHOULD indicate any warning messages that were
+                 generated.";
             }
-            enum image-download-error {
+            enum boot-image-error {
               description
-                "Indicates that the device had an issue downloading
-                 the image, which could be for reasons such as a file
-                 server being unreachable to the downloaded file
-                 being the incorrect file (signature mismatch).  The
-                 'message' field about SHOULD indicate the specific
-                 error.  This message also indicates that the device
-                 has abandoned trying to bootstrap off this bootstrap
-                 server.";
+                "Indicates that the device encountered an error when 
+                 trying to install a boot-image, which could be for
+                 reasons such as a file server being unreachable,
+                 file not found, signature mismatch, etc.  The
+                 'message' field SHOULD indicate the specific error
+                 that occurred.  This notification also indicates
+                 that the device has abandoned trying to bootstrap
+                 off this bootstrap server.";
             }
             enum pre-script-warning {
               description
@@ -416,7 +417,7 @@ module ietf-zerotouch-bootstrap-server {
                  The 'message' field below SHOULD indicate both the
                  resulting exit status code, as well as capture any
                  stdout/stderr messages the script may have produced.
-                 This message also indicates that the device has 
+                 This notification also indicates that the device has 
                  abandoned trying to bootstrap off this bootstrap
                  server.";
             }
@@ -424,7 +425,7 @@ module ietf-zerotouch-bootstrap-server {
               description
                 "Indicates that the device obtained warning messages
                  when it committed the initial configuration.  The
-                 'message' field below SHOULD indicate the warning
+                 'message' field below SHOULD indicate any warning
                  messages that were generated.";
             }
             enum config-error {
@@ -432,9 +433,9 @@ module ietf-zerotouch-bootstrap-server {
                 "Indicates that the device obtained error messages
                  when it committed the initial configuration.  The
                  'message' field below SHOULD indicate the error
-                 messages that were generated.  This message also
-                 indicates that the device has abandoned trying to
-                 bootstrap off this bootstrap server.";
+                 messages that were generated.  This notification
+                 also indicates that the device has abandoned trying
+                 to bootstrap off this bootstrap server.";
             }
             enum post-script-warning {
               description
@@ -452,25 +453,27 @@ module ietf-zerotouch-bootstrap-server {
                  The 'message' field below SHOULD indicate both the
                  resulting exit status code, as well as capture any
                  stdout/stderr messages the script may have produced.
-                 This message also indicates that the device has 
+                 This notification also indicates that the device has 
                  abandoned trying to bootstrap off this bootstrap
                  server.";
             }
             enum bootstrap-complete {
               description
                 "Indicates that the device successfully processed the 
-                 all the bootstrapping data and that it is ready to
-                 be managed.  The 'message' field below MAY contain
-                 any additional information that the manufacturer 
-                 thinks might be useful.  After sending this message,
+                 all the bootstrapping data and that it is ready to be
+                 managed.  The 'message' field below MAY contain any
+                 additional information that the manufacturer thinks
+                 might be useful.  After sending this notification,
                  the device is not expected to access the bootstrap
                  server again.";
             }
             enum informational {
               description
                 "Indicates any additional information not captured by
-                 any of the other notification-type.  The 'message'
-                 field below SHOULD contain any additional information
+                 any of the other notification-type. For instance, a
+                 message indicating that the device is about to reboot
+                 after having installed a boot-image could be provided.
+                 The 'message' field below SHOULD contain information
                  that the manufacturer thinks might be useful.";
             }
           }
@@ -484,15 +487,15 @@ module ietf-zerotouch-bootstrap-server {
             "An optional human-readable value.";
         }
         container ssh-host-keys {
+          when "../notification-type = 'bootstrap-complete'" {
+            description
+              "SSH host keys are only sent when the notification
+               type is 'bootstrap-complete'.";
+          }
           description
             "A list of SSH host keys an NMS may use to authenticate
              a NETCONF connection to the device with.";
           list ssh-host-key {
-            when "../notification-type = 'bootstrap-complete'" {
-              description
-                "SSH host keys are only sent when the notification
-                 type is 'bootstrap-complete'.";
-            }
             description
               "An SSH host-key";
             leaf format {
@@ -513,16 +516,16 @@ module ietf-zerotouch-bootstrap-server {
           }
         }
         container trust-anchors {
+          when "../notification-type = 'bootstrap-complete'" {
+            description
+              "Trust anchors are only sent when the notification
+               type is 'bootstrap-complete'.";
+          }
           description
             "A list of trust anchor certificates an NMS may use to
              authenticate a NETCONF or RESTCONF connection to the
              device with.";
           list trust-anchor {
-            when "../notification-type = 'bootstrap-complete'" {
-              description
-                "Trust anchors are only sent when the notification
-                 type is 'bootstrap-complete'.";
-            }
             description
               "A list of trust anchor certificates an NMS may use to
                authenticate a NETCONF or RESTCONF connection to the

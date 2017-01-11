@@ -420,12 +420,10 @@
 
           <t>The information type artifact is YANG modeled data formally defined by the
           "information-type" choice node in <xref target="yang-module"/> and can be encoded
-          using any standard YANG encoding (e.g., XML, JSON).</t>
-
-          <!--  How this
-          node is encoded is defined by each source of bootstrapping data defined in
-          <xref target="sources"/>.</t>-->
-
+          using any standard YANG encoding (e.g., XML, JSON).  This artifact is formatted
+          the same as if returned by a RESTCONF server for an HTTP GET request for the
+          specific information-type resource.  Examples of this artifact's encoding are
+          provided in <xref target="artifact-examples"/>.</t>
         </section>
 
         <section title="Signature" anchor="signature">
@@ -2140,25 +2138,26 @@ Server: example-server
 
           <t>This section presents examples for how the 'information type' artifact
           (<xref target="information-type"/>) can be encoded into a document that
-          can be distributed outside the bootstrap server's RESETCONF API.  The
-          encoding for these artifacts is the same as if an HTTP GET request had
-          been sent to the RESTCONF URL for the specific resource.</t>
+          can be distributed outside the bootstrap server's RESTCONF API.</t>
+
+          <t>The inforamtion type artifact is encoded the same as if returned by a
+          RESTCONF server for an HTTP GET request for the specific information-type
+          resource.</t>
 
           <t>These examples show the bootstrap information containing
           configuration from the YANG modules in <xref target="RFC7317"/> and 
           <xref target="draft-ietf-netconf-server-model"/>.</t>
           <!-- KENT FIXME: examples should use new server-model YANG! -->
 
-          <t>Only examples for information type artifact are provided as the
-          other five artifacts in <xref target="artifacts"/> have their own
-          encodings.</t>
+          <t>Only examples for the information type artifact are provided, as the
+          other five artifacts in <xref target="artifacts"/> have binary encodings.</t>
 
           <section title="Redirect Information" anchor="art-ex-1">
             <t>The following example illustrates how redirect information can be encoded
             into an artifact.</t>
             <figure>
               <artwork><![CDATA[
-INSERT  _TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
 ]]></artwork>
             </figure>
           </section>
@@ -2168,7 +2167,7 @@ INSERT  _TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
             into an artifact.</t>
             <figure>
               <artwork><![CDATA[
-INSERT  _TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
 ]]></artwork>
             </figure>
           </section>
@@ -2328,6 +2327,23 @@ INSERT  _TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
               submission-time validator...</t>
               <t>fixed a typo in the yang module, someone the config false statement
               was removed.</t>
+            </list>
+            </t>
+          </section>
+          <section title="11 to 12">
+            <t>
+            <list style="symbols">
+              <t>fixed typo that prevented Appendix B from loading the
+              examples correctly.</t>
+              <t>fixed more yang validation issues found by 
+              IETFYANGPageCompilation.  note: again, these issues were
+              NOT found by pyang --ietf or by the submission-time
+              validator...</t>
+              <t>updated a few of the notification enumerations to be
+              more consistent with the other enumerations (following the
+              warning/error pattern).</t>
+              <t>updated the information-type artifact to state how it's
+              encoded, matching the language that was in Appendix B.</t>
             </list>
             </t>
           </section>
