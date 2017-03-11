@@ -6,12 +6,9 @@
     <name>
       boot-image-v3.2R1.6.img
     </name>
-    <md5>
-      SomeMD5String
-    </md5>
-    <sha1>
-      SomeSha1String
-    </sha1>
+    <sha256>
+      SomeSha256String
+    </sha256>
     <uri>
       file:///some/path/to/raw/file
     </uri>
