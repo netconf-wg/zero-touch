@@ -737,7 +737,7 @@ List of artifacts included in this grouping:
           provisionally (e.g., unsigned redirect information).</t>
 
           <t>From an artifact perspective, since a removable storage device presents
-          itself as a file-system, the bootstrapping artifacts need to be presented
+          itself as a filesystem, the bootstrapping artifacts need to be presented
           as files.  The six artifacts defined in <xref target="artifacts"/> are
           mapped to files below.</t>
 
@@ -1567,7 +1567,7 @@ List of artifacts included in this grouping:
           <xref target="tree-diagram"/>.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-tree.txt)
 ]]></artwork>
           </figure>
           <t>In the above diagram, notice that all of the protocol accessible nodes are read-only,
@@ -1610,9 +1610,9 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
           <xref target="draft-kwatsen-netconf-voucher"/>.</t>
           <figure>
             <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
+<CODE BEGINS> file "ietf-zerotouch@YYYY-MM-DD.yang"
 
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
+INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
 
 <CODE ENDS>
 
@@ -1762,7 +1762,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>
             <figure>
                 <artwork><![CDATA[
-   URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
+   URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch
    Registrant Contact: The NETCONF WG of the IETF.
    XML: N/A, the requested URI is an XML namespace.
 ]]></artwork>
@@ -1777,9 +1777,9 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>
             <figure>
                 <artwork><![CDATA[
-   name:         ietf-zerotouch-bootstrap-server
-   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
-   prefix:       ztbs
+   name:         ietf-zerotouch
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch
+   prefix:       zt
    reference:    RFC XXXX
 ]]></artwork>
           </figure>
@@ -1964,7 +1964,7 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+GET https://example.com/restconf/data/ietf-zerotouch:\
 device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
@@ -1997,7 +1997,7 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+GET https://example.com/restconf/data/ietf-zerotouch:\
 device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
@@ -2029,7 +2029,7 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+GET https://example.com/restconf/data/ietf-zerotouch:\
 device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
@@ -2063,7 +2063,7 @@ REQUEST
 
 ['\' line wrapping added for formatting only]
 
-GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+GET https://example.com/restconf/data/ietf-zerotouch:\
 device=123456 HTTP/1.1
 HOST: example.com
 Accept: application/yang.data+xml
@@ -2115,7 +2115,7 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-POST https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+POST https://example.com/restconf/data/ietf-zerotouch:\
 device=123456/notification HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml

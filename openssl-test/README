@@ -1,0 +1,39 @@
+
+The purpose of this test is to validate the "removable storage" solution
+described in the draft from end-to-end using the OpenSSL library.
+
+The removable storage solution is used an the test case only because it
+if file based, which simplifies script development.
+
+Highlights of the test includes:
+  - generating a PKI for IDevID certificates
+  - generating a PKI for Owner Certificates
+  - generating a PKI for Ownership Vouchers
+  - simulating an owner staging bootstrapping data onto a storage device
+  - simulating a device processing the staged boostrapping data
+     - when not asserting revocation status
+     - when asserting revocation status
+        - and nothing is revoked
+        - and something is revoked
+
+Directory structure:
++-- openssl-test
+  +-- vendor
+  | +-- idevid-certificate-pki
+  | | +-- trust-anchor-ca
+  | | +-- intermeditate-ca      // signs IDevID CSRs (see 'device' dir)
+  | +-- ownership-voucher-pki
+  |   +-- trust-anchor-ca
+  |   +-- intermeditate-ca      // signs Voucher VSRs (see 'device' dir)
+  +-- 3rd-party-ca
+  | +-- owner-certificate-pki
+  |   +-- trust-anchor-ca
+  |   +-- intermeditate-ca      // signs Owner Cert CSRs (see 'owner' dir)
+  +-- device
+  | +-- idevid-certificate
+  | +-- ownership-voucher
+  +-- owner
+    +-- bootstrap-server-pki    // not used, but here on purpose
+    +-- owner-certificate
+    +-- removable-storage-device
+

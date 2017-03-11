@@ -1,7 +1,7 @@
 <!-- '\' line wrapping added for formatting purposes only -->
 
 <device
-   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch">
   <unique-id>123456789</unique-id>
   <bootstrap-information>
     <boot-image>

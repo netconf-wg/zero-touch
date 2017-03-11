@@ -1,0 +1,10 @@
+PKI hierarchy has two levels of intermedites CA so as to better
+excercise the voucher and voucher revocation operations.
+
+trust-anchor
+  ^
+  |
+intermediate1
+  ^
+  |
+intermediate2   // this CA signs vouchers and voucher revocation artificates

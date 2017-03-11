@@ -1,0 +1,8 @@
+<redirect-information
+   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+  <bootstrap-server>
+    <address>redirect.example.com</address>
+    <port>8443</port>
+    <trust-anchor>BOOSTRAP_SERVER_TRUST_ANCHOR</trust-anchor>
+  </bootstrap-server> 
+</redirect-information>

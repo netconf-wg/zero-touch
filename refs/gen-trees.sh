@@ -1,1 +1,1 @@
-pyang -f tree ../ietf-zerotouch-bootstrap-server\@*.yang > ietf-zerotouch-bootstrap-server-tree.txt 
+pyang -f tree ../ietf-zerotouch\@*.yang > ietf-zerotouch-tree.txt 

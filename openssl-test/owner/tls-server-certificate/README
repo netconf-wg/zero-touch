@@ -1,0 +1,11 @@
+
+This directory for the PKI for the owner's bootstrap server, that
+is, for it's TLS server certificate.  This trusted certificate of
+which goes into the <redirect-information> artifact.
+
+While the removable storage device test does not (yet) establish
+a TLS connection, and thus any base64 blob could be used, doing 
+it this way is more reaslistic and underscores that the bootstrap
+server's TLS certificate is distinctly different than the owner
+certificate.
+

@@ -1,0 +1,11 @@
+<voucher-revocation
+   xmlns="urn:ietf:params:xml:ns:yang:ietf-voucher-revocation">
+  <revocation-type>issuer-wide</revocation-type>
+  <created-on>CURRENT_DATE</created-on>
+  <expires-on>EXPIRATION_DATE</expires-on>
+  <issuer-wide>
+    <blacklist>
+      LIST_OF_REVOKED_VOUCHER_IDS
+    </blacklist>
+  </issuer-wide>
+</voucher-revocation>
