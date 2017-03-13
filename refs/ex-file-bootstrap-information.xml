@@ -1,17 +1,11 @@
-<!-- '\' line wrapping added for formatting purposes only -->
+<-- '\' line wrapping added for formatting purposes only -->
 
 <bootstrap-information
-   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
   <boot-image>
-    <name>
-      boot-image-v3.2R1.6.img
-    </name>
-    <sha256>
-      SomeSha256String
-    </sha256>
-    <uri>
-      file:///some/path/to/raw/file
-    </uri>
+    <name>boot-image-v3.2R1.6.img</name>
+    <sha256>Hex-encoded SHA256 hash</sha256>
+    <uri>file:///some/path/to/raw/file </uri>
   </boot-image>
   <configuration-handling>merge</configuration-handling>
   <configuration>
@@ -38,7 +32,7 @@
     <netconf-server
       xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-server">
       <call-home>
-        <application>
+        <netconf-client>
           <name>config-mgr</name>
           <ssh>
             <endpoints>
@@ -52,10 +46,27 @@
               </endpoint>
             </endpoints>
             <host-keys>
-              <host-key>my-call-home-x509-key</host-key>
+              <host-key>
+                <name>certificate</name>
+                <certificate>builtin-idevid-cert</certificate>
+              </host-key>
             </host-keys>
+            <client-cert-auth>
+              <trusted-ca-certs>deployment-specific-ca-certs</trusted-ca-certs>
+              <trusted-client-certs>explicitly-trusted-client-certs</trusted-client-certs>
+            </client-cert-auth>
           </ssh>
-        </application>
+          <connection-type>
+            <periodic>
+              <idle-timeout>300</idle-timeout>
+              <reconnect-timeout>60</reconnect-timeout>
+            </periodic>
+          </connection-type>
+          <reconnect-strategy>
+            <start-with>last-connected</start-with>
+            <max-attempts>3</max-attempts>
+          </reconnect-strategy>
+        </netconf-client>
       </call-home>
     </netconf-server>
   </configuration>

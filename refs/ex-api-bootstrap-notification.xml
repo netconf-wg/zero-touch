@@ -1,33 +1,17 @@
 <!-- '\' line wrapping added for formatting purposes only -->
 
 <input
-   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
   <notification-type>bootstrap-complete</notification-type>
   <message>example message</message>
   <ssh-host-keys>
     <ssh-host-key>
       <format>ssh-rsa</format>
-      <key-data>
-       AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRCjCzfve2m6\
-       zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2MwjE1lG9YxL\
-       zeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcCWAw1lOr\
-       9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5vg7SLq\
-       QFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWqEIuA7\
-       LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6gakW\
-       VOZZgQ8929uWjCWlGlqn2mPibp2Go1
-      </key-data>
+      <key-data>Base64-encoded SSH RSA Public Key</key-data>
     </ssh-host-key>
     <ssh-host-key>
       <format>ssh-dsa</format>
-      <key-data>
-       zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2MwjE1lG9YxL\
-       zeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcCWAw1lOr\
-       9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5vg7SLq\
-       AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRCjCzfve2m6\
-       QFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWqEIuA7\
-       LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6gakW\
-       VOZZgQ8929uWjCWlGlqn2mPibp2Go1
-      </key-data>
+      <key-data>Base64-encoded SSH DSA Public Key</key-data>
     </ssh-host-key>
   </ssh-host-keys>
   <trust-anchors>
@@ -38,22 +22,7 @@
       <protocol>netconf-ch-ssh</protocol>
       <protocol>netconf-ch-tls</protocol>
       <protocol>restconf-ch-tls</protocol>
-      <certificate>
-        WmdsK2gyTTg3QmtGMjhWbW1CdFFVaWc3OEgrRkYyRTFwdSt4ZVRJbVFFM\
-        lLQllsdWpOcjFTMnRLR05EMUc2OVJpK2FWNGw2NTdZNCtadVJMZgpRYjk\
-        zSFNwSDdwVXBCYnA4dmtNanFtZjJma3RqZHBxeFppUUtTbndWZTF2Zwot\
-        NGcEk3UE90cnNFVjRwTUNBd0VBQWFPQ0FSSXdnZ0VPCk1CMEdBMVVkRGd\
-        VEJiZ0JTWEdlbUEKMnhpRHVOTVkvVHFLNWd4cFJBZ1ZOYUU0cERZd05ER\
-        V6QVJCZ05WQkFNVENrTlNUQ0JKYzNOMVpYS0NDUUNVRHBNSll6UG8zREF\
-        NQmdOVkhSTUJBZjhFCkFqQUFNQTRHQTFVZER3RUIvd1FFQXdJSGdEQnBC\
-        Z05WSFI4RVlqQmdNRjZnSXFBZ2hoNW9kSFJ3T2k4dlpYaGgKYlhCc1pTN\
-        WpiMjB2WlhoaGJYQnNaUzVqY215aU9LUTJNRFF4Q3pBSkJnTlZCQVlUQW\
-        QmdOVkJBWVRBbFZUTVJBd0RnWURWUVFLRXdkbAplR0Z0Y0d4bE1RNHdEQ\
-        MkF6a3hqUDlVQWtHR0dvS1U1eUc1SVR0Wm0vK3B0R2FieXVDMjBRd2kvZ\
-        25PZnpZNEhONApXY0pTaUpZK2xtYWs3RTRORUZXZS9RdGp4NUlXZmdvN2\
-        RJSUJQFRStS0Cg==
-      </certificate>
+      <certificate>Base64-encoded X.509</certificate>
     </trust-anchor>
   </trust-anchors>
-
 </input>

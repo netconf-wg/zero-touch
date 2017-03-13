@@ -1,25 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
-<!ENTITY rfc1035 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml">
-<!ENTITY rfc1951 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1951.xml">
-<!ENTITY rfc2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
-<!ENTITY rfc2315 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2315.xml">
-<!ENTITY rfc2782 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2782.xml">
-<!ENTITY rfc2939 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2939.xml">
-<!ENTITY rfc3688 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3688.xml">
-<!ENTITY rfc5280 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml">
-<!ENTITY rfc6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
-<!ENTITY rfc6125 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6125.xml">
-<!ENTITY rfc6241 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml">
-<!ENTITY rfc6698 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6698.xml">
-<!ENTITY rfc6762 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6762.xml">
-<!ENTITY rfc6763 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6763.xml">
-<!ENTITY rfc6234 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6234.xml">
-<!ENTITY rfc6991 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6991.xml">
-<!ENTITY rfc7317 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7317.xml">
-<!ENTITY rfc7468 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7468.xml">
-]>
-
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes" ?>
@@ -71,10 +51,8 @@
           the Normative References section, as well as in body text throughout.
           Please update the following references to reflect their final RFC assignments:
             <list style="symbols">
-              <t>draft-ietf-netconf-call-home</t>
-              <t>draft-ietf-netconf-restconf</t>
-              <t>draft-ieft-netconf-server-model</t>
-              <t>draft-ietf-anima-bootstrapping-keyinfra</t>
+              <t>I-D.ieft-netconf-netconf-client-server</t>
+              <t>I-D.ietf-anima-bootstrapping-keyinfra</t>
             </list>
           </t>
           <t>Artwork in this document contains shorthand references to drafts in
@@ -110,13 +88,13 @@
         securely obtain bootstrapping data with no installer input, beyond
         physical placement and connecting network and power cables.  The ultimate
         goal of this document is to enable a secure NETCONF <xref target="RFC6241"/>
-        or RESTCONF <xref target="draft-ietf-netconf-restconf"/> connection
+        or RESTCONF <xref target="RFC8040"/> connection
         to the deployment specific network management system (NMS).</t>
 
         <section title="Use Cases" anchor="use-cases">
           <t>
             <list style="symbols">
-              <t>Connecting to a remotely administered network
+              <t>Device connecting to a remotely administered network
                 <list style="empty">
                   <t>This use-case involves scenarios, such as a remote branch office
                   or convenience store, whereby a device connects as an access gateway
@@ -126,7 +104,7 @@
                   out to an Internet-based bootstrap server to bootstrap off of.</t>
                 </list>
               </t>
-              <t>Connecting to a locally administered network
+              <t>Device connecting to a locally administered network
                 <list style="empty">
                   <t>This use-case covers all other scenarios and differs only in that
                   the device may additionally leverage nearby devices, which may direct
@@ -150,7 +128,7 @@
             <list style="hanging" hangIndent="4">
 
               <t hangText="Artifact:">The term "artifact" is used throughout to represent the
-              any of the six artifacts defined in <xref target="artifacts"/>.  These artifacts
+              any of the three artifacts defined in <xref target="artifacts"/>.  These artifacts
               collectively provide all the bootstrapping data a device needs.</t>
 
               <t hangText="Bootstrapping Data:">The term "bootstrapping data" is used
@@ -208,7 +186,7 @@
               device's rightful owner's private key.</t>
 
               <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
-              either redirect rnformation or bootstrap information that has not been signed by
+              either redirect information or bootstrap information that has not been signed by
               a device's rightful owner's private key.</t>
             </list>
           </t>
@@ -297,17 +275,15 @@
           its rightful owner provided the data by verifying the signature over the data
           using an additional artifact defined within this document, the ownership voucher.
           With this approach, ownership is conveyed by the manufacturer (or delegate)
-          taking the onus of ensuring that the ownership vouchers it issues are accurate and,
-          in some cases, also ensuring timely voucher revocations
-          (<xref target="voucher-revocation"/>).</t>
+          taking the onus of ensuring that the ownership vouchers it issues are accurate.</t>
         </section>
       </section>   <!-- end guiding principles -->
 
-      <section title="Types of Information" anchor="types-of-information">
+      <section title="Types of Zero Touch Information" anchor="types-of-information">
 
-        <t>This document defines two types of information, redirect information
-        and bootstrap information, that devices access during the bootstrapping
-        process.  These two types of information are described in this section.</t>
+        <t>This document defines two types of information that devices access during
+        the bootstrapping process.  These information types are described in
+        this section.</t>
 
         <section title="Redirect Information" anchor="redirect-information">
           <t>Redirect information provides information to redirect
@@ -317,7 +293,7 @@
 
           <t>Redirect information is YANG modeled data formally defined by the
           "redirect-information" grouping in the YANG module presented in
-          <xref target="yang-module"/>.  This grouping has the tree diagram 
+          <xref target="info-yang-module"/>.  This grouping has the tree diagram 
           shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
           
@@ -370,7 +346,7 @@
 
           <t>Bootstrap information is YANG modeled data formally defined by the
           "bootstrap-information" grouping in the YANG module presented in
-          <xref target="yang-module"/>.  This grouping has the tree diagram 
+          <xref target="info-yang-module"/>.  This grouping has the tree diagram 
           shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
 
@@ -407,77 +383,48 @@
 
       <section title="Artifacts" anchor="artifacts">
 
-        <t>This document defines six artifacts that can be made 
+        <t>This document defines three artifacts that can be made 
         available to devices while they are bootstrapping.  As will be
         seen in <xref target="sources"/>, each source of bootstrapping
         information specifies a means for providing each of the artifacts
         defined in this section.</t>
 
-        <section title="Information Type" anchor="information-type">
-          <t>The information type artifact encodes the essential bootstrapping data
-          for the device.  This artifact is used to encode the redirect information and
-          bootstrap information types discussed in <xref target="types-of-information"/>.</t>
+        <section title="Zero Touch Information" anchor="zerotouch-information">
+          <t>The information artifact encodes the essential bootstrapping
+          data for the device.  This artifact is used to encode the redirect
+          information and bootstrap information types discussed in <xref
+          target="types-of-information"/>.</t>
 
-          <t>The information type artifact is YANG modeled data formally defined by the
-          "information-type" choice node in <xref target="yang-module"/> and can be encoded
-          using any standard YANG encoding (e.g., XML, JSON).  This artifact is formatted
-          the same as if returned by a RESTCONF server for an HTTP GET request for the
-          specific information-type resource.  Examples of this artifact's encoding are
-          provided in <xref target="artifact-examples"/>.</t>
-        </section>
+          <t>The information artifact is a PKCS#7 SignedData structure, as
+          specified by Section 9.1 of <xref target="RFC2315"/>, encoded
+          using ASN.1 distinguished encoding rules (DER), as specified
+          in ITU-T X.690.</t>
 
-        <section title="Signature" anchor="signature">
-          <t>The signature artifact is used by a device to verify that an information type
-          artifact was created by the device's rightful owner.  The signature is generated
-          using the owner's private key over the information-type artifact, in whatever encoding
-          it is presented in (e.g., XML, JSON, etc.).  How signed data is validated is formally
-          described in <xref target="validating-signed-data"/>.</t>
+          <t>Regardless how the information artifact is conveyed, the 
+          PKCS#7 structure MUST contain JSON-encoded content conforming to
+          the YANG module specified in <xref target="info-yang-module"/>.</t>
 
-          <t>The signature artifact is formally a PKCS#7 SignedData structure as specified by
-          Section 9.1 of <xref target="RFC2315"/>, containing just the signature (no content,
-          certificates, or CRLs), encoded using ASN.1 distinguished encoding rules (DER),
-          as specified in ITU-T X.690.</t>
-
-          <!--How the ASN.1 SignedData structure is encoded (e.g., DER, PEM)
-          is specified by each source of bootstrapping data in <xref target="sources"/>.</t>
-          -->
-        </section>
-
-        <section title="Ownership Voucher" anchor="ownership-voucher">
-          <t>The ownership voucher is used to securely identify a device's owner, as it
-          is known to the manufacturer.  The ownership voucher is signed by the device's
-          manufacturer or delegate.</t>
-
-          <t>The ownership voucher is used by a device to verify the owner certificate
-          (<xref target="owner-certificate"/>) that the device SHOULD have also received,
-          as described in <xref target="artifact-groupings"/>.  In particular, the
-          device verifies that owner certificate's chain of trust includes the trusted
-          certificate included in the voucher, and also verifies that the owner certificate
-          contains an identifier matching the one specified in the voucher.</t>
-
-          <t>In order to validate the voucher, a device MUST verify that the voucher was
-          signed by the private key associated with a trusted certificate known to the
-          device in its factory default state, as described in <xref target="factory-defaults"/>,
-          and the device MUST verify that the voucher's expression for the devices that
-          it applies to includes the device's unique identifier (e.g., serial number) and,
-          for devices that insist on verifying voucher revocation status, the device MUST
-          verify that the voucher has neither expired nor been revoked.</t>
-
-          <t>The ownership voucher artifact, including its encoding, is formally defined
-          in <xref target="draft-kwatsen-netconf-voucher"/>.</t>
+          <t>When the information artifact is conveyed over an untrusted
+          transport (<xref target="conveying-trust"/>), the PKCS#7 structure
+          structure  MUST also contain a 'signerInfo' structure, as described
+          in Section 9.1 of <xref target="RFC2315"/>, containing a signature
+          generated over the content using the private key associated with
+          the owner certificate (<xref target="owner-certificate"/>).</t>
         </section>
 
         <section title="Owner Certificate" anchor="owner-certificate">
           <t>The owner certificate artifact is a certificate that is used to
           identify an 'owner' (e.g., an organization), as known to a trusted certificate
-          authority.  The owner certificate is signed by the trusted certificate
-          authority.</t>
+          authority.  The owner certificate is signed by a trusted certificate
+          authority (CA), whose certificate is placed into the ownership voucher
+          (<xref target="ownership-voucher"/>).</t>
 
-          <t>The owner certificate is used by a device to verify the signature artifact
-          (<xref target="signature"/>) that the device SHOULD have also received,
-          as described in <xref target="artifact-groupings"/>.  In particular, the
-          device verifies signature using the public key in the owner certificate
-          over the information type artifact (<xref target="information-type"/>).</t>
+          <t>The owner certificate is used by a device to verify the signature 
+          attached to the information artifact (<xref target="zerotouch-information"/>)
+          that the device SHOULD have also received, as described in 
+          <xref target="artifact-groupings"/>.  In particular, the device verifies
+          signature using the public key in the owner certificate over the content
+          contained within the information artifact.</t>
 
           <t>In order to validate the owner certificate, a device MUST verify
           that the owner certificate's certificate chain includes the certificate
@@ -489,68 +436,22 @@
           revocation status, the device MUST verify that the certificate has
           neither expired nor been revoked.</t>
 
-          <t>The owner certificate artifact is formally an unsigned PKCS #7 SignedData
-          structure as specified by RFC 2315 <xref target="RFC2315"/>, Section 9.1,
-          containing just certificates (no content, signatures, or CRLs), encoded
-          using ASN.1 distinguished encoding rules (DER), as specified in ITU-T X.690.</t>
+          <t>The owner certificate artifact is formally an unsigned PKCS #7 
+          SignedData structure as specified by Section 9.1 in <xref target="RFC2315"/>,
+          encoded using ASN.1 distinguished encoding rules (DER), as 
+          specified in ITU-T X.690.</t>
 
-          <t>The owner certificate artifact contains, in order, the owner certificate
-          itself and all intermediate certificates leading up to a trust anchor
-          certificate.  The owner certificate MAY optionally include the trust
-          anchor certificate.</t>
+          <t>The owner certificate artifact MUST contain the owner certificate
+          itself and all intermediate certificates leading up to the trust
+          anchor certificate specified in the ownership voucher.  The owner
+          certificate artifact MAY optionally include the trust anchor
+          certificate.</t>
 
-        </section>
+          <t>Additionally, if needed by the device, the owner certificate
+          artifact MAY also contain suitably fresh CRLs <xref target="RFC5280"/>
+          and/or OCSP Responses <xref target="RFC6960"/>.</t>
 
-        <section title="Voucher Revocation" anchor="voucher-revocation">
-
-          <t>The voucher revocation artifact is used to verify the revocation status
-          of vouchers.  Voucher revocations are signed by the manufacturer or delegate
-          (i.e. the issuer of the voucher).</t>
-
-          <t>Voucher revocations are generally needed when it is critical
-          for devices to know that assurances implied at the time the voucher was
-          signed are still valid at the time the voucher is being processed.</t>
-  
-          <t>The need for devices to insist on verifying voucher revocation status
-          is a decision for each manufacturer.  If voucher revocation status verification
-          is not asserted, then the ownership vouchers are essentially forever, which
-          may be acceptable for various kinds of devices.  If revocations are supported,
-          then it becomes possible to support various scenarios such as handling a key
-          compromise or change in ownership.</t>
-
-          <t>If voucher revocations are supported, devices MAY dynamically obtain the
-          voucher revocation artifact (or equivalents) from an Internet based resource.
-          If the access to the Internet based resource is sufficiently reliable, then
-          there may not be a need for the voucher revocation artifact to be supplied
-          by any other means (e.g., <xref target="sources"/>).  However, since the
-          access may not be sufficiently reliable, support for this artifact is
-          defined herein.</t>
-
-          <t>The voucher revocation artifact is used by a device to verify the
-          ownership voucher (<xref target="ownership-voucher"/>) that the device
-          SHOULD have also received, as described in <xref target="artifact-groupings"/>.
-          In particular, the device verifies that the voucher revocation explicitly
-          states either that the given voucher is valid or that it is not invalid.</t>
-
-          <t>In order to validate a voucher revocation artifact, a device MUST verify that
-          it was signed by a private key associated with a trusted certificate known
-          to the device in its factory default state, as described in
-          <xref target="factory-defaults"/>, and the device MUST verify that the voucher
-          revocation hasn't expired, and the device SHOULD verify that the revocation is
-          sufficiently fresh, per local policy.</t>
-
-          <t>The voucher revocation artifact, including its encoding, is formally defined
-          in <xref target="draft-kwatsen-netconf-voucher"/>.</t>
-
-        </section>
-
-        <section title="Certificate Revocation" anchor="certificate-revocation">
-
-          <t>The certificate revocation artifact is a list of CRLS used to verify
-          the revocation status of owner certificates.  Certificate revocations
-          are signed by the certificate authority (or delegate) that issued the
-          owner certificate.</t>
-
+<!--
           <t>Certificate revocations are generally needed when it is critical
           for devices to know that assurances implied at the time the certificate was
           signed are still valid at the time the certificate is being processed.</t>
@@ -591,8 +492,33 @@
           <t>The certificate revocation artifact contains, in order, the CRL for
           the owner certificate itself and the CRLs for all intermediate certificates
           leading up to but not including a trust anchor certificate.</t>
-
+-->
         </section>
+
+        <section title="Ownership Voucher" anchor="ownership-voucher">
+          <t>The ownership voucher artifact is used to securely identify a device's
+          owner, as it is known to the manufacturer.  The ownership voucher is signed
+          by the device's manufacturer or delegate.</t>
+
+          <t>The ownership voucher is used by a device to verify the owner certificate
+          (<xref target="owner-certificate"/>) that the device SHOULD have also received,
+          as described in <xref target="artifact-groupings"/>.  In particular, the
+          device verifies that the owner certificate's chain of trust includes the
+          trusted certificate included in the voucher, and the device also verifies
+          that the owner certificate contains an identifier matching the one specified
+          in the voucher.</t>
+
+          <t>In order to validate the voucher, a device MUST verify that the voucher was
+          signed by the private key associated with a trusted certificate known to the
+          device in its factory default state, as described in <xref target="factory-defaults"/>,
+          and the device MUST verify that the voucher includes the device's unique
+          identifier (e.g., serial number) and, if the voucher contains an expiration
+          date, the device MUST also verify that the voucher has not expired.</t>
+
+          <t>The ownership voucher artifact, including its encoding, is formally defined
+          in <xref target="I-D.ietf-anima-voucher"/>.</t>
+        </section>
+
       </section>
 
       <section title="Artifact Groupings" anchor="artifact-groupings">
@@ -605,27 +531,26 @@
 
         <section title="Unsigned Information" anchor="unsigned-information">
           <t>The first grouping of artifacts is for unsigned information.  That is,
-          when the information type artifact (<xref target="information-type"/>)
+          when the information artifact (<xref target="zerotouch-information"/>)
           has not been signed.</t>
           <t>Unsigned information is useful for cases when transport level security
           can be used to convey trust (e.g., HTTPS), or when the information can be 
           processed in a provisional manner (i.e. unsigned redirect information).</t>
           <t>Conveying unsigned information entails communicating just one of the
-          six artifacts listed in <xref target="artifacts"/>, namely the information
-          type artifact.</t>
+          three artifacts listed in <xref target="artifacts"/> as follows:</t>
           <t>
             <figure>
               <artwork><![CDATA[
 List of artifacts included in this grouping:
-  - information type
+  - zero touch information (with no embedded signature)
 ]]></artwork>
             </figure>
           </t>
         </section>
 
         <section title="Signed Information (without Revocations)" anchor="signed-information-without">
-          <t>The second grouping of artifacts is for when the information type artifact
-          (<xref target="information-type"/>) has been signed, without any revocation
+          <t>The second grouping of artifacts is for when the information artifact
+          (<xref target="zerotouch-information"/>) has been signed, without any revocation
           information.</t>
           <t>Signed information is needed when the information is obtained
           from an untrusted source of bootstrapping data (<xref target="sources"/>) and
@@ -637,23 +562,23 @@ List of artifacts included in this grouping:
           device does not have a reliable clock, and therefore the manufacturer decides
           to never revoke information (e.g., ownership assignments are forever).</t>
           <t>Conveying signed information without revocation information entails
-          communicating four of the six artifacts listed in <xref target="artifacts"/>.</t>
+          communicating all three of the artifacts listed in <xref target="artifacts"/>
+          as follows:</t>
           <t>
             <figure>
               <artwork><![CDATA[
 List of artifacts included in this grouping:
-  - information type
-  - signature
+  - zero touch information (with an embedded signature)
+  - owner certificate      (with no revocation structures)
   - ownership voucher
-  - owner certificate
 ]]></artwork>
             </figure>
           </t>
         </section>
 
         <section title="Signed Information (with Revocations)" anchor="signed-information-with">
-          <t>The third grouping of artifacts is for when the information type artifact
-          (<xref target="information-type"/>) has been signed and also includes revocation
+          <t>The third grouping of artifacts is for when the information artifact
+          (<xref target="zerotouch-information"/>) has been signed and also includes revocation
           information.</t>
           <t>Signed information, as described above, is needed when the information is
           obtained from an untrusted source of bootstrapping data (<xref target="sources"/>)
@@ -664,17 +589,15 @@ List of artifacts included in this grouping:
           a private network and therefore unable to obtain the revocation information
           from Internet based resources.</t>
           <t>Conveying signed information with revocation information entails
-          communicating all six of the artifacts listed in <xref target="artifacts"/>.</t>
+          communicating all three of the artifacts listed in <xref target="artifacts"/>
+          as follows:</t>
           <t>
             <figure>
               <artwork><![CDATA[
 List of artifacts included in this grouping:
-  - information type
-  - signature
+  - zero touch information (with an embedded signature)
+  - owner certificate      (with revocation structures)
   - ownership voucher
-  - owner certificate
-  - voucher revocations
-  - certificate revocations
 ]]></artwork>
             </figure>
           </t>
@@ -715,7 +638,7 @@ List of artifacts included in this grouping:
 -->
  
         <t>For each source defined in this section, details are given for how each
-        of the six artifacts listed in <xref target="artifacts"/> is provided.</t>
+        of the three artifacts listed in <xref target="artifacts"/> is provided.</t>
 
         <section title="Removable Storage" anchor="removable-storage">
           <t>A directly attached removable storage device (e.g., a USB flash drive)
@@ -738,33 +661,25 @@ List of artifacts included in this grouping:
 
           <t>From an artifact perspective, since a removable storage device presents
           itself as a filesystem, the bootstrapping artifacts need to be presented
-          as files.  The six artifacts defined in <xref target="artifacts"/> are
+          as files.  The three artifacts defined in <xref target="artifacts"/> are
           mapped to files below.</t>
 
           <t>Artifact to File Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information Type:">Mapped to a file containing 
-              a standard YANG encoding for the YANG modeled data described in 
-              <xref target="information-type"/>.  A filenaming convention SHOULD
-              be used to indicate data encoding (e.g., boot-info.[xml|json]).</t>
-              <t hangText="   Signature:">Mapped to a file containing the binary
-              artifact described in <xref target="signature"/>.</t>
-              <t hangText="   Ownership Voucher:">Mapped to a file containing the
-              binary artifact described in <xref target="ownership-voucher"/>.</t>
+              <t hangText="   Information:">Mapped to a file containing 
+              the binary artifact described in <xref target="zerotouch-information"/>.</t>
               <t hangText="   Owner Certificate:">Mapped to a file containing the
               binary artifact described in <xref target="owner-certificate"/>.</t>
-              <t hangText="   Voucher Revocation:">Mapped to a file containing the
-              binary artifact described in <xref target="voucher-revocation"/>.</t>
-              <t hangText="   Certificate Revocation:">Mapped to a file containing
-              binary artifact described in <xref target="certificate-revocation"/>.</t>
+              <t hangText="   Ownership Voucher:">Mapped to a file containing the
+              binary artifact described in <xref target="ownership-voucher"/>.</t>
             </list>
           </t>
           <t>The format of the removable storage device's filesystem and the naming of the
           files are outside the scope of this document.  However, in order to facilitate
           interoperability, it is RECOMMENDED devices support open and/or standards based
-          filesystems.  It is also RECOMMENDED that devices assume a filenaming convention
+          filesystems.  It is also RECOMMENDED that devices assume a file naming convention
           that enables more than one instance of bootstrapping data to exist on a removable
-          storage device.  The filenaming convention SHOULD be unique to the manufacturer,
+          storage device.  The file naming convention SHOULD be unique to the manufacturer,
           in order to enable bootstrapping data from multiple manufacturers to exist on a
           removable storage device.</t>
         </section>
@@ -791,37 +706,27 @@ List of artifacts included in this grouping:
 
           <t>From an artifact perspective, since a DNS server presents resource records
           (Section 3.2.1 of <xref target="RFC1035"/>), the bootstrapping artifacts need
-          to be presented as resource records.  The six artifacts defined in 
+          to be presented as resource records.  The three artifacts defined in 
           <xref target="artifacts"/> are mapped to resource records below.</t>
 
           <t>Artifact to Resource Record Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information Type:">Mapped to a TXT record called "info-type"
-              containing a standard YANG encoding for the YANG modeled data described in 
-              <xref target="information-type"/>.  Note: no additional field is provided
-              to specify the encoding.</t>
-              <t hangText="   Signature:">Mapped to a TXT record called "sig" containing
-              the base64-encoding of the binary artifact described in
-              <xref target="signature"/>.</t>
-              <t hangText="   Ownership Voucher:">Mapped to a TXT record called
-              "voucher" containing the base64-encoding of the binary artifact
-              described in <xref target="ownership-voucher"/>.</t>
+              <t hangText="   Information:">Mapped to a TXT record called "zt-info"
+              containing the base64-encoding of the binary artifact described in
+              <xref target="zerotouch-information"/>.</t>
               <t hangText="   Owner Certificate:">Mapped to a TXT record called
-              "cert" containing the base64-encoding of the binary artifact described
-              in <xref target="owner-certificate"/>.</t>
-              <t hangText="   Voucher Revocation:">Mapped to a TXT record
-              called "vouch-rev" containing the base64-encoding of the binary
-              artifact described in <xref target="voucher-revocation"/>.</t>
-              <t hangText="   Certificate Revocation:">Mapped to a TXT record
-              called "cert-rev" that containing the base64-encoding of the binary
-              artifact described in <xref target="certificate-revocation"/>.</t>
+              "zt-cert" containing the base64-encoding of the binary artifact
+              described in <xref target="owner-certificate"/>.</t>
+              <t hangText="   Ownership Voucher:">Mapped to a TXT record called
+              "zt-voucher" containing the base64-encoding of the binary artifact
+              described in <xref target="ownership-voucher"/>.</t>
             </list>
           </t>
 
           <t>TXT records have an upper size limit of 65535 bytes (Section 3.2.1
           in RFC1035), since 'RDLENGTH' is a 16-bit field.  Please see Section
           3.1.3 in RFC4408 for how a TXT record can achieve this size.  Due to this
-          size limitation, some information type artifacts may not fit.  In particular,
+          size limitation, some information artifacts may not fit.  In particular,
           the bootstrap information artifact could hit this upper bound, depending
           on the size of the included configuration and scripts.</t> 
 
@@ -829,7 +734,6 @@ List of artifacts included in this grouping:
           for the boot-image the device can download would have to point to another 
           server (e.g., http://, ftp://, etc.), as DNS servers do not themselves
           distribute files.</t>
-
         </section>
 
         <section title="DHCP Server" anchor="dhcp-server">
@@ -858,32 +762,21 @@ List of artifacts included in this grouping:
           <t>From an artifact perspective, since a DHCP server presents data as
           DHCP options <!-- ref? -->, the bootstrapping artifacts need to be
           presented as DHCP options, specifically the ones specified in 
-          <xref target="dhcp-options"/>.  The six artifacts defined in
+          <xref target="dhcp-options"/>.  The three artifacts defined in
           <xref target="artifacts"/> are mapped to the DHCP options 
           specified in <xref target="dhcp-options"/> below.</t>
 
           <t>Artifact to DHCP Option Field Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information Type:">Mapped to the DHCP option field 
-              "information-type" containing the YANG modeled data described in 
-              <xref target="information-type"/>.  The additional field
-              "encoding" is provided to specify the encoding used, taking
-              the values "xml" or "json".</t>
-              <t hangText="   Signature:">Mapped to the DHCP option
-              field "signature" containing the binary artifact described in
-              <xref target="signature"/>.</t>
-              <t hangText="   Ownership Voucher:">Mapped to the DHCP option field
-              "ownership-voucher" containing the binary artifact described in
-              <xref target="ownership-voucher"/>.</t>
+              <t hangText="   Information:">Mapped to the DHCP option field 
+              "zerotouch-information" containing the binary artifact described in
+              <xref target="zerotouch-information"/>.</t>
               <t hangText="   Owner Certificate:">Mapped to the DHCP option field
               "owner-certificate" containing the binary artifact described in
               <xref target="owner-certificate"/>.</t>
-              <t hangText="   Voucher Revocation:">Mapped to the DHCP option
-              field "voucher-revocations" containing the binary artifact described
-              in <xref target="voucher-revocation"/>.</t>
-              <t hangText="   Certificate Revocation:">Mapped to the DHCP option
-              field "certificate-revocations" containing the binary artifact
-              described in <xref target="certificate-revocation"/>.</t>
+              <t hangText="   Ownership Voucher:">Mapped to the DHCP option field
+              "ownership-voucher" containing the binary artifact described in
+              <xref target="ownership-voucher"/>.</t>
             </list>
           </t>
 
@@ -895,7 +788,7 @@ List of artifacts included in this grouping:
 
         <section title="Bootstrap Server" anchor="bootstrap-server">
           <t>A bootstrap server MAY be used as a source of zero touch bootstrapping data.
-          A bootstrap server is defined as a RESTCONF (<xref target="draft-ietf-netconf-restconf"/>)
+          A bootstrap server is defined as a RESTCONF <xref target="RFC8040"/>
           server implementing the YANG module provided in <xref target="api"/>.</t>
 
           <t>Unlike any other source of bootstrap data described in this document, a
@@ -933,30 +826,24 @@ List of artifacts included in this grouping:
 
           <t>From an artifact perspective, since a bootstrap server presents data as
           a YANG-modeled data, the bootstrapping artifacts need to be mapped to
-          nodes in the YANG module.  The six artifacts defined in <xref target="artifacts"/>
+          nodes in the YANG module.  The three artifacts defined in <xref target="artifacts"/>
           are mapped to bootstrap server nodes defined in <xref target="yang-module"/>
           below.</t>
 
           <t>Artifact to Bootstrap Server Node Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information Type:">Mapped to 
-              the choice node /device/information-type.</t>
-              <t hangText="   Signature:">Mapped to the leaf node
-              /device/signature.</t> 
-              <t hangText="   Ownership Voucher:">Mapped to the 
-              leaf node /device/ownership-voucher.</t>
+              <t hangText="   Information:">Mapped to 
+              the node /device/zerotouch-information.</t>
               <t hangText="   Owner Certificate:">Mapped to the 
               leaf node /device/owner-certificate.</t>
-              <t hangText="   Voucher Revocations:">Mapped to the
-              leaf node /device/voucher-revocation.</t>
-              <t hangText="   Certificate Revocations:">Mapped to the
-              leaf-list node /device/certificate-revocation.</t> 
+              <t hangText="   Ownership Voucher:">Mapped to the 
+              leaf node /device/ownership-voucher.</t>
             </list>
           </t>
 
           <t>While RESTCONF servers typically support a nested hierarchy of 
           resources, zero touch bootstrap servers only need to support the
-          paths /device and /device/notification.  The processing
+          paths /device and /device/notification.  The device processing
           instructions provided in <xref target="processing-a-source"/> only
           uses these two URLs.</t>
 
@@ -1237,7 +1124,7 @@ List of artifacts included in this grouping:
                   an administrator account on the device (e.g., username, ssh-rsa
                   key, etc.) and SHOULD configure the device either to listen for
                   NETCONF or RESTCONF connections or to initiate call home connections
-                  (<xref target="draft-ietf-netconf-call-home"/>).</t>
+                  <xref target="RFC8071"/>.</t>
                   <t>If the bootstrap server supports forwarding device notifications
                   to external systems (e.g., via a webhook), the "bootstrap-complete"
                   notification (<xref target="yang-module"/>) informs the external
@@ -1444,36 +1331,27 @@ List of artifacts included in this grouping:
           the device MAY skip verifying the signature.</t>
           <t>Whenever there is signed data, the device MUST also be provided
           an ownership voucher and an owner certificate.  Depending on circumstances,
-          the device MAY also be provided certificate and voucher revocations.  How
+          the device MAY also be provided certificate revocations.  How
           all the needed artifacts are provided for each source of bootstrapping 
           data is defined in <xref target="sources"/>.</t>
           <t>The device MUST first authenticate the ownership voucher by validating
           the signature on it to one of its preconfigured trust anchors (see
           <xref target="factory-defaults"/>) and verify that the voucher contains
-          the device's unique identifier (e.g., serial number).  If the device
-          insists on verifying revocation status, it MUST also verify that the
-          voucher isn't expired or has been revoked.  If the authentication of
-          the voucher is successful, the device extracts the rightful owner's
-          identity from the voucher for use in the next step.</t>
+          the device's unique identifier (e.g., serial number).  If the voucher
+          contains an expiration timestamp, the device MUST also verify that the
+          voucher has not expired.  If the authentication of the voucher is
+          successful, the device extracts from it information that can be used
+          to  verify the owner certificate in the next step.</t>
           <t>Next the device MUST authenticate the owner certificate by performing
-          X.509 certificate path validation on it, and by verifying that the 
-          certificate is both identified by the voucher and also has in its
-          chain of trust the certificate identified by the voucher.  If the device
-          insists on verifying revocation status, it MUST also verify that none of the
-          certificates in the chain of certificates have been revoked or expired.
-          If the authentication of the certificate is successful, the device
-          extracts the owner's public key from the certificate for use in
-          the next step.</t>
-          <t>Finally the device MUST verify the signature over 'information type'
+          X.509 certificate path verification to the trusted certificate provided
+          in the voucher.  If the device insists on verifying revocation status, it
+          MUST also verify that none of the certificates in the chain of certificates
+          have been revoked or expired.  If the authentication of the certificate
+          is successful, the device extracts the owner's public key from the
+          certificate for use in the next step.</t>
+          <t>Finally the device MUST verify the signature over information
           artifact was generated by the private key matching the public
           key extracted from the owner certificate in the previous step.</t>
-
-          <t>When the device receives the signed data from a bootstrap server,
-          the device MUST use text-level operations to extract the 'information-type'
-          node from the parent 'device' node in the response in order to verify
-          the signature.  It is not important if the extracted text is a
-          valid YANG encoding in order to verify the signature.</t>
-
           <t>If any of these steps fail, then the device MUST mark the data as
           invalid and not perform any of the subsequent steps.</t>
         </section>  <!-- end validating signed data -->
@@ -1555,9 +1433,72 @@ List of artifacts included in this grouping:
         </section>
       </section>  <!-- end device details -->
 
-      <section title="RESTCONF API for Bootstrap Servers" anchor="api">
-        <t>This section defines a YANG (<xref target="RFC6020"/>) module that is used to
-        define the RESTCONF (<xref target="draft-ietf-netconf-restconf"/>) API used by the
+      <section title="The Zero Touch Information Artifact" anchor="artifact">
+        <t>This section defines a YANG <xref target="RFC6020"/> module that is used to
+        define the data model for the Zero Touch Information artifact described in
+        <xref target="zerotouch-information"/>.  Examples illustrating this artifact in
+        use are provided in <xref target="artifact-examples"/>.</t>
+
+        <section title="Tree Diagram">
+          <t>The following tree diagram provides an overview of the data model for the
+          Zero Touch Information artifact.  The syntax used for this tree diagram is
+          described in <xref target="tree-diagram"/>.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-information-tree.txt)
+]]></artwork>
+          </figure>
+        </section>
+
+        <section title="Example Usage" anchor="artifact-examples">
+
+          <t>This section presents examples for how the information artifact
+          (<xref target="zerotouch-information"/>) can be encoded into a document that
+          can be distributed outside the bootstrap server's RESTCONF API.</t>
+
+          <t>The following example illustrates how redirect information can be encoded
+            into an artifact.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
+]]></artwork>
+          </figure>
+
+          <t>The following example illustrates how bootstrap information can be encoded
+          into an artifact.  This example uses datamodels from <xref target="RFC7317"/>
+          and <xref target="I-D.ietf-netconf-netconf-client-server"/>.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
+]]></artwork>
+          </figure>
+        </section> <!-- Artifact Examples -->
+
+        <section title="YANG Module" anchor="info-yang-module">
+          <t>The Zero Touch Information artifact is normatively defined
+          by the YANG module defined in this section.</t>
+
+          <t>Note: the module defined herein uses data types defined
+          in <xref target="RFC5280"/>, <xref target="RFC6234"/>, and
+          <xref target="RFC6991"/>.</t>
+
+          <figure>
+            <artwork><![CDATA[
+<CODE BEGINS> file "ietf-zerotouch-information@YYYY-MM-DD.yang"
+
+INSERT_TEXT_FROM_FILE(ietf-zerotouch-information@YYYY-MM-DD.yang)
+
+<CODE ENDS>
+
+]]></artwork>
+          </figure>
+        </section>
+
+      </section>
+
+      <section title="The Zero Touch Bootstrap Server API" anchor="api">
+        <t>This section defines a YANG <xref target="RFC6020"/> module that is used to
+        define the RESTCONF <xref target="RFC8040"/> API used by the
         bootstrap server defined in <xref target="bootstrap-server"/>.  Examples
         illustrating this API in use are provided in <xref target="api-examples"/>.</t>
 
@@ -1567,7 +1508,7 @@ List of artifacts included in this grouping:
           <xref target="tree-diagram"/>.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
 ]]></artwork>
           </figure>
           <t>In the above diagram, notice that all of the protocol accessible nodes are read-only,
@@ -1589,7 +1530,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-tree.txt)
               SSH public key) that the NMS can use to log into the device with, and configure
               the device to either listen for inbound NETCONF/RESTCONF connections, or for the
               device to initiate an outbound NETCONF/RESTCONF call home connection
-              <xref target="draft-ietf-netconf-call-home"/>.  The bootstrap information examples
+              <xref target="RFC8071"/>.  The bootstrap information examples
               provided in <xref target="api-ex-3"/>, <xref target="api-ex-4"/>, and
               <xref target="art-ex-2"/> all illustrate a minimal initial configuration.</t>
 
@@ -1601,25 +1542,108 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-tree.txt)
 -->
         </section>
 
+        <section title="Example Usage" anchor="api-examples">
+
+          <t>This section presents some examples illustrating the bootstrap server's API.
+          Two examples are provided, one illustrating a device fetching bootstrapping data
+          from the server, and the other illustrating a data posting a progress notification
+          to the server.</t>
+
+          <t>The following example illustrates a device using the API to fetch its
+          bootstrapping data from the bootstrap server.  In this example, the device
+          receives a signed response; an unsigned response would look similar except
+          the last two fields (owner-certificate and ownership-voucher) would be
+          absent in the response.</t>
+
+          <figure>
+            <artwork><![CDATA[
+REQUEST
+-------
+['\' line wrapping added for formatting only]
+
+GET https://example.com/restconf/data/ietf-zerotouch-bootstrap-server:\
+device=123456 HTTP/1.1
+HOST: example.com
+Accept: application/yang.data+xml
+
+
+RESPONSE
+--------
+
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-signed.xml)
+]]></artwork>
+          </figure>
+
+          <t>The following example illustrates a device using the API to post
+          a notification to a bootstrap server.  Illustrated below is
+          the 'bootstrap-complete' message, but the device may send other
+          notifications to the server while bootstrapping (e.g., to provide
+          status updates).  In this message, the device is sending both its
+          SSH host keys and TLS server certificate, which the bootstrap
+          server may, for example, pass to an NMS, as discussed in
+          <xref target="device-powers-on"/>.</t>
+
+          <t>Note that devices that are able to present an IDevID certificate
+          <xref target="Std-802.1AR-2009"/> when establishing SSH or TLS
+          connections do not need to include its DevID certificate in the
+          bootstrap-complete message.  It is unnecessary to send the DevID
+          certificate in this case because the IDevID certificate does not
+          need to be pinned by an NMS in order to be trusted.</t>
+
+          <t>Note that the bootstrap server MUST NOT process a notification from a
+          device without first authenticating the device.  This is in contrast
+          to when a device is fetching data from the server, a read-only
+          operation, in which case device authentication is not strictly
+          required (e.g., when sending signed information).</t>
+
+          <figure>
+            <artwork><![CDATA[
+REQUEST
+-------
+['\' line wrapping added for formatting only]
+
+POST https://example.com/restconf/data/ietf-zerotouch:\
+device=123456/notification HTTP/1.1
+HOST: example.com
+Content-Type: application/yang.data+xml
+
+INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-notification.xml)
+
+
+RESPONSE
+--------
+
+HTTP/1.1 204 No Content
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+]]></artwork>
+          </figure>
+        </section>  <!-- Example Usage -->
+
         <section title="YANG Module" anchor="yang-module">
           <t>The bootstrap server's device-facing API is normatively defined
           by the YANG module defined in this section.</t>
+
           <t>Note: the module defined herein uses data types
           defined in <xref target="RFC2315"/>, <xref target="RFC5280"/>, 
-          <xref target="RFC6234"/>, <xref target="RFC6991"/>, and
-          <xref target="draft-kwatsen-netconf-voucher"/>.</t>
+          and <xref target="I-D.ietf-anima-voucher"/>.</t>
           <figure>
             <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch@YYYY-MM-DD.yang"
+<CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
 
-INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
+INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
 <CODE ENDS>
 
 ]]></artwork>
           </figure>
+        </section> <!-- YANG Module -->
 
-        </section>
       </section>
 
       <section title="Security Considerations" anchor="sec-con">
@@ -1647,8 +1671,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
           <t>If it is not possible to ensure clock accuracy, it is
           RECOMMENDED that implementations disable the aspects of the
           solution having clock sensitivity. In particular, such
-          implementations should assume that TLS certificates,
-          owner certificates, and ownership vouchers are not revokable,
+          implementations should assume that TLS certificates and
+          owner certificates are not revokable.
           In real-world terms, this means that manufacturers SHOULD 
           only issue a single ownership voucher for the lifetime of 
           some devices.</t>
@@ -1700,59 +1724,46 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
           <t>The following registrations are in accordance to RFC 2939 <xref target="RFC2939"/>
           for "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
           http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
-
-          <section title="DHCP v4 Option">
-            <figure>
-              <artwork>
+          <figure>
+            <artwork>
    Tag: XXX
 
    Name: Zero Touch Information
 
-   Returns up to six zero touch bootstrapping artifacts.
+   Returns up to three zero touch bootstrapping artifacts.
 
     Code   Len
-   +-----+-----+----------+------------------+-----------+
-   | XXX |  n  | encoding | information-type | signature |
-   +-----+-----+----------+------------------+-----------+
+   +-----+-----+-----------------------+
+   | XXX |  n  | zerotouch-information |
+   +-----+-----+-----------------------+
 
-   +-------------------+-------------------+-------------------------+
-   | owner-certificate | ownership-voucher | certificate-revocations |
-   +-------------------+-------------------+-------------------------+
-
-   +---------------------+
-   | voucher-revocations |
-   +---------------------+
+   +-------------------+-------------------+
+   | owner-certificate | ownership-voucher |
+   +-------------------+-------------------+
 
    Reference: RFC XXXX
-              </artwork>
-            </figure>
-          </section>
-          <section title="DHCP v6 Option">
-            <figure>
-              <artwork>
+            </artwork>
+          </figure>
+          <figure>
+            <artwork>
    Tag: YYY
 
    Name: Zero Touch Information
 
-   Returns up to six zero touch bootstrapping artifacts.
+   Returns up to three zero touch bootstrapping artifacts.
 
     Code   Len
-   +-----+-----+----------+------------------+-----------+
-   | XXX |  n  | encoding | information-type | signature |
-   +-----+-----+----------+------------------+-----------+
+   +-----+-----+-----------------------+
+   | XXX |  n  | zerotouch-information |
+   +-----+-----+-----------------------+
 
-   +-------------------+-------------------+-------------------------+
-   | owner-certificate | ownership-voucher | certificate-revocations |
-   +-------------------+-------------------+-------------------------+
-
-   +---------------------+
-   | voucher-revocations |
-   +---------------------+
+   +-------------------+-------------------+
+   | owner-certificate | ownership-voucher |
+   +-------------------+-------------------+
 
    Reference: RFC XXXX
-              </artwork>
-            </figure>
-          </section>
+            </artwork>
+          </figure>
         </section>
         <section title="The IETF XML Registry">
           <t>This document registers one URI in the IETF XML
@@ -1770,14 +1781,19 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
           </t>
         </section>
         <section title="The YANG Module Names Registry">
-          <t>This document registers one YANG module in the
+          <t>This document registers two YANG modules in the
           YANG Module Names registry <xref target="RFC6020"/>.
           Following the format defined in <xref target="RFC6020"/>, the
-          the following registration is requested:</t>
+          the following registrations are requested:</t>
           <t>
             <figure>
                 <artwork><![CDATA[
-   name:         ietf-zerotouch
+   name:         ietf-zerotouch-information
+   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch
+   prefix:       zt
+   reference:    RFC XXXX
+
+   name:         ietf-zerotouch-bootstrap-server
    namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch
    prefix:       zt
    reference:    RFC XXXX
@@ -1788,7 +1804,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
       </section>
 
       <section title="Other Considerations">
-        <t>Both this document and <xref target="draft-ietf-anima-bootstrapping-keyinfra"/>
+        <t>Both this document and <xref target="I-D.ietf-anima-bootstrapping-keyinfra"/>
         define bootstrapping mechanisms.  The authors have collaborated on both solutions
         and believe that each solution has merit and, in fact, can work together.  That is,
         it is possible for a device to support both solutions simultaneously.</t>
@@ -1805,6 +1821,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
         Joe Clarke,
         Toerless Eckert,
         Stephen Farrell,
+        Ian Farrer,
         Stephen Hanna,
         Wes Hardaker,
         Russ Mundy,
@@ -1823,19 +1840,19 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
 
     <back>
         <references title="Normative References">
-          &rfc1035;
-          <!--&rfc1951;-->
-          &rfc2119;
-          &rfc2315;
-          <!--&rfc2782;-->
-          &rfc5280;
-          &rfc6020;
-          &rfc6125;
-          &rfc6234;
-          &rfc6762;
-          &rfc6763;
-          &rfc6991;
-          &rfc7468;
+          <?rfc include="reference.RFC.1035.xml"?>
+          <?rfc include="reference.RFC.2119.xml"?>
+          <?rfc include="reference.RFC.2315.xml"?>
+          <?rfc include="reference.RFC.5280.xml"?>
+          <?rfc include="reference.RFC.6020.xml"?>
+          <?rfc include="reference.RFC.6125.xml"?>
+          <?rfc include="reference.RFC.6234.xml"?>
+          <?rfc include="reference.RFC.6762.xml"?>
+          <?rfc include="reference.RFC.6763.xml"?>
+          <?rfc include="reference.RFC.6991.xml"?>
+          <?rfc include="reference.RFC.7468.xml"?>
+          <?rfc include="reference.RFC.8040.xml"?>
+          <?rfc include="reference.I-D.ietf-anima-voucher"?>
 
           <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
             <front>
@@ -1846,333 +1863,21 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch@YYYY-MM-DD.yang)
               <date month="December" year="2009"/>
             </front>
           </reference>
-
-          <reference anchor='draft-ietf-netconf-restconf' target="https://datatracker.ietf.org/html/draft-ietf-netconf-restconf-10">
-            <front>
-              <title>RESTCONF Protocol</title>
-              <author initials='A.B.' surname='Bierman'
-                 fullname='Andy Bierman'>
-                <organization>YumaWorks</organization>
-              </author>
-              <author initials='M' surname='Bjorklund'
-                 fullname='Martin Bjorklund'>
-                <organization>Tail-f Systems</organization>
-              </author>
-              <author initials='K.W.' surname='Watsen'
-                 fullname='Kent Watsen'>
-                <organization>Juniper Networks</organization>
-              </author>
-              <date year='2016' />
-            </front>
-            <seriesInfo name='Internet-Draft'
-                   value='draft-ieft-netconf-restconf-10' />
-         </reference>
-
-          <reference anchor='draft-kwatsen-netconf-voucher' target="https://datatracker.ietf.org/html/draft-kwatsen-netconf-voucher">
-            <front>
-              <title>Voucher and Voucher Revocation Profiles for Bootstrapping Protocols</title>
-              <author initials='K.W.' surname='Watsen' fullname='Kent Watsen'>
-                <organization>Juniper Networks</organization>
-              </author>
-              <author fullname="Michael C. Richardson" initials="M." surname="Richardson">
-                <organization>Sandelman Software Works</organization>
-              </author>
-              <author initials='M.P.' surname='Pritikin' fullname='Max Pritikin'>
-                <organization>Cisco Systems</organization>
-              </author>
-              <author initials='T.E.' surname='Eckert' fullname='Toerless Eckert'>
-                <organization>Cisco Systems</organization>
-              </author>
-              <date year='2016' />
-            </front>
-            <seriesInfo name='Internet-Draft' value='draft-kwatsen-netconf-voucher-00'/>
-          </reference>
-
         </references>
 
         <references title="Informative References">
-           &rfc2939;
-           &rfc3688;
-           &rfc6241;
-           &rfc6698;
-           &rfc7317;
-
-          <reference anchor="draft-ietf-netconf-call-home" target="https://datatracker.ietf.org/html/draft-ietf-netconf-call-home-17">
-              <front>
-                  <title>NETCONF Call Home (work in progress)</title>
-                  <author initials="K.W." surname="Watsen"
-                          fullname="Kent Watsen">
-                      <organization>Juniper Networks</organization>
-                  </author>
-                  <date month="December" year="2015"/>
-              </front>
-              <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-restconf-10' />
-          </reference>
-
-
-          <reference anchor="draft-ietf-netconf-server-model" target="https://datatracker.ietf.org/html/draft-ietf-netconf-call-home-17">
-            <front>
-              <title>NETCONF Server Model (work in progress)</title>
-              <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
-                <organization>Juniper Networks</organization>
-              </author>
-              <date month="March" year="2016"/>
-            </front>
-            <seriesInfo name='Internet-Draft' value='draft-ieft-netconf-server-model-09'/>
-          </reference>
-
-          <reference anchor='draft-ietf-anima-bootstrapping-keyinfra' target="https://datatracker.ietf.org/html/draft-ietf-anima-bootstrapping-keyinfra">
-            <front>
-              <title>Bootstrapping Key Infrastructures</title>
-              <author initials='M.P.' surname='Pritikin'
-                 fullname='Max Pritikin'>
-                <organization>Cisco</organization>
-              </author>
-              <author initials='M.B.' surname='Behringer'
-                 fullname='Micheal Behringer'>
-                <organization>Cisco</organization>
-              </author>
-              <author initials='S.B.' surname='Bjarnason'
-                 fullname='Steinthor Bjarnason'>
-                <organization>Cisco</organization>
-              </author>
-              <date year='2016' />
-            </front>
-            <seriesInfo name='Internet-Draft' value='draft-ietf-anima-bootstrapping-keyinfra-03' />
-          </reference>
+          <?rfc include="reference.RFC.2939.xml"?>
+          <?rfc include="reference.RFC.3688.xml"?>
+          <?rfc include="reference.RFC.6241.xml"?>
+          <?rfc include="reference.RFC.6960.xml"?>
+          <?rfc include="reference.RFC.6698.xml"?>
+          <?rfc include="reference.RFC.7317.xml"?>
+          <?rfc include="reference.RFC.8071.xml"?>
+          <?rfc include="reference.I-D.ietf-netconf-netconf-client-server"?>
+          <?rfc include="reference.I-D.ietf-anima-bootstrapping-keyinfra"?>
         </references>
 
-        <section title="API Examples" anchor="api-examples">
 
-          <t>This section presents some examples illustrating device interactions with a bootstrap
-          server to access Redirect and Bootstrap information, both unsigned and signed, as well
-          as to send a progress notification.
-          These examples show the bootstrap information containing
-          configuration from the YANG modules in <xref target="RFC7317"/> and 
-          <xref target="draft-ietf-netconf-server-model"/>.</t>
-          <!-- KENT FIXME: examples should use new server-model YANG! -->
-
-          <section title="Unsigned Redirect Information" anchor="api-ex-1">
-
-            <t>The following example illustrates a device using the API to fetch its
-            bootstrapping data.  In this example, the device receives unsigned
-            redirect information.  This example is representative of a response a trusted
-            redirect server might return.</t>
-            <figure>
-              <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-GET https://example.com/restconf/data/ietf-zerotouch:\
-device=123456 HTTP/1.1
-HOST: example.com
-Accept: application/yang.data+xml
-
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
-INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-unsigned.xml)
-]]></artwork>
-            </figure>
-
-          </section>
-
-          <section title="Signed Redirect Information" anchor="api-ex-2">
-
-            <t>The following example illustrates a device using the API to fetch its
-            bootstrapping data.  In this example, the device receives signed
-            redirect information.  This example is representative of a response
-            that redirect server might return if concerned the device might not
-            be able to authenticate its TLS certificate.</t>
-            <figure>
-             <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-GET https://example.com/restconf/data/ietf-zerotouch:\
-device=123456 HTTP/1.1
-HOST: example.com
-Accept: application/yang.data+xml
-
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
-INSERT_TEXT_FROM_FILE(refs/ex-api-redirect-information-signed.xml)
-]]></artwork>
-            </figure>
-
-          </section>
-
-          <section title="Unsigned Bootstrap Information" anchor="api-ex-3">
-
-            <t>The following example illustrates a device using the API to fetch its
-            bootstrapping data.  In this example, the device receives unsigned
-            bootstrapping information.  This example is representative of a response
-            a locally deployed bootstrap server might return.</t>
-            <figure>
-              <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-GET https://example.com/restconf/data/ietf-zerotouch:\
-device=123456 HTTP/1.1
-HOST: example.com
-Accept: application/yang.data+xml
-
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-unsigned.xml)
-]]></artwork>
-            </figure>
-
-          </section>
-
-          <section title="Signed Bootstrap Information" anchor="api-ex-4">
-
-            <t>The following example illustrates a device using the API to fetch its
-            bootstrapping data.  In this example, the device receives signed
-            bootstrap information.  This example is representative of a response
-            that bootstrap server might return if concerned the device might not
-            be able to authenticate its TLS certificate.</t>
-            <figure>
-              <artwork><![CDATA[
-REQUEST
--------
-
-['\' line wrapping added for formatting only]
-
-GET https://example.com/restconf/data/ietf-zerotouch:\
-device=123456 HTTP/1.1
-HOST: example.com
-Accept: application/yang.data+xml
-
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-information-signed.xml)
-]]></artwork>
-            </figure>
-
-          </section>
-
-          <section title="Progress Notifications" anchor="api-ex-5">
-            <t>The following example illustrates a device using the API to post
-            a notification to a trusted bootstrap server.  Illustrated below is
-            the 'bootstrap-complete' message, but the device may send other
-            notifications to the server while bootstrapping (e.g., to provide
-            status updates).</t>
-
-            <t>The bootstrap server MUST NOT process a notification from a
-            device without first authenticating the device.  This is in contrast
-            to when a device is fetching data from the server, a read-only
-            operation, in which case device authentication is not strictly
-            required (e.g., when sending signed information).</t>
-
-            <t>In this example, the device sends a notification indicating that
-            it has completed bootstrapping off the data provided by the server.
-            This example illustrates the device sending both its SSH host keys
-            and TLS server certificate to the bootstrap server, which the
-            bootstrap server may, for example, pass to an NMS, as discussed
-            in <xref target="device-powers-on"/>.</t>
-
-            <t>Note that devices that are able to present an IDevID certificate
-            <xref target="Std-802.1AR-2009"/>, when establishing SSH or TLS
-            connections, do not need to include its DevID certificate in the
-            bootstrap-complete message.  It is unnecessary to send the DevID
-            certificate in this case because the IDevID certificate does not
-            need to be pinned by an NMS in order to be trusted.</t>
-            <figure>
-              <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-POST https://example.com/restconf/data/ietf-zerotouch:\
-device=123456/notification HTTP/1.1
-HOST: example.com
-Content-Type: application/yang.data+xml
-
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-notification.xml)
-
-
-RESPONSE
---------
-
-HTTP/1.1 204 No Content
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-]]></artwork>
-            </figure>
-          </section>
-        </section> <!-- API Examples -->
-
-        <section title="Artifact Examples" anchor="artifact-examples">
-
-          <t>This section presents examples for how the 'information type' artifact
-          (<xref target="information-type"/>) can be encoded into a document that
-          can be distributed outside the bootstrap server's RESTCONF API.</t>
-
-          <t>The inforamtion type artifact is encoded the same as if returned by a
-          RESTCONF server for an HTTP GET request for the specific information-type
-          resource.</t>
-
-          <t>These examples show the bootstrap information containing
-          configuration from the YANG modules in <xref target="RFC7317"/> and 
-          <xref target="draft-ietf-netconf-server-model"/>.</t>
-          <!-- KENT FIXME: examples should use new server-model YANG! -->
-
-          <t>Only examples for the information type artifact are provided, as the
-          other five artifacts in <xref target="artifacts"/> have binary encodings.</t>
-
-          <section title="Redirect Information" anchor="art-ex-1">
-            <t>The following example illustrates how redirect information can be encoded
-            into an artifact.</t>
-            <figure>
-              <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
-]]></artwork>
-            </figure>
-          </section>
-
-          <section title="Bootstrap Information" anchor="art-ex-2">
-            <t>The following example illustrates how bootstrap information can be encoded
-            into an artifact.</t>
-            <figure>
-              <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
-]]></artwork>
-            </figure>
-          </section>
-
-        </section> <!-- Artifact Examples -->
 
         <section title="Change Log">
           <section title="ID to 00">
@@ -2344,6 +2049,22 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
               warning/error pattern).</t>
               <t>updated the information-type artifact to state how it's
               encoded, matching the language that was in Appendix B.</t>
+            </list>
+            </t>
+          </section>
+          <section title="12 to 13">
+            <t>
+            <list style="symbols">
+              <t>defined a standalone artifact to encode the old information-type
+              into a PKCS#7 structure.</t>
+              <t>standalone information artifact hardcodes JSON encoding (to
+              match the voucher draft).</t>
+              <t>combined the information and signature PKCS#7 structures into a
+              single PKCS#7 structure.</t>
+              <t>moved the certificate-revocations into the owner-certificate's
+              PKCS#7 structure.</t>
+              <t>eliminated support for voucher-revocations, to reflect the
+              voucher-draft's switch from revocations to renewals.</t>
             </list>
             </t>
           </section>
