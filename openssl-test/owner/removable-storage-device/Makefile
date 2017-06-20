@@ -28,9 +28,10 @@ generate_offline_data:
 	@echo "\n[6.5] assembling voucher-revocation bundle..."
 	@# already the voucher is a PKCS#7, so what we can do is add all the CRLs from the
 	@# cert chain CAs into it as 'helper objects'
-	cat ../../vendor/ownership-voucher-pki/intermediate2-ca/crl.pem ../../vendor/ownership-voucher-pki/intermediate1-ca/crl.pem ../../vendor/ownership-voucher-pki/trust-anchor-ca/crl.pem > tmp_crls.pem
-	../../tools/pack-ovr-bundle -c tmp_crls.pem -v ../../vendor/ownership-voucher-pki/intermediate3-ca/ownership-voucher-revocation.pk7 -b ownership-voucher-revocation.pk7
-	@rm tmp_crls.pem
+	# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
+	#cat ../../vendor/ownership-voucher-pki/intermediate2-ca/crl.pem ../../vendor/ownership-voucher-pki/intermediate1-ca/crl.pem ../../vendor/ownership-voucher-pki/trust-anchor-ca/crl.pem > tmp_crls.pem
+	#../../tools/pack-ovr-bundle -c tmp_crls.pem -v ../../vendor/ownership-voucher-pki/intermediate3-ca/ownership-voucher-revocation.pk7 -b ownership-voucher-revocation.pk7
+	#@rm tmp_crls.pem
 
 	@echo "\n[6.6] assembling owner-certificate-revocation bundle..."
 	cat ../../3rd-party-ca/owner-certificate-pki/intermediate-ca/crl.pem ../../3rd-party-ca/owner-certificate-pki/trust-anchor-ca/crl.pem > tmp_crls.pem

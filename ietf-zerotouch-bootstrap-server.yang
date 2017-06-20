@@ -99,11 +99,6 @@ module ietf-zerotouch-bootstrap-server {
 
     leaf owner-certificate {
       type pkcs7;
-      must "../zerotouch-information" {
-        description
-          "An 'zerotouch-information' artifact must be present
-           whenever an ownership certificate is presented.";
-      }
       description
         "An unsigned PKCS #7 SignedData structure, as specified by
          Section 9.1 in RFC 2315, encoded using ASN.1 distinguished
@@ -142,9 +137,11 @@ module ietf-zerotouch-bootstrap-server {
       }
       description
         "A 'voucher' artifact, as described in Section 5 of 
-         I-D.ietf-anima-voucher.  The voucher's 'device-identifier'
-         MUST reference both the device's unique identifier and
-         the owner's owner certificate.";
+         I-D.ietf-anima-voucher.  The voucher informs the device
+         who it's 'owner' is.  The voucher encodes the device's
+         serial number, so that the device can be ensured that
+         the voucher applies to it.  The voucher is signed by
+         the device's manufacturer or delagate.";
       reference
         "I-D.etf-anima-voucher:
            Voucher and Voucher Revocation Profiles for Bootstrapping

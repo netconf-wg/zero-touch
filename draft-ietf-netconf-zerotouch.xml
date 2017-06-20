@@ -28,7 +28,13 @@
         <author initials="M.A." surname="Abrahamsson" fullname="Mikael Abrahamsson">
             <organization>T-Systems</organization>
             <address>
-                <email>"mikael.abrahamsson@t-systems.se</email>
+                <email>mikael.abrahamsson@t-systems.se</email>
+            </address>
+        </author>
+        <author initials="I.F." surname="Farrer" fullname="Ian Farrer">
+            <organization>Deutsche Telekom AG</organization>
+            <address>
+                <email>ian.farrer@telekom.de</email>
             </address>
         </author>
         <date/>
@@ -47,12 +53,12 @@
           with finalized values at the time of publication.  This note summarizes
           all of the substitutions that are needed.  Please note that no other
           RFC Editor instructions are specified anywhere else in this document.</t>
-          <t>This document contains references to other drafts in progress, both in
-          the Normative References section, as well as in body text throughout.
-          Please update the following references to reflect their final RFC assignments:
-            <list style="symbols">
-              <t>I-D.ieft-netconf-netconf-client-server</t>
-              <t>I-D.ietf-anima-bootstrapping-keyinfra</t>
+          <t>Artwork in the IANA Considerations section contains placeholder
+          values for DHCP options pending IANA assignment.  Please apply the
+          following replacements:
+            <list  style="symbols">
+              <t><spanx style="verb">OPTION_V4_ZEROTOUCH_REDIRECT</spanx> --&gt; the option code assigned for the "DHCPv4 Zero Touch Option" option</t>
+              <t><spanx style="verb">OPTION_V6_ZEROTOUCH_REDIRECT</spanx> --&gt; the option code assigned for the "DHCPv6 Zero Touch Option" option</t>
             </list>
           </t>
           <t>Artwork in this document contains shorthand references to drafts in
@@ -65,6 +71,12 @@
           draft.  Please apply the following replacement:
             <list  style="symbols">
               <t><spanx style="verb">YYYY-MM-DD</spanx> --&gt; the publication date of this draft</t>
+            </list>
+          </t>
+          <t>Please update the following references to reflect their final RFC assignments:
+            <list style="symbols">
+              <t>I-D.ieft-netconf-netconf-client-server</t>
+              <t>I-D.ietf-anima-bootstrapping-keyinfra</t>
             </list>
           </t>
           <t>The following one Appendix section is to be removed prior to publication:
@@ -81,15 +93,15 @@
         <t>A fundamental business requirement for any network operator is
         to reduce costs where possible.  For network operators, deploying
         devices to many locations can be a significant cost, as sending
-        trained specialists to each site to do installations is both cost
+        trained specialists to each site for installations is both cost
         prohibitive and does not scale.</t>
 
         <t>This document defines a bootstrapping strategy enabling devices to
-        securely obtain bootstrapping data with no installer input, beyond
+        securely obtain bootstrapping data with no installer action beyond
         physical placement and connecting network and power cables.  The ultimate
         goal of this document is to enable a secure NETCONF <xref target="RFC6241"/>
-        or RESTCONF <xref target="RFC8040"/> connection
-        to the deployment specific network management system (NMS).</t>
+        or RESTCONF <xref target="RFC8040"/> connection to a deployment specific
+        network management system (NMS).</t>
 
         <section title="Use Cases" anchor="use-cases">
           <t>
@@ -124,23 +136,18 @@
 
         <section title="Terminology" anchor="terminology">
 
-          <t>This document uses the following terms:
+          <t>This document uses the following terms (sorted by name):
             <list style="hanging" hangIndent="4">
 
-              <t hangText="Artifact:">The term "artifact" is used throughout to represent the
-              any of the three artifacts defined in <xref target="artifacts"/>.  These artifacts
-              collectively provide all the bootstrapping data a device needs.</t>
+              <t hangText="Artifact:">The term "artifact" is used throughout to represent
+              any of the three artifacts defined in <xref target="artifacts"/> (Zero Touch
+              Information, Ownership Voucher, and Owner Certificate).  These artifacts
+              collectively provide all the bootstrapping data a device may use.</t>
 
               <t hangText="Bootstrapping Data:">The term "bootstrapping data" is used
               throughout this document to refer to the collection of data that a device
               may obtain from any source of bootstrapping data.  Specifically, it refers
               to the artifacts defined in <xref target="artifacts"/>.</t>
-
-              <t hangText="Bootstrap Information:">The term "bootstrap information" is used
-              herein to refer to one of the bootstrapping artifacts defined in 
-              <xref target="artifacts"/>.  Specifically, bootstrap information is the
-              bootstrapping data that guides a device to, for instance, install a 
-              specific boot-image and commit a specific configuration.</t>
 
               <t hangText="Bootstrap Server:">The term "bootstrap server" is used within
               this document to mean any RESTCONF server implementing the YANG module
@@ -156,7 +163,7 @@
               identifier is used in this document to enable a Bootstrap Server to 
               securely identify and authenticate a device.</t>
 
-              <t hangText="Manufacturer:">The term "manufacturer is used herein to 
+              <t hangText="Manufacturer:">The term "manufacturer" is used herein to 
               refer to the manufacturer of a device or a delegate of the manufacturer.</t>
 
               <t hangText="Network Management System (NMS):">The acronym "NMS" is used
@@ -165,39 +172,62 @@
               From a device's perspective, when the bootstrapping process has completed,
               the NMS is a NETCONF or RESTCONF client.</t>
 
-              <t hangText="Owner:">See Rightful Owner.</t>
+              <t hangText="Onboarding Information:">The term "onboarding information" is used
+              herein to refer to one of the two types of 'zero touch information' defined
+              in this document, the other being 'redirect information'.  Specifically, 
+              onboarding information guides a device to, for instance, install a specific
+              boot-image and commit a specific configuration.</t>
 
-              <t hangText="Redirect Information:">The term "bootstrap information" is used
-              herein to refer to one of the bootstrapping artifacts defined in 
-              <xref target="artifacts"/>.  Specifically, redirect information is the
-              bootstrapping data that directs a device to connect to a bootstrap server.</t>
+              <t hangText="Owner:">The term "owner" is used throughout this document
+              to refer to the person or organization that purchased or otherwise owns
+              a device.</t>
 
-              <t hangText="Redirect Server:">The term "redirect server" is used to refer to
-              a subset of bootstrap servers that only returns redirect information.  A 
-              redirect server is particularly useful when hosted by a manufacturer, to
-              redirect devices to deployment-specific bootstrap servers.</t>
+              <t hangText="Owner Certificate:">The term "owner certificate" is used in
+              this document to represent an X.509 certificate that binds an owner identity
+              to a public key, which a device can use to validate a signature over the
+              zero touch information artifacts.  The owner certificate is one of
+              the three bootstrapping artifacts described in <xref target="artifacts"/>.</t>
 
-              <t hangText="Rightful Owner:">The term "rightful owner" is used herein to refer to
-              the person or organization that purchased or otherwise owns a device.  Ownership
-              is further described in <xref target="ownership"/>.</t>
+              <t hangText="Ownership Voucher:">The term "ownership voucher" is used in
+              this document to represent the voucher artifact defined in <xref 
+              target="I-D.ietf-anima-voucher"/>.  The ownership voucher is used to
+              assign a device to an owner.  The ownership voucher is one of
+              the three bootstrapping artifacts described in <xref target="artifacts"/>.</t>
+
+              <t hangText="Redirect Information:">The term "redirect information" is used
+              herein to refer to one of the two types of 'zero touch information' defined
+              in this document, the other being 'onboarding information'.  Specifically,
+              redirect information directs a device to connect to a specified bootstrap
+              server.</t>
+
+              <t hangText="Redirect Server:">The term "redirect server" is used to refer
+              to a bootstrap server that only returns redirect information.  A redirect
+              server is particularly useful when hosted by a manufacturer, as an
+              Internet-based resource to redirect devices to deployment-specific 
+              bootstrap servers.</t>
 
               <t hangText="Signed Data:">The term "signed data" is used throughout to mean
-              either redirect information or bootstrap information that has been signed by a
-              device's rightful owner's private key.</t>
+              either redirect information or onboarding information that has been signed,
+              specifically by a private key possessed by a device's owner.</t>
 
               <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
-              either redirect information or bootstrap information that has not been signed by
-              a device's rightful owner's private key.</t>
+              either redirect information or onboarding information that has not been signed.</t>
+
+              <t hangText="Zero Touch Information:">The term "zero touch information" is used
+              generally herein to refer either redirect information or onboarding information.
+              Zero touch information is one of the three bootstrapping artifacts described in
+              <xref target="artifacts"/>.</t>
+
             </list>
           </t>
         </section>
 
-
         <section title="Requirements Language" anchor="requirements-language">
-          <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
-          "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
-          and "OPTIONAL" in the sections below are to be interpreted
-          as described in RFC 2119 <xref target="RFC2119"/>.</t>
+          <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+          NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+          "MAY", and "OPTIONAL" in this document are to be interpreted as
+          described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/>
+          when, and only when, they appear in all capitals, as shown here.</t>
         </section>
 
         <section title="Tree Diagram Notation" anchor="tree-diagram">
@@ -224,77 +254,80 @@
         </section>
       </section>  <!-- end Introduction -->
 
-      <section title="Guiding Principles" anchor="guiding-principles">
+<!--
+      <section title="Guiding Principles">
         <t>This section provides overarching principles guiding the solution presented in this document.</t>
-        <section title="Trust Anchors" anchor="trust-anchors">
+
+        <section title="Trust Anchors">
           <t>A trust anchor is used in cryptography to represent an entity in which trust is implicit
-          and not derived.  In public key infrastructure using X.509 certificates, a root certificate
-          is the trust anchor, from which a chain of trust is derived.  The solution presented in this
+          and not derived.  In PKIX (Public Key Infrastructure using X.509), a root certificate
+          is a trust anchor, from which a chain of trust can be derived.  The solution presented in this
           document requires that all the entities involved (e.g., devices, bootstrap servers, NMSs)
           possess specific trust anchors in order to ensure mutual authentication throughout the 
           zero touch bootstrapping process.</t>
         </section>
+
         <section title="Conveying Trust" anchor="conveying-trust">
-          <t>A device in its factory default state possesses a limited set of manufacturer
-          specified trust anchors.  In this document, there are two types of trust anchors
-          of interest.  The first type of trust anchor is used to authenticate a secure 
-          (e.g., HTTPS) connection to, for instance, a manufacturer-hosted Internet-based
-          bootstrap server.  The second type of trust anchor is used to authenticate
-          manufacturer-signed data, such as the ownership voucher artifact described
-          in <xref target="ownership-voucher"/>.</t>
-          <t>Using the first type of trust anchor, trust is conveyed by the device first 
-          authenticating the server (e.g., a bootstrap server), and then by the device
-          trusting that the server would only provide data that its rightful owner
-          staged for it to find.  Thereby the device can trust any information
-          returned from the server.</t>
-          <t>Using the second type of trust anchor, trust is conveyed by the device first
-          authenticating that an artifact has been signed by its rightful owner, and thereby
-          can trust any information held within the artifact.</t>
+          <t>A device in its factory default state possesses a finite number of manufacturer
+          specified trust anchors.  In this document, there are two types of device trust 
+          anchors of interest, those used to verify TLS connections and those used to verify
+          message signatures.  How each of these two types of trust anchors can be used to
+          convey trust is discussed next.</t>
+          <t>The first type of trust anchor is used to verify TLS connections, for instance,
+          to a manufacturer-hosted Internet-based bootstrap server, as described in
+          <xref target="bootstrap-server"/>.  In this case, trust is conveyed by the device
+          first authenticating the server, using a factory default trust anchor, and then
+          implicitly trusting any information provided by the server.</t>
+          <t>The second type of trust anchor is used to verify signed messages, for instance,
+          messages signed by a device's manufacturer, such as the ownership voucher artifact
+          described in <xref target="ownership-voucher"/>.  In this case, trust is conveyed
+          by the device first authenticating the signed message, using a factory default trust
+          anchor, and then implicitly trusting any information provided by the message.</t>
           <t>Notably, redirect information, as described in <xref target="redirect-information"/>,
-          may include more trust anchors, which illustrates another way in which trust can
-          be conveyed.</t>
+          may be communicated using either method, and it may encode additional trust anchors
+          that can be used when the device connects to the bootstrap servers specified by the
+          redirect information.</t>
         </section>
-        <section title="Conveying Ownership" anchor="ownership">
+
+        <section title="Conveying Ownership">
           <t>The ultimate goal of this document is to enable a device to establish a secure 
-          connection with its rightful owner's NMS.  This entails the manufacturer being able
-          to track who is the rightful owner of a device (not defined in this document), as
+          connection with its owner's NMS.  This entails the manufacturer being able
+          to track who is the owner of a device (not defined in this document), as
           well as an ability to convey that information to devices (defined in this document).</t>
-          <t>Matching the two ways to convey trust (<xref target="conveying-trust"/>), this
-          document provides two ways to convey ownership, by using a trusted bootstrap server
-          (<xref target="bootstrap-server"/>) or by using an ownership voucher 
-          (<xref target="ownership-voucher"/>).</t>
-          <t>When a device connects to a trusted bootstrap server, one that was preconfigured
-          into its factory default configuration, it implicitly trusts that the bootstrap server
-          would only provide data that its rightful owner staged for it to find.  That is,
-          ownership is conveyed by the administrator of the bootstrap server (e.g., a manufacturer)
-          taking the onus of ensuring that only data configured by a device's rightful owner
-          is made available to the device.  With this approach, the assignment of a device to
-          an owner is ephemeral, as the administrator can reassign a device to another owner
-          at any time.</t>
-          <t>When a device is presented signed bootstrapping data, it can authenticate that
-          its rightful owner provided the data by verifying the signature over the data
+          <t>Complimenting the two ways to convey trust (<xref target="conveying-trust"/>), 
+          ownership can be conveyed either by a connection to a trusted bootstrap server
+          (<xref target="bootstrap-server"/>) or by a verified signed message.
+
+          <t>When a device connects to a trusted bootstrap server, it can implicitly trust
+          that the bootstrap server would only provide data that its owner staged
+          for it to find.  That is, ownership is conveyed by an agreement, that the
+          administrator of the bootstrap server (e.g., a manufacturer) would only stage
+          data configured by a device's owner.</t>
+
+          <t>When a device verifies signed bootstrapping data, it can authenticate that
+          its owner provided the data by verifying the signature over the data
           using an additional artifact defined within this document, the ownership voucher.
           With this approach, ownership is conveyed by the manufacturer (or delegate)
           taking the onus of ensuring that the ownership vouchers it issues are accurate.</t>
         </section>
-      </section>   <!-- end guiding principles -->
+      </section>    end guiding principles -->
 
-      <section title="Types of Zero Touch Information" anchor="types-of-information">
+      <section title="Types of Bootstrapping Information" anchor="types-of-information">
 
         <t>This document defines two types of information that devices access during
         the bootstrapping process.  These information types are described in
-        this section.</t>
+        this section. Examples are provided in <xref target="artifact-examples"/></t>
 
         <section title="Redirect Information" anchor="redirect-information">
-          <t>Redirect information provides information to redirect
-          a device to a bootstrap server.  Redirect information encodes a list of bootstrap
-          servers, each defined by its hostname or IP address, an optional port, and an 
-          optional trust anchor certificate.</t>
+          <t>Redirect information redirects a device to 
+          another bootstrap server.  Redirect information encodes a list of bootstrap
+          servers, each defined by its hostname or IP address, an optional port,
+          and an optional trust anchor certificate.</t>
 
           <t>Redirect information is YANG modeled data formally defined by the
-          "redirect-information" grouping in the YANG module presented in
-          <xref target="info-yang-module"/>.  This grouping has the tree diagram 
-          shown below.  Please see <xref target="tree-diagram"/> for tree
+          "redirect-information" container in the YANG module presented in
+          <xref target="info-yang-module"/>.  This container has the tree
+          diagram shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
           
           <!-- FIXME: this tree-diagram should be dynamically generated -->
@@ -311,31 +344,28 @@
 
           <t>Redirect information MAY be trusted or untrusted.  The redirect information
           is trusted whenever it is obtained via a secure connection to a trusted bootstrap
-          server, or whenever it is signed by the device's rightful owner.  In all other
+          server, or whenever it is signed by the device's owner.  In all other
           cases, the redirect information is untrusted.</t>
 
           <t>Trusted redirect information is useful for enabling a device to establish
           a secure connection to a bootstrap server, which is possible when the redirect
           information includes the bootstrap server's trust anchor certificate.   When
           a device is able to establish a secure connection to a bootstrap server, the
-          bootstrapping data does not have to be signed in order to be trusted, as
-          described in <xref target="conveying-trust"/>.</t>
+          data is implicitly trusted, and does not need to be signed.</t>
 
           <t>Untrusted redirect information is useful for directing a device to a bootstrap
           server where signed data has been staged for it to obtain.  When the redirect 
           information is untrusted, the device MUST discard any potentially included trust
-          anchor certificates.  When the redirect information is untrusted, a device MAY
-          establish a provisional connection to any of the specified bootstrap servers.
-          A provisional connection is accomplished by the device blindly accepting the
-          bootstrap server's TLS certificate.  In this case, the device MUST NOT trust
-          the bootstrap server, and data provided by the bootstrap server MUST be signed
-          for it to be of any use to the device.</t>
+          anchor certificates and SHOULD establish a provisional connection (by blindly
+          accepting the TLS certificate) to any of the specified bootstrap servers.  In 
+          this case, the device MUST NOT trust the bootstrap server, and data provided 
+          by the bootstrap server MUST be signed for it to be of any use to the device.</t>
 
           <t>How devices process redirect information is described more formally in 
           <xref target="process-redirect-information"/>.</t>
         </section>
 
-        <section title="Bootstrap Information" anchor="bootstrap-information">
+        <section title="Onboarding Information" anchor="onboarding-information">
 
           <t>Bootstrap information provides all the data necessary for a device
           to bootstrap itself, in order to be considered ready to be managed 
@@ -345,16 +375,16 @@
           specified, the device MUST successfully execute.</t>
 
           <t>Bootstrap information is YANG modeled data formally defined by the
-          "bootstrap-information" grouping in the YANG module presented in
-          <xref target="info-yang-module"/>.  This grouping has the tree diagram 
+          "onboarding-information" container in the YANG module presented in
+          <xref target="info-yang-module"/>.  This container has the tree diagram 
           shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
 
          <!-- FIXME: this tree-diagram should be dynamically generated -->
          <t><figure>
             <artwork><![CDATA[
-  +--:(bootstrap-information)
-     +--ro bootstrap-information
+  +--:(onboarding-information)
+     +--ro onboarding-information
         +--ro boot-image
         |  +--ro name       string
         |  +--ro (hash-algorithm)
@@ -369,47 +399,45 @@
           </figure></t>
 
           <t>Bootstrap information MUST be trusted for it to be of any use to a device.
-          There is no option for a device to process untrusted bootstrap information.</t>
+          There is no option for a device to process untrusted onboarding information.</t>
 
           <t>Bootstrap information is trusted whenever it is obtained via a secure connection
-          to a trusted bootstrap server, or whenever it is signed by the device's rightful
-          owner.  In all other cases, the bootstrap information is untrusted.</t>
+          to a trusted bootstrap server, or whenever it is signed by the device's 
+          owner.  In all other cases, the onboarding information is untrusted.</t>
 
-          <t>How devices process bootstrap information is described more formally in 
-          <xref target="process-bootstrap-information"/>.</t>
+          <t>How devices process onboarding information is described more formally in 
+          <xref target="process-onboarding-information"/>.</t>
         </section>
 
       </section>
 
       <section title="Artifacts" anchor="artifacts">
 
-        <t>This document defines three artifacts that can be made 
-        available to devices while they are bootstrapping.  As will be
+        <t>This document defines the following three artifacts that can be
+        made available to devices while they are bootstrapping.  As will be
         seen in <xref target="sources"/>, each source of bootstrapping
         information specifies a means for providing each of the artifacts
         defined in this section.</t>
 
         <section title="Zero Touch Information" anchor="zerotouch-information">
-          <t>The information artifact encodes the essential bootstrapping
+          <t>The zero touch information artifact encodes the essential bootstrapping
           data for the device.  This artifact is used to encode the redirect
-          information and bootstrap information types discussed in <xref
+          information and onboarding information types discussed in <xref
           target="types-of-information"/>.</t>
 
-          <t>The information artifact is a PKCS#7 SignedData structure, as
+          <t>The zero touch information artifact is a PKCS#7 SignedData structure, as
           specified by Section 9.1 of <xref target="RFC2315"/>, encoded
           using ASN.1 distinguished encoding rules (DER), as specified
-          in ITU-T X.690.</t>
+          in ITU-T X.690. The PKCS#7 structure MUST contain JSON-encoded
+          content conforming to the YANG module specified in
+          <xref target="info-yang-module"/>.</t>
 
-          <t>Regardless how the information artifact is conveyed, the 
-          PKCS#7 structure MUST contain JSON-encoded content conforming to
-          the YANG module specified in <xref target="info-yang-module"/>.</t>
-
-          <t>When the information artifact is conveyed over an untrusted
-          transport (<xref target="conveying-trust"/>), the PKCS#7 structure
-          structure  MUST also contain a 'signerInfo' structure, as described
-          in Section 9.1 of <xref target="RFC2315"/>, containing a signature
-          generated over the content using the private key associated with
-          the owner certificate (<xref target="owner-certificate"/>).</t>
+          <t>In order for the zero touch information artifact to be trusted when
+          conveyed over an untrusted transport, the PKCS#7 structure MUST also
+          contain a 'signerInfo' structure, as described in Section 9.1 of 
+          <xref target="RFC2315"/>, containing a signature generated over the
+          content using the private key associated with the owner certificate
+          (<xref target="owner-certificate"/>).</t>
         </section>
 
         <section title="Owner Certificate" anchor="owner-certificate">
@@ -420,79 +448,40 @@
           (<xref target="ownership-voucher"/>).</t>
 
           <t>The owner certificate is used by a device to verify the signature 
-          attached to the information artifact (<xref target="zerotouch-information"/>)
+          attached to the zero touch information artifact (<xref target="zerotouch-information"/>)
           that the device SHOULD have also received, as described in 
           <xref target="artifact-groupings"/>.  In particular, the device verifies
           signature using the public key in the owner certificate over the content
-          contained within the information artifact.</t>
+          contained within the zero touch information artifact.</t>
 
           <t>In order to validate the owner certificate, a device MUST verify
-          that the owner certificate's certificate chain includes the certificate
+          that the owner certificate's certificate-chain includes the certificate
           specified by the ownership voucher (<xref target="ownership-voucher"/>)
           that the device SHOULD have also received, as described in
           <xref target="artifact-groupings"/>, and the device MUST verify that
           owner certificate contains an identifier matching the one specified
-          in the voucher and, for devices that insist on verifying certificate
-          revocation status, the device MUST verify that the certificate has
-          neither expired nor been revoked.</t>
+          in the voucher and, for devices that verify certificate revocation
+          status, the device MUST also verify that the certificate has neither
+          expired nor been revoked.</t>
 
           <t>The owner certificate artifact is formally an unsigned PKCS #7 
           SignedData structure as specified by Section 9.1 in <xref target="RFC2315"/>,
           encoded using ASN.1 distinguished encoding rules (DER), as 
           specified in ITU-T X.690.</t>
 
-          <t>The owner certificate artifact MUST contain the owner certificate
-          itself and all intermediate certificates leading up to the trust
-          anchor certificate specified in the ownership voucher.  The owner
-          certificate artifact MAY optionally include the trust anchor
+          <t>The owner certificate PKCS#7 structure MUST contain the owner
+          certificate itself, as well as all intermediate certificates leading
+          up to the trust anchor certificate specified in the ownership voucher.
+          The owner certificate artifact MAY optionally include the trust anchor
           certificate.</t>
 
-          <t>Additionally, if needed by the device, the owner certificate
-          artifact MAY also contain suitably fresh CRLs <xref target="RFC5280"/>
-          and/or OCSP Responses <xref target="RFC6960"/>.</t>
-
-<!--
-          <t>Certificate revocations are generally needed when it is critical
-          for devices to know that assurances implied at the time the certificate was
-          signed are still valid at the time the certificate is being processed.</t>
-  
-          <t>The need for devices to insist on verifying certificate revocation status
-          is a decision for each manufacturer.  If certificate revocation status verification
-          is not asserted, then the owner certificates are essentially forever, which
-          may be acceptable for various kinds of devices. If revocations are supported,
-          then it becomes possible to support various scenarios such as handling a key
-          compromise or expiration.</t>
-
-          <t>If certificate revocations are supported, devices MAY dynamically obtain the
-          certificate revocation artifact from an Internet based resource (using a CRL
-          distribution point or an OCSP responder).  If the access to the Internet based
-          resource is sufficiently reliable, then there may not be a need for the certificate
-          revocation artifact to be supplied by any other means (e.g., <xref target="sources"/>).
-          However, since the access may not be sufficiently reliable, support for this
-          artifact is defined herein, so that the voucher revocation artifact can be
-          distributed by any source of bootstrapping data.</t>
-
-          <t>The certificate revocation artifact is used by a device to verify the
-          owner certificate (<xref target="owner-certificate"/>) that the device
-          SHOULD have also received, as described in <xref target="artifact-groupings"/>.
-          In particular, the device verifies that the certificate revocation explicitly
-          states either that the given certificate is valid or that it is not invalid.</t>
-
-          <t>In order to validate the CRLs contained with the certificate revocation
-          artifact, a device MUST verify that the CRL was signed by a private key
-          associated certificate's issuer (or delegate), and the device MUST verify that the
-          CRL hasn't expired, and the device SHOULD verify that the revocation is sufficiently
-          fresh, per local policy.</t>
-
-          <t>The certificate revocation artifact is formally an unsigned PKCS #7 SignedData
-          structure as specified by RFC 2315 <xref target="RFC2315"/>, Section 9.1,
-          containing just CRLs (no content, signatures, or certificates), encoded
-          using ASN.1 distinguished encoding rules (DER), as specified in ITU-T X.690.</t>
-
-          <t>The certificate revocation artifact contains, in order, the CRL for
-          the owner certificate itself and the CRLs for all intermediate certificates
-          leading up to but not including a trust anchor certificate.</t>
--->
+          <t>Additionally, in order to support devices deployed on private networks,
+          the owner certificate PKCS#7 structure MAY also contain suitably fresh
+          CRLs <xref target="RFC5280"/> and/or OCSP Responses <xref target="RFC6960"/>.
+          Having these revocation objects stapled to the owner certificate precludes
+          the need for the device to have to download them dynamically using the CRL
+          distribution point or an OCSP responder specified in the associated
+          certificates.</t>
         </section>
 
         <section title="Ownership Voucher" anchor="ownership-voucher">
@@ -500,20 +489,20 @@
           owner, as it is known to the manufacturer.  The ownership voucher is signed
           by the device's manufacturer or delegate.</t>
 
-          <t>The ownership voucher is used by a device to verify the owner certificate
-          (<xref target="owner-certificate"/>) that the device SHOULD have also received,
-          as described in <xref target="artifact-groupings"/>.  In particular, the
-          device verifies that the owner certificate's chain of trust includes the
-          trusted certificate included in the voucher, and the device also verifies
-          that the owner certificate contains an identifier matching the one specified
-          in the voucher.</t>
+          <t>More specifically, the ownership voucher is used to verify the owner
+          certificate (<xref target="owner-certificate"/>) that the device SHOULD
+          have also received, as described in <xref target="artifact-groupings"/>.
+          In particular, the device verifies that the owner certificate has
+          a chain of trust leading to the trusted certificate included in the 
+          ownership voucher, even if it is itself (e.g., self-signed certificate).</t>
 
-          <t>In order to validate the voucher, a device MUST verify that the voucher was
-          signed by the private key associated with a trusted certificate known to the
-          device in its factory default state, as described in <xref target="factory-defaults"/>,
-          and the device MUST verify that the voucher includes the device's unique
-          identifier (e.g., serial number) and, if the voucher contains an expiration
-          date, the device MUST also verify that the voucher has not expired.</t>
+          <t>In order to validate the ownership voucher, a device MUST perform a
+          number of checks.  The device MUST verify that the voucher specifies
+          the device's serial number. The device MUST verify that the ownership
+          voucher has a chain of trust to a trusted certificate known to the device
+          (<xref target="factory-defaults"/>).  If the ownership voucher contains
+          an expiration date, the device MUST also verify that the ownership voucher
+          has not expired.</t>
 
           <t>The ownership voucher artifact, including its encoding, is formally defined
           in <xref target="I-D.ietf-anima-voucher"/>.</t>
@@ -531,7 +520,7 @@
 
         <section title="Unsigned Information" anchor="unsigned-information">
           <t>The first grouping of artifacts is for unsigned information.  That is,
-          when the information artifact (<xref target="zerotouch-information"/>)
+          when the zero touch information artifact (<xref target="zerotouch-information"/>)
           has not been signed.</t>
           <t>Unsigned information is useful for cases when transport level security
           can be used to convey trust (e.g., HTTPS), or when the information can be 
@@ -549,13 +538,15 @@ List of artifacts included in this grouping:
         </section>
 
         <section title="Signed Information (without Revocations)" anchor="signed-information-without">
-          <t>The second grouping of artifacts is for when the information artifact
-          (<xref target="zerotouch-information"/>) has been signed, without any revocation
-          information.</t>
+          <t>The second grouping of artifacts is for when the zero touch information artifact
+          (<xref target="zerotouch-information"/>) has been signed, but without any revocation
+          information, because the device is expected to download the revocation information
+          dynamically (e.g., using the CRL distribution point or OCSP Responder listed in the
+          owner certificate and and the pinned domain certificate specified in the ownership
+          voucher).</t>
           <t>Signed information is needed when the information is obtained
-          from an untrusted source of bootstrapping data (<xref target="sources"/>) and
-          yet it is desired that the device be able to trust the information (i.e. no
-          provisional processing).</t>
+          from an untrusted source of bootstrapping data (<xref target="sources"/>),
+          in order for the device to be able to trust the information.</t>
           <t>Revocation information may not need to be provided because, for
           instance, the device only uses revocation information obtained dynamically 
           from Internet based resources.  Another possible reason may be because the
@@ -569,25 +560,23 @@ List of artifacts included in this grouping:
               <artwork><![CDATA[
 List of artifacts included in this grouping:
   - zero touch information (with an embedded signature)
-  - owner certificate      (with no revocation structures)
-  - ownership voucher
+  - owner certificate      (with no stapled revocation objects)
+  - ownership voucher      (with no stapled revocation objects)
 ]]></artwork>
             </figure>
           </t>
         </section>
 
         <section title="Signed Information (with Revocations)" anchor="signed-information-with">
-          <t>The third grouping of artifacts is for when the information artifact
+          <t>The third grouping of artifacts is for when the zero touch information artifact
           (<xref target="zerotouch-information"/>) has been signed and also includes revocation
           information.</t>
           <t>Signed information, as described above, is needed when the information is
-          obtained from an untrusted source of bootstrapping data (<xref target="sources"/>)
-          and yet it is desired that the device be able to trust the information (i.e. no
-          provisional processing).</t>
+          obtained from an untrusted source of bootstrapping data (<xref target="sources"/>),
+          in order for the device be able to trust the information.</t>
           <t>Revocation information may need to be provided because, for instance, the 
-          device insists on being able to verify revocations and the device is deployed on
-          a private network and therefore unable to obtain the revocation information
-          from Internet based resources.</t>
+          device is deployed on a private network and therefore unable to obtain the
+          revocation information from Internet based resources.</t>
           <t>Conveying signed information with revocation information entails
           communicating all three of the artifacts listed in <xref target="artifacts"/>
           as follows:</t>
@@ -596,8 +585,8 @@ List of artifacts included in this grouping:
               <artwork><![CDATA[
 List of artifacts included in this grouping:
   - zero touch information (with an embedded signature)
-  - owner certificate      (with revocation structures)
-  - ownership voucher
+  - owner certificate      (with stapled revocation objects)
+  - ownership voucher      (with stapled revocation objects)
 ]]></artwork>
             </figure>
           </t>
@@ -611,32 +600,6 @@ List of artifacts included in this grouping:
         It is left to future documents to define additional sources for obtaining
         zero touch bootstrapping data.</t>
  
-<!-- 
-        <t>The trustability of a source for bootstrapping data is important as it
-        leads directly to what kinds of bootstrapping data the source needs to be
-        able to provide.  Specifically, only a trusted source can provide unsigned
-        bootstrapping information, as illustrated below:
-        <figure>
-          <artwork><![CDATA[
-                                 Untrusted Source  Trusted Source
-    Kind of Bootstrapping Data     Can Provide?     Can Provide?
-
-    Unsigned Redirect Info     :       Yes+             Yes
-    Signed Redirect Info       :       Yes              Yes* 
-    Unsigned Bootstrap Info    :        No              Yes
-    Signed Bootstrap Info      :       Yes              Yes* 
-
-    The '+' above denotes that the source redirected to MUST
-    return signed (not unsigned) data.
-
-    The '*' above denotes that, while possible, it is generally
-    unnecessary for a trusted source to return signed data.  In
-    fact, it's only needed when the '+' case occurs.
-
-]]></artwork>
-        </figure></t>
--->
- 
         <t>For each source defined in this section, details are given for how each
         of the three artifacts listed in <xref target="artifacts"/> is provided.</t>
 
@@ -649,8 +612,8 @@ List of artifacts included in this grouping:
           and mount its filesystem.</t>
 
           <t>Use of a removable storage device is compelling, as it doesn't require
-          any external infrastructure to work.  It is also compelling that the raw
-          boot image file can be located on the removable storage device, enabling
+          any external infrastructure to work.  It is notable that the raw boot
+          image file can be located on the removable storage device, enabling
           a removable storage device to be a fully self-standing bootstrapping 
           solution.</t>
 
@@ -666,12 +629,15 @@ List of artifacts included in this grouping:
 
           <t>Artifact to File Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information:">Mapped to a file containing 
-              the binary artifact described in <xref target="zerotouch-information"/>.</t>
+              <t hangText="   Zero Touch Information:">Mapped to a file containing 
+              the binary artifact described in <xref target="zerotouch-information"/>
+              (e.g., zerotouch-information.pkcs7).</t>
               <t hangText="   Owner Certificate:">Mapped to a file containing the
-              binary artifact described in <xref target="owner-certificate"/>.</t>
+              binary artifact described in <xref target="owner-certificate"/>
+              (e.g., owner-certificate.pkcs7).</t>
               <t hangText="   Ownership Voucher:">Mapped to a file containing the
-              binary artifact described in <xref target="ownership-voucher"/>.</t>
+              binary artifact described in <xref target="ownership-voucher"/>
+              (e.g., ownership-voucher.pkcs7).</t>
             </list>
           </t>
           <t>The format of the removable storage device's filesystem and the naming of the
@@ -699,7 +665,7 @@ List of artifacts included in this grouping:
           returned to it from the DHCP server; for example, searching for the service
           "_zerotouch._tcp.example.com".</t>
 
-          <t>Unsigned DNS records (not using DNSSEC as described in <xref target="RFC6698"/>)
+          <t>Unsigned DNS records (e.g., not using DNSSEC as described in <xref target="RFC6698"/>)
           are an untrusted source of bootstrapping data.  This means that the information 
           stored in the DNS records either MUST be signed, or it MUST be information
           that can be processed provisionally (e.g., unsigned redirect information).</t>
@@ -711,7 +677,7 @@ List of artifacts included in this grouping:
 
           <t>Artifact to Resource Record Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information:">Mapped to a TXT record called "zt-info"
+              <t hangText="   Zero Touch Information:">Mapped to a TXT record called "zt-info"
               containing the base64-encoding of the binary artifact described in
               <xref target="zerotouch-information"/>.</t>
               <t hangText="   Owner Certificate:">Mapped to a TXT record called
@@ -726,64 +692,51 @@ List of artifacts included in this grouping:
           <t>TXT records have an upper size limit of 65535 bytes (Section 3.2.1
           in RFC1035), since 'RDLENGTH' is a 16-bit field.  Please see Section
           3.1.3 in RFC4408 for how a TXT record can achieve this size.  Due to this
-          size limitation, some information artifacts may not fit.  In particular,
-          the bootstrap information artifact could hit this upper bound, depending
+          size limitation, some zero touch information artifacts may not fit.  In particular,
+          onboarding information could hit this upper bound, depending
           on the size of the included configuration and scripts.</t> 
 
-          <t>When bootstrap information is provided, it is notable that the URL
-          for the boot-image the device can download would have to point to another 
-          server (e.g., http://, ftp://, etc.), as DNS servers do not themselves
-          distribute files.</t>
+          <t>When onboarding information (not redirect information) is provided, it
+          is notable that the URL for the boot-image the device can download would
+          have to point to another server (e.g., http://, ftp://, etc.), as DNS
+          servers do not themselves distribute files.</t>
         </section>
 
         <section title="DHCP Server" anchor="dhcp-server">
           <t>A DHCP server MAY be used as a source of zero touch bootstrapping data.</t>
-
-          <t>To use a DHCP server as a source of bootstrapping data, a device need
-          only send a DHCP lease request to a DHCP server.  However, the device
-          SHOULD pass the Vendor Class Identifier (option 60) field in its DHCP
-          lease request, so the DHCP server can return bootstrap information 
-          shared by devices from the same vendor.  However, if it is desired to
-          return device-specific bootstrap information, then the device SHOULD
-          also send the Client Identifier (option 61) field in its DHCP lease
-          request, so the DHCP server can select the specific bootstrap information
-          that has been staged for that one device.</t>
 
           <t>Using a DHCP server may be a compelling option for deployments having
           existing DHCP infrastructure, as it enables a touchless bootstrapping option
           that does not entail utilizing an Internet based resource hosted by a
           3rd-party.</t>
 
-          <t>A DHCP server is an untrusted source of bootstrapping data.
-          This means that the information returned by the DHCP server either
-          MUST be signed, or it MUST be information that can be processed
-          provisionally (e.g., unsigned redirect information).</t>
+          <t>A DHCP server is an untrusted source of bootstrapping data.  Thus the
+          information stored on the DHCP server either MUST be signed, or it MUST
+          be information that can be processed provisionally (e.g., unsigned redirect
+          information).</t>
 
-          <t>From an artifact perspective, since a DHCP server presents data as
-          DHCP options <!-- ref? -->, the bootstrapping artifacts need to be
-          presented as DHCP options, specifically the ones specified in 
-          <xref target="dhcp-options"/>.  The three artifacts defined in
-          <xref target="artifacts"/> are mapped to the DHCP options 
-          specified in <xref target="dhcp-options"/> below.</t>
+          <t>However, unlike other sources of bootstrapping data described
+          in this document, the DHCP protocol (especially DHCP for IPv4) is limited
+          in the amount of data that can be conveyed, to the extent that
+          signed data cannot be communicated. This means only unsigned redirect
+          information can be conveyed.  Since the redirect information is unsigned,
+          it SHOULD NOT include the optional trust anchor certificate, as the
+          device would have to discard it anyway.</t>
 
-          <t>Artifact to DHCP Option Field Mapping:
+          <t>From an artifact perspective, the three artifacts defined in
+          <xref target="artifacts"/> are mapped to the DHCP fields specified in
+          <xref target="dhcp-options"/> as follows:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information:">Mapped to the DHCP option field 
-              "zerotouch-information" containing the binary artifact described in
-              <xref target="zerotouch-information"/>.</t>
-              <t hangText="   Owner Certificate:">Mapped to the DHCP option field
-              "owner-certificate" containing the binary artifact described in
-              <xref target="owner-certificate"/>.</t>
-              <t hangText="   Ownership Voucher:">Mapped to the DHCP option field
-              "ownership-voucher" containing the binary artifact described in
-              <xref target="ownership-voucher"/>.</t>
+              <t hangText="   Zero Touch Information:">This artifact is not supported
+              directly.  Instead, the essence of redirect information (not onboarding
+              information) is mapped to the DHCP fields described in
+              <xref target="dhcp-options"/>.</t>
+              <t hangText="   Owner Certificate:">Not supported.  There is not enough
+              space in the DHCP packet to hold an owner certificate artifact.</t>
+              <t hangText="   Ownership Voucher:">Not supported.  There is not enough
+              space in the DHCP packet to hold an ownership voucher artifact.</t>
             </list>
           </t>
-
-          <t>When bootstrap information is provided, it is notable that the URL
-          for the boot-image the device can download would have to point to another 
-          server (e.g., http://, ftp://, etc.), as DHCP servers do not themselves
-          distribute files.</t>
         </section>
 
         <section title="Bootstrap Server" anchor="bootstrap-server">
@@ -800,11 +753,11 @@ List of artifacts included in this grouping:
           (e.g., the device's SSH host-keys).</t>
 
           <t>To use a bootstrap server as a source of bootstrapping data, a device MUST 
-          use the RESTCONF protocol to access the YANG container node /device/,
+          use the RESTCONF protocol to access the YANG container node /device,
           passing its own serial number in the URL as the key to the 'device' list.</t>
 
           <t>Using a bootstrap server as a source of bootstrapping data is a compelling
-          option as it uses transport-level security in lieu of signed data, which
+          option as it MAY use transport-level security, in lieu of signed data, which
           may be easier to deploy in some situations.  Additionally, the bootstrap server
           is able to receive notifications from devices, which may be critical to
           some deployments (e.g., the passing of the device's SSH host keys).</t>
@@ -814,8 +767,8 @@ List of artifacts included in this grouping:
           anchor from a trusted source.  When a bootstrap server is trusted, the 
           information returned from it MAY be signed.  However, when the server is
           untrusted, in order for its information to be of any use to the device, the
-          information MUST either be signed or be information that can be processed
-          provisionally (e.g., unsigned redirect information).</t>
+          bootstrap information MUST either be signed or be information that can be
+          processed provisionally (e.g., unsigned redirect information).</t>
 
           <t>When a device is able to trust a bootstrap server, it MUST send its
           IDevID certificate in the form of a TLS client certificate, and it MUST
@@ -832,8 +785,8 @@ List of artifacts included in this grouping:
 
           <t>Artifact to Bootstrap Server Node Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Information:">Mapped to 
-              the node /device/zerotouch-information.</t>
+              <t hangText="   Zero Touch Information:">Mapped to 
+              the leaf node /device/zerotouch-information.</t>
               <t hangText="   Owner Certificate:">Mapped to the 
               leaf node /device/owner-certificate.</t>
               <t hangText="   Ownership Voucher:">Mapped to the 
@@ -861,7 +814,7 @@ List of artifacts included in this grouping:
         of the steps presented in the diagram, with further explanation on how
         implementations may vary.</t>
 
-        <section title="Onboarding and Ordering Devices" anchor="onboarding-and-ordering">
+        <section title="Enrollment and Ordering Devices" anchor="onboarding-and-ordering">
           <t>The following diagram illustrates key interactions that may occur from when a
           prospective owner enrolls in a manufacturer's zero touch program to when the
           manufacturer ships devices for an order placed by the prospective owner.</t>
@@ -878,26 +831,25 @@ List of artifacts included in this grouping:
       #<-----------------------------|                            |
       #                              |                            |
       #                              |                            |
-      #  IDevID trust anchor         |                            |
+      #     IDevID trust anchor      |                            |
       #----------------------------->#  set IDevID trust anchor   |
       #                              #--------------------------->|
       #                              |                            |
-      #  bootstrap server            |                            |
-      #  account credentials         |                            |
+      #     bootstrap server         |                            |
+      #     account credentials      |                            |
       #----------------------------->#  set credentials           |
-      #                              #--------------------------->|
-      #                              |                            |
-      #                              |                            |
-      #  owner certificate           |                            |
-      #----------------------------->#  set certificate           |
       |                              #--------------------------->|
       |                              |                            |
       |                              |                            |
-      |  2. place device order       |                            |
+      |  2. set owner certificate trust anchor                    |
+      |<----------------------------------------------------------|
+      |                              |                            |
+      |                              |                            |
+      |  3. place device order       |                            |
       |<-----------------------------#  model devices             |
       |                              #--------------------------->|
       |                              |                            |
-      |  3. ship devices and send    |                            |
+      |  4. ship devices and send    |                            |
       |     device identifiers and   |                            |
       |     ownership vouchers       |                            |
       |----------------------------->#  set device identifiers    |
@@ -919,30 +871,29 @@ List of artifacts included in this grouping:
                 they will always obtain from the manufacturer or delegate the trust anchor
                 certificate for its device's IDevID certificates.  This certificate will
                 need to be installed on the prospective owner's NMS so that the NMS can
-                subsequently authenticate the device's IDevID certificates.</t>
+                subsequently authenticate the devices' IDevID certificates.</t>
                 <t>If the manufacturer hosts an Internet based bootstrap server (e.g., a
                 redirect server) such as described in <xref target="bootstrap-server"/>,
-                then credentials
-                necessary to configure the bootstrap server would be provided to the
-                prospective owner.  If the bootstrap server is configurable through an
-                API (outside the scope of this document), then the credentials might be
-                installed on the prospective owner's NMS so that the NMS can subsequently
-                configure the manufacturer-hosted bootstrap server directly.</t>
-                <t>If the manufacturer's devices are able to validate signed data
-                (<xref target="validating-signed-data"/>), then the manufacturer,
-                acting as a certificate authority, may additionally sign an owner 
-                certificate for the prospective owner.  Alternatively, and not
-                depicted, the owner may obtain an owner certificate from a 
-                manufacturer-trusted 3rd-party certificate authority, and report
-                that certificate to the manufacturer.  How the owner certificate
-                is used to enable devices to validate signed bootstrapping data
-                is described in <xref target="validating-signed-data"/>.  Assuming
-                the prospective owner's NMS is able to prepare and sign the
-                bootstrapping data, the owner certificate would be installed
-                on the NMS at this time.</t>
+                then credentials necessary to configure the bootstrap server would be
+                provided to the prospective owner.  If the bootstrap server is
+                configurable through an API (outside the scope of this document), then
+                the credentials might be installed on the prospective owner's NMS so
+                that the NMS can subsequently configure the manufacturer-hosted
+                bootstrap server directly.</t>
               </list></t>
+              <t>If the manufacturer's devices are able to validate signed data
+              (<xref target="validating-signed-data"/>), and assuming that the 
+              prospective owner's NMS is able to prepare and sign the bootstrapping
+              data itself, the prospective owner's NMS might set a trust anchor
+              certificate onto the manufacturer's bootstrap server, using the
+              credentials provided in the previous step.  This certificate is the
+              trust anchor certificate that the prospective owner would like the
+              manufacturer to place into the ownership vouchers it generates, thereby
+              enabling devices to trust the owner's owner certificate.  How this trust
+              anchor certifiate is used to enable devices to validate signed bootstrapping
+              data is described in <xref target="validating-signed-data"/>.</t>
               <t>Some time later, the prospective owner places an order
-              with the manufacturer (or delegate), perhaps with a special
+              with the manufacturer or delegate, perhaps with a special
               flag checked for zero touch handling.  At this time, or
               perhaps before placing the order, the owner may model
               the devices in their NMS, creating virtual objects for the
@@ -952,13 +903,13 @@ List of artifacts included in this grouping:
               operational.</t>
               <t>When the manufacturer or delegate fulfills the order, shipping
               the devices to their intended locations, they may notify the owner
-              of the devices's unique identifiers (e.g., serial numbers) and
-              shipping destinations, which the owner may use to stage the network
-              for when the devices power on.  Additionally,  the manufacturer may
-              send one or more ownership vouchers, cryptographically assigning
-              ownership of those devices to the rightful owner.  The owner may
-              set this information on their NMS, perhaps binding specific modeled
-              devices to the unique identifiers and ownership vouchers.</t>
+              of the devices's serial numbers and shipping destinations, which
+              the owner may use to stage the network for when the devices power
+              on.  Additionally,  the manufacturer may send one or more ownership
+              vouchers, cryptographically assigning ownership of those devices to
+              the owner.  The owner may set this information on their NMS, perhaps
+              binding specific modeled devices to the serial numbers and ownership
+              vouchers.</t>
             </list>
           </t>
         </section>
@@ -1012,9 +963,9 @@ List of artifacts included in this grouping:
           in the diagram above.
             <list style="numbers">
               <t>Having previously modeled the devices, including setting their
-              fully operational configurations and associating both device identifiers
-              (e.g., serial numbers) and ownership vouchers, the owner "activates"
-              one or more modeled devices.  That is, the owner tells the NMS to perform
+              fully operational configurations and associating both device serial
+              numbers and ownership vouchers, the owner might "activate" one or
+              more modeled devices.  That is, the owner tells the NMS to perform
               the steps necessary to prepare for when the real-world devices
               power up and initiate the bootstrapping process.  Note that,
               in some deployments, this step might be combined with the last step
@@ -1030,13 +981,13 @@ List of artifacts included in this grouping:
               <t>If it is desired to use a manufacturer (or delegate) hosted bootstrap
               server, it MUST be configured to provide the bootstrapping information
               for the specific devices.  The configuration MUST be either redirect or
-              bootstrap information.  That is, either the manufacturer hosted bootstrap
+              onboarding information.  That is, either the manufacturer hosted bootstrap
               server will redirect the device to another bootstrap server, or provide
               the device with its bootstrapping information itself.  The types of
               bootstrapping information the manufacturer hosted bootstrap server
               supports MAY vary by implementation; some implementations may only
-              support redirect information, or only support bootstrap information,
-              or support both redirect and bootstrap information.  Configuring the
+              support redirect information, or only support onboarding information,
+              or support both redirect and onboarding information.  Configuring the
               bootstrap server MAY occur via a programmatic API not defined by this
               document.</t>
               <t>If it is desired to use a DNS server to supply bootstrapping
@@ -1080,7 +1031,7 @@ List of artifacts included in this grouping:
    | 2. for each source supported, check  |              |         |
    |------------------------------------->|              |         |
    |                                      |              |         |
-   | 3. if bootstrap-information found,   |              |         |
+   | 3. if onboarding-information found,  |              |         |
    |    initialize self and, only if      |              |         |
    |    source is a bootstrap server,     |              |         |
    |    send notifications                |              |         |
@@ -1093,7 +1044,7 @@ List of artifacts included in this grouping:
    |-+-------------------------------------------------->|         |
    | |                                                   |         |
    | |  if more redirect-information is found, recurse   |         |
-   | |  (not depicted), else if bootstrap-information    |         |
+   | |  (not depicted), else if onboarding-information   |         |
    | |  found, initialize self and post notifications    |         |
    | +-------------------------------------------------->#         |
    |                                                     # webhook |
@@ -1114,7 +1065,7 @@ List of artifacts included in this grouping:
               in order of closeness to the device (e.g., removable storage before
               Internet based servers), the device checks to see if there is any
               bootstrapping data for it there.</t>
-              <t>If bootstrap-information is found, the device initializes
+              <t>If onboarding information is found, the device initializes
               itself accordingly (e.g., installing a boot-image and committing an
               initial configuration).  If the source is a bootstrap server, and the
               bootstrap server can be trusted (i.e., TLS-level authentication), the
@@ -1131,7 +1082,7 @@ List of artifacts included in this grouping:
                   system to know when it can, for instance, initiate a connection to
                   the device (assuming it knows the device's address and the device
                   was configured to listen for connections).  To support this further,
-                  the bootstrap-complete notification also relays the device's SSH
+                  the bootstrap-complete notification MAY also relay the device's SSH
                   host keys and/or TLS certificates, with which the external system
                   can use to authenticate subsequent connections to the device.</t>
                 </list>
@@ -1141,11 +1092,11 @@ List of artifacts included in this grouping:
                 bootstrapping data.
               </t>
 
-              <t>Otherwise, if redirect-information is found, the device iterates 
+              <t>Otherwise, if redirect information is found, the device iterates 
               through the list of specified bootstrap servers, checking to see if
               there is any bootstrapping data for it on them.  If the bootstrap server
-              returns more redirect-information, then the device processes it recursively.
-              Otherwise, if the bootstrap server returns bootstrap-information,
+              returns more redirect information, then the device processes it recursively.
+              Otherwise, if the bootstrap server returns onboarding information,
               the device processes it following the description provided in (3) above.</t>
 
               <t>After having tried all supported sources of bootstrapping data, the
@@ -1178,7 +1129,7 @@ List of artifacts included in this grouping:
   |   | 1. IDevID cert & associated intermediate certificate(s)  |   |
   |   | 2. list of trusted Internet based bootstrap servers      |   |
   |   | 3. list of trust anchor certs for bootstrap servers      |   |
-  |   | 4. trust anchor cert for ownership vouchers              |   |
+  |   | 4. trust anchor cert for verifying ownership vouchers    |   |
   |   +----------------------------------------------------------+   |
   |                                                                  |
   |                    +----------------------+                      |
@@ -1195,11 +1146,10 @@ List of artifacts included in this grouping:
 
               <t>Devices MUST be manufactured with an initial device identifier (IDevID),
               as defined in <xref target="Std-802.1AR-2009"/>.  The IDevID is an X.509
-              certificate, encoding the device's unique device identifier (e.g., serial
-              number).  The device MUST also possess any intermediate certificates
-              between the IDevID certificate and the manufacturer's IDevID trust anchor
-              certificate, which is provided to prospective owners separately 
-              (e.g., <xref target="onboarding-and-ordering"/>).</t>
+              certificate, encoding the device's serial number.  The device MUST also
+              possess any intermediate certificates between the IDevID certificate and
+              the manufacturer's IDevID trust anchor certificate, which is provided to
+              prospective owners separately (e.g., <xref target="onboarding-and-ordering"/>).</t>
 
               <t>Devices that support loading bootstrapping data from an Internet-based
               bootstrap server (see <xref target="bootstrap-server"/>) MUST be manufactured
@@ -1214,10 +1164,10 @@ List of artifacts included in this grouping:
               on the bootstrap server's TLS server certificate.</t>
 
               <t>Devices that support loading owner signed data (see <xref target="terminology"/>)
-              MUST also be manufactured with the trust anchor certificate for the 
+              MUST also be manufactured with the manufacturer's trust anchor certificate for the 
               ownership vouchers.</t> 
 
-              <t>Device MUST be manufactured with a private key that corresponds to the
+              <t>Devices MUST be manufactured with a private key that corresponds to the
               public key encoded in the device's IDevID certificate.  This private key SHOULD be
               securely stored, ideally by a cryptographic processor (e.g., a TPM).</t>
             </list>
@@ -1271,20 +1221,64 @@ List of artifacts included in this grouping:
         </section>  <!-- end boot sequence -->
 
         <section title="Processing a Source of Bootstrapping Data" anchor="processing-a-source">
-          <t>This section describes a recursive algorithm that a device claiming to support
-          the bootstrapping strategy defined in this document MUST use to authenticate
-          bootstrapping data.  A device enters this algorithm for each new source of
-          bootstrapping data.  The first time the device enters this algorithm, it MUST
-          initialize a conceptual trust state variable, herein referred to as "trust-state",
-          to FALSE.  The ultimate goal of this algorithm is for the device to process
-          bootstrap information (<xref target="bootstrap-information"/>) while the trust-state
-          variable is TRUE.</t>
+          <t>This section describes a recursive algorithm that devices can use to,
+          ultimately, obtain onboarding information.  The algorithm is recursive
+          only because sources of bootstrapping data MAY return redirect information,
+          which causes the algorithm to run again, for the newly discovered sources
+          of information.  To be clear, an expression that captures all possible
+          combinations is "(redirect information)* onboarding information".  That is,
+          zero or more redirect information responses, followed by one bootstrap
+          information response.</t>
 
-          <t>If the data source is a bootstrap server, and the device is able
-          to authenticate the server using X.509 certificate path validation
+          <t>An important aspect of the algorithm is knowing when data needs to be
+          signed or not.  The following figure provides a summary of options:
+          <figure>
+            <artwork><![CDATA[
+                                 Untrusted Source  Trusted Source
+    Kind of Bootstrapping Data     Can Provide?     Can Provide?
+
+    Unsigned Redirect Info     :       Yes+             Yes
+    Signed Redirect Info       :       Yes              Yes* 
+    Unsigned Bootstrap Info    :        No              Yes
+    Signed Bootstrap Info      :       Yes              Yes* 
+
+    The '+' above denotes that the source redirected to MUST
+    return signed data, or more unsigned redirect information.
+
+    The '*' above denotes that, while possible, it is generally
+    unnecessary for a trusted source to return signed data.  In
+    fact, it's only needed when the '+' case occurs.
+
+]]></artwork>
+          </figure></t>
+
+          <t>As an example, imagine a device initially obtains unsigned
+          redirect information, which redirects it to an [untrusted]
+          bootstrap server where it obtains more unsigned redirect
+          information, which redirects it to another [untrusted] 
+          bootstrap server where it obtains signed redirect information,
+          which redirects it to a [trusted] bootstrap server where it
+          obtains redirect information (signed or unsigned doesn't matter,
+          its trusted either way), but without an included trust anchor
+          certificate, which is unexpected but possible, so the device
+          can't trust the server it's redirected to, and so on, until
+          finally the device obtains some onboarding information.</t>
+
+          <t>To support this behavior, this recursive algorithm uses a
+          conceptually global-scoped variable  algorithm variable called
+          "trust-state".  The trust-state variable is initialized to FALSE.
+          The ultimate goal of this algorithm is for the device to process
+          onboarding information (<xref target="onboarding-information"/>)
+          while the trust-state variable is TRUE.</t>
+
+          <t>If the data source is a bootstrap server, the only source of
+          bootstrapping data defined in this document that can be trusted
+          via transport level security, and the device is able to 
+          authenticate the server using X.509 certificate path validation
           (<xref target="RFC6125"/>, Section 6) to one of the device's
           preconfigured trust anchors, or to a trust anchor that it learned
           from a previous step, then the device MUST set trust-state to TRUE.</t>
+
           <t>If trust-state is TRUE, when connecting to the bootstrap server,
           the device MUST use its IDevID certificate for client certificate
           based authentication and MUST POST progress notifications using the
@@ -1294,11 +1288,9 @@ List of artifacts included in this grouping:
           and MUST NOT POST progress notifications using the bootstrap server's
           "notification" action.</t>
 
-          <t>When accessing a bootstrap server, the device MUST only access its
-          top-level resource, to obtain all the data staged for it in one GET
-          request, so that it can determine if the data is signed or not, and
-          thus act accordingly. If trust-state is TRUE, then the device MAY also
-          accesses the bootstrap servers 'notification' resource for the device.</t>
+          <t>When accessing a bootstrap server, the device SHOULD only access its
+          top-level resource, to obtain all the data staged for it in a single GET
+          request.</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
           if the data is signed and the device is able to validate the signed data
@@ -1307,21 +1299,24 @@ List of artifacts included in this grouping:
           trust-state to FALSE.  Note, this is worded to cover the special case
           when signed data is returned even from a trusted bootstrap server.</t>
 
-          <t>If the data is bootstrap information (not redirect information), and
-          trust-state is FALSE, the device MUST exit the recursive algorithm,
-          returning to the state machine described in <xref target="boot-sequence"/>.
-          Otherwise, the device MUST attempt to process the bootstrap information
-          as described in <xref target="process-bootstrap-information"/>.  In either
-          case, success or failure, the device MUST exit the recursive algorithm,
-          returning to the state machine described in <xref target="boot-sequence"/>,
-          the only difference being in how it responds to the "Able to bootstrap off
-          any source?" conditional described in that state machine.</t>
+          <t>If the data is onboarding information (not redirect information), and
+          trust-state is FALSE, the device MUST exit the recursive algorithm (as
+          this is not allowed, per the figure above), returning to the state machine
+          described in <xref target="boot-sequence"/>.  Otherwise, the device MUST
+          attempt to process the onboarding information as described in
+          <xref target="process-onboarding-information"/>.  In either case, success
+          or failure, the device MUST exit the recursive algorithm, returning to
+          the state machine described in <xref target="boot-sequence"/>, the only
+          difference being in how it responds to the "Able to bootstrap off any
+          source?" conditional described in the figure in the section.</t>
 
           <t>If the data is redirect information, the device MUST process the redirect
           information as described in <xref target="process-redirect-information"/>.
           This is the recursion step, it will cause to device to reenter this algorithm,
           but this time the data source will most definitely be a bootstrap server, as
-          that is all redirect information is able to do.</t>
+          that is all redirect information is able to redirect a device to.</t>
+
+
         </section>
 
         <section title="Validating Signed Data" anchor="validating-signed-data">
@@ -1336,18 +1331,18 @@ List of artifacts included in this grouping:
           data is defined in <xref target="sources"/>.</t>
           <t>The device MUST first authenticate the ownership voucher by validating
           the signature on it to one of its preconfigured trust anchors (see
-          <xref target="factory-defaults"/>) and verify that the voucher contains
-          the device's unique identifier (e.g., serial number).  If the voucher
-          contains an expiration timestamp, the device MUST also verify that the
-          voucher has not expired.  If the authentication of the voucher is
-          successful, the device extracts from it information that can be used
-          to  verify the owner certificate in the next step.</t>
+          <xref target="factory-defaults"/>) and verify that the ownership voucher
+          contains the device's serial number.  If the ownership voucher contains
+          an expiration timestamp, the device MUST also verify that the ownership
+          voucher has not expired.  If the authentication of the ownership voucher
+          is successful, the device extracts from it information that can be used
+          to verify the owner certificate in the next step.</t>
           <t>Next the device MUST authenticate the owner certificate by performing
           X.509 certificate path verification to the trusted certificate provided
           in the voucher.  If the device insists on verifying revocation status, it
           MUST also verify that none of the certificates in the chain of certificates
-          have been revoked or expired.  If the authentication of the certificate
-          is successful, the device extracts the owner's public key from the
+          have been revoked or expired.  If the authentication of the owner certificate
+          is successful, the device extracts the owner's public key from the owner 
           certificate for use in the next step.</t>
           <t>Finally the device MUST verify the signature over information
           artifact was generated by the private key matching the public
@@ -1385,19 +1380,19 @@ List of artifacts included in this grouping:
           accepting its TLS server certificate).</t>
         </section>
 
-        <section title="Processing Bootstrap Information" anchor="process-bootstrap-information">
-          <t>In order to process bootstrap information (<xref target="bootstrap-information"/>),
+        <section title="Processing Onboarding Information" anchor="process-onboarding-information">
+          <t>In order to process onboarding information (<xref target="onboarding-information"/>),
           the device MUST follow the steps presented in this section.</t>
 
-          <t>When processing bootstrap information, the device MUST first process the boot image
+          <t>When processing onboarding information, the device MUST first process the boot image
           information, then execute the pre-configuration script (if any), then commit the initial
           configuration, and then execute the script (if any), in that order.  If the device
           encounters an error at any step, it MUST NOT proceed to the next step.</t>
 
           <t>First the device MUST determine if the image it is running satisfies the specified
-          boot image  criteria (e.g., name or fingerprint match).  If it does not, the
-          device MUST download, verify, and install the specified boot image, and then
-          reboot.  To verify the boot image, the device MUST check that the boot image
+          boot image  criteria (e.g., name or fingerprint match).  If it does not, the device
+          MUST download (using the supplied URI), verify, and install the specified boot image,
+          and then reboot.  To verify the boot image, the device MUST check that the boot image
           file matches the fingerprint (e.g., sha256) supplied by the bootstrapping
           information.  Upon rebooting, the device MUST still be in its factory default
           state, causing the bootstrapping process to run again, which will eventually
@@ -1426,7 +1421,7 @@ List of artifacts included in this grouping:
           'bootstrap-complete' notification now.</t>
 
           <t>At this point the device is configured and no longer running its factory
-          default configuration.  Notably, if the bootstrap information configured
+          default configuration.  Notably, if the onboarding information configured
           the device it initiate a call home connection, the device would proceed
           to do so now.</t>
 
@@ -1435,13 +1430,13 @@ List of artifacts included in this grouping:
 
       <section title="The Zero Touch Information Artifact" anchor="artifact">
         <t>This section defines a YANG <xref target="RFC6020"/> module that is used to
-        define the data model for the Zero Touch Information artifact described in
+        define the data model for the zero touch information artifact described in
         <xref target="zerotouch-information"/>.  Examples illustrating this artifact in
         use are provided in <xref target="artifact-examples"/>.</t>
 
         <section title="Tree Diagram">
           <t>The following tree diagram provides an overview of the data model for the
-          Zero Touch Information artifact.  The syntax used for this tree diagram is
+          zero touch information artifact.  The syntax used for this tree diagram is
           described in <xref target="tree-diagram"/>.</t>
           <figure>
             <artwork><![CDATA[
@@ -1452,7 +1447,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-information-tree.txt)
 
         <section title="Example Usage" anchor="artifact-examples">
 
-          <t>This section presents examples for how the information artifact
+          <t>This section presents examples for how the zero touch information artifact
           (<xref target="zerotouch-information"/>) can be encoded into a document that
           can be distributed outside the bootstrap server's RESTCONF API.</t>
 
@@ -1464,18 +1459,18 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.xml)
 ]]></artwork>
           </figure>
 
-          <t>The following example illustrates how bootstrap information can be encoded
-          into an artifact.  This example uses datamodels from <xref target="RFC7317"/>
+          <t>The following example illustrates how onboarding information can be encoded
+          into an artifact.  This example uses data models from <xref target="RFC7317"/>
           and <xref target="I-D.ietf-netconf-netconf-client-server"/>.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-file-bootstrap-information.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.xml)
 ]]></artwork>
           </figure>
         </section> <!-- Artifact Examples -->
 
         <section title="YANG Module" anchor="info-yang-module">
-          <t>The Zero Touch Information artifact is normatively defined
+          <t>The zero touch information artifact is normatively defined
           by the YANG module defined in this section.</t>
 
           <t>Note: the module defined herein uses data types defined
@@ -1530,7 +1525,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
               SSH public key) that the NMS can use to log into the device with, and configure
               the device to either listen for inbound NETCONF/RESTCONF connections, or for the
               device to initiate an outbound NETCONF/RESTCONF call home connection
-              <xref target="RFC8071"/>.  The bootstrap information examples
+              <xref target="RFC8071"/>.  The onboarding information examples
               provided in <xref target="api-ex-3"/>, <xref target="api-ex-4"/>, and
               <xref target="art-ex-2"/> all illustrate a minimal initial configuration.</t>
 
@@ -1612,7 +1607,7 @@ device=123456/notification HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-notification.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-complete-notification.xml)
 
 
 RESPONSE
@@ -1645,6 +1640,162 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         </section> <!-- YANG Module -->
 
       </section>
+
+      <section title="DHCP Zero Touch Options" anchor="dhcp-options">
+
+        <t>This section defines two DHCP options, one for DHCPv4 and one for
+        DHCPv6.  These two options are semantically the same, though syntactically
+        different.</t>
+
+        <section title="DHCPv4 Zero Touch Option">
+
+          <t>The DHCPv4 Zero Touch Option is used to provision the client
+          with one or more URIs for bootstrap servers that can be
+          contacted to attempt further configuration.</t>
+
+          <figure>
+            <artwork><![CDATA[
+   DHCPv4 Zero Touch Redirect Option
+
+    0                             1
+    0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+   |   option-code (TBD)   |     option-length     |
+   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+   .                                               .
+   .    bootstrap-server-list (variable length)    .
+   .                                               .
+   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+   o option-code: OPTION_V4_ZEROTOUCH_REDIRECT (TBD)
+   o option-length: The option length in octets
+   o bootstrap-server-list: A list of servers for the
+      client to attempt contacting, in order to obtain
+      further bootstrapping data, in the format shown
+      in [common-field-encoding].
+]]></artwork>
+          </figure>
+
+          <t>DHCPv4 Client Behavior</t>
+          <t>Clients MAY request the OPTION_V4_ZEROTOUCH_REDIRECT by including its
+          option code in the Parameter Request List (55) in DHCP request messages.</t>
+          <t>On receipt of a DHCPv4 Reply message which contains the 
+          OPTION_V4_ZEROTOUCH_REDIRECT, the client performs the following steps:
+            <list style="numbers">
+              <t>Check the contents of the DHCPv4 message for at least one valid
+              URI. If there is more than one valid URI in the list, a candidate
+              list of possible URIs is created.</t>
+              <t>Attempt to connect to the one of the URIs in the candidate list.
+              The order in which these are processed by the client is implementation
+              specific and not defined here.</t>
+              <t>If a successful connection to the Zero Touch bootstrap server,
+              then the client stops processing entries in the list and proceeds
+              according to <xref target="device-powers-on"/>, step(3).</t>
+              <t>If the Zero Touch bootstrap server does not respond, provides
+              an invalid response, or the transaction otherwise fails, the client
+              SHOULD attempt to contact another server from the candidate list.</t>
+            </list>
+          </t>
+          <t>Any invalid URI entries received in the uri-data field are ignored by
+          the client.  If OPTION_V4_ZEROTOUCH_REDIRECT does not contain at least one
+          valid URI entry in the uri-data field, then the client MUST discard the option.</t>
+
+          <t>DHCPv4 Server Behavior</t>
+          <t>The DHCPv4 server MAY include a single instance of Option 
+          OPTION_V4_ZEROTOUCH_REDIRECT in DHCP messages it sends.  Servers MUST
+          NOT send more than one instance of the OPTION_V4_ZEROTOUCH_REDIRECT option.</t>
+
+        </section>
+
+        <section title="DHCPv6 Zero Touch Option">
+
+          <t>The DHCPv6 Zero Touch Option is used to provision the client with
+          one or more URIs for bootstrap servers that can be contacted to
+          attempt further configuration.</t>
+          <figure>
+            <artwork><![CDATA[
+   DHCPv6 Zero Touch Redirect Option
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |       option-code (TBD)      |          option-length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   .           bootstrap-server-list (variable length)             .
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   o option-code: OPTION_V6_ZEROTOUCH_REDIRECT (TBD)
+   o option-length: The option length in octets
+   o bootstrap-server-list: A list of servers for the client to
+     attempt contacting, in order to obtain further bootstrapping
+     data, in the format shown in [common-field-encoding].
+]]></artwork>
+          </figure>
+
+          <t>DHCPv6 Client Behavior</t>
+          <t>Clients MAY request the OPTION_V6_ZEROTOUCH_REDIRECT option, as defined
+          in <xref target="RFC3315"/>, Sections 17.1.1, 18.1.1, 18.1.3, 18.1.4,
+          18.1.5, and 22.7.   As a convenience to the reader, we mention here that
+          the client includes requested option codes in the Option Request Option.</t>
+          <t>On receipt of a DHCPv6 reply message which contains the 
+          OPTION_V6_ZEROTOUCH_REDIRECT, the client performs the following steps:
+            <list style="numbers">
+              <t>Check the contents of the DHCPv6 message for at least one valid
+              URI.  If there is more than one valid URI in the list, a candidate
+              list of possible URIs is created.</t>
+              <t>Attempt to connect to the one of the URIs in the candidate list.
+              The order in which these are processed by the client is implementation
+              specific and not defined here.</t>
+              <t>If a successful connection to the Netconf Zero Touch Bootstrap server,
+              then the client stops processing entries in the list and proceeds
+              according to <xref target="device-powers-on"/>, step(3).</t>
+              <t>If the Zero Touch bootstrap server does not respond, provides
+              and invalid response or the transaction otherwise fails, the client
+              SHOULD attempt to contact another server from the candidate list.</t>
+            </list>
+          </t>
+          <t>Any invalid URI entries received in the uri-data field are ignored
+          by the client.  If OPTION_V6_ZEROTOUCH_REDIRECT does not contain at least
+          one valid URI entry in the uri-data field, then the client MUST discard
+          the option.</t>
+
+          <t>DHCPv6 Server Behavior</t>
+          <t>Sections 17.2.2 and 18.2 of <xref target="RFC3315"/> govern server
+          operation in regard to option assignment.  As a convenience to the 
+          reader, we mention here that the server will send a particular option
+          code only if configured with specific values for that option code and
+          if the client requested it.</t>
+          <t>Option OPTION_V6_ZEROTOUCH_REDIRECT is a singleton.  Servers MUST
+          NOT send more than one instance of the OPTION_V6_ZEROTOUCH_REDIRECT
+          option.</t>
+
+        </section> <!-- DHCPv6 -->
+
+        <section title="Common Field Encoding" anchor="common-field-encoding">
+          <t>Both of the DHCPv4 and DHCPv6 options defined in this section
+          encode a list of bootstrap server URIs.  The 'URI' structure is
+          an option that can contain multiple URIs (see <xref target="RFC7227"/>,
+          Section 5.7).</t>
+
+          <figure>
+            <artwork><![CDATA[
+  bootstrap-server-list:
+
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
+  |       uri-length              |          URI                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
+
+  o uri-length: variable, in octets.
+
+  o URI: URI of Netconf zerotouch bootstrap server, using the HTTPS URI
+    scheme defined in Section 2.7.2 of RFC7230.
+]]></artwork>
+          </figure>
+
+        </section> <!-- common -->
+
+      </section> <!-- DHCP -->
+
 
       <section title="Security Considerations" anchor="sec-con">
 
@@ -1699,11 +1850,11 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           strong key length (e.g., 512-bit ECC).</t>
         </section>
         <section title="Serial Numbers">
-          <t>This draft suggests using the device's serial number as
-          the unique identifier in its IDevID certificate.  This is
-          because serial numbers are ubiquitous and prominently
-          contained in invoices and on labels affixed to devices and
-          their packaging.  That said, serial numbers many times encode
+          <t>This draft uses the device's serial number both in the
+          IDevID certificate as well as in the bootstrap server API.
+          Serial numbers are are ubiquitous and prominently contained
+          in invoices and on labels affixed to devices and their
+          packaging.  That said, serial numbers many times encode
           revealing information, such as the device's model number,
           manufacture date, and/or sequence number.  Knowledge of this
           information may provide an adversary with details needed
@@ -1720,50 +1871,25 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
       </section>
 
       <section title="IANA Considerations" anchor="iana-considerations">
-        <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry" anchor="dhcp-options">
-          <t>The following registrations are in accordance to RFC 2939 <xref target="RFC2939"/>
-          for "BOOTP Manufacturer Extensions and DHCP Options" registry maintained at
-          http://www.iana.org/assignments/bootp-dhcp-parameters.</t>
-          <figure>
-            <artwork>
-   Tag: XXX
-
-   Name: Zero Touch Information
-
-   Returns up to three zero touch bootstrapping artifacts.
-
-    Code   Len
-   +-----+-----+-----------------------+
-   | XXX |  n  | zerotouch-information |
-   +-----+-----+-----------------------+
-
-   +-------------------+-------------------+
-   | owner-certificate | ownership-voucher |
-   +-------------------+-------------------+
-
-   Reference: RFC XXXX
-            </artwork>
-          </figure>
-          <figure>
-            <artwork>
-   Tag: YYY
-
-   Name: Zero Touch Information
-
-   Returns up to three zero touch bootstrapping artifacts.
-
-    Code   Len
-   +-----+-----+-----------------------+
-   | XXX |  n  | zerotouch-information |
-   +-----+-----+-----------------------+
-
-   +-------------------+-------------------+
-   | owner-certificate | ownership-voucher |
-   +-------------------+-------------------+
-
-   Reference: RFC XXXX
-            </artwork>
-          </figure>
+        <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry">
+          <t>IANA is kindly requested to allocate a new option code from the
+          "BOOTP Manufacturer Extensions and DHCP Options" registry
+          maintained at http://www.iana.org/assignments/bootp-dhcp-parameters:
+            <figure>
+              <artwork>
+      TBD for OPTION_V4_ZEROTOUCH_REDIRECT
+              </artwork>
+            </figure>
+          </t>
+          <t>And a new option code from the "Dynamic Host Configuration Protocol
+          for IPv6 (DHCPv6)" registry maintained at
+          http://www.iana.org/assignments/dhcpv6-parameters:
+            <figure>
+              <artwork>
+     TBD for OPTION_V6_ZEROTOUCH_REDIRECT
+              </artwork>
+            </figure>
+          </t>
         </section>
         <section title="The IETF XML Registry">
           <t>This document registers two URIs in the IETF XML
@@ -1825,7 +1951,6 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         Joe Clarke,
         Toerless Eckert,
         Stephen Farrell,
-        Ian Farrer,
         Stephen Hanna,
         Wes Hardaker,
         Russ Mundy,
@@ -1847,6 +1972,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <?rfc include="reference.RFC.1035.xml"?>
           <?rfc include="reference.RFC.2119.xml"?>
           <?rfc include="reference.RFC.2315.xml"?>
+          <?rfc include="reference.RFC.3315.xml"?>
           <?rfc include="reference.RFC.5280.xml"?>
           <?rfc include="reference.RFC.6020.xml"?>
           <?rfc include="reference.RFC.6125.xml"?>
@@ -1854,8 +1980,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <?rfc include="reference.RFC.6762.xml"?>
           <?rfc include="reference.RFC.6763.xml"?>
           <?rfc include="reference.RFC.6991.xml"?>
+          <?rfc include="reference.RFC.7227.xml"?>
           <?rfc include="reference.RFC.7468.xml"?>
           <?rfc include="reference.RFC.8040.xml"?>
+          <?rfc include="reference.RFC.8174.xml"?>
           <?rfc include="reference.I-D.ietf-anima-voucher"?>
 
           <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
@@ -2069,6 +2197,18 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
               PKCS#7 structure.</t>
               <t>eliminated support for voucher-revocations, to reflect the
               voucher-draft's switch from revocations to renewals.</t>
+            </list>
+            </t>
+          </section>
+          <section title="13 to 14">
+            <t>
+            <list style="symbols">
+              <t>Renamed "bootstrap information" to "onboarding information".</t>
+              <t>Rewrote DHCP sections to address the packet-size limitation
+              issue, as discussed in Chicago.</t>
+              <t>Added Ian as an author for his text-contributions to the
+              DHCP sections.</t>
+              <t>Removed the Guiding Principles section.</t>
             </list>
             </t>
           </section>

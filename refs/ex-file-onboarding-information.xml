@@ -1,6 +1,6 @@
 <-- '\' line wrapping added for formatting purposes only -->
 
-<bootstrap-information
+<onboarding-information
   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
   <boot-image>
     <name>boot-image-v3.2R1.6.img</name>
@@ -70,4 +70,4 @@
       </call-home>
     </netconf-server>
   </configuration>
-</bootstrap-information>
+</onboarding-information>

@@ -50,8 +50,6 @@ all:
 	cd device/removable-storage-device && make process_offline_data
 
 
-
-
 	@echo "\nTo Do:"
 	@echo "  - replace PKCS#7 with CMS..."
 	@echo "  - add hardwareModule to DevID..."
@@ -65,10 +63,11 @@ all:
 generate_crls:
 	cd vendor/idevid-certificate-pki/trust-anchor-ca && make generate_crl
 	cd vendor/idevid-certificate-pki/intermediate-ca && make generate_crl
-	cd vendor/ownership-voucher-pki/trust-anchor-ca && make generate_crl
-	cd vendor/ownership-voucher-pki/intermediate1-ca && make generate_crl
-	cd vendor/ownership-voucher-pki/intermediate2-ca && make generate_crl
-	cd vendor/ownership-voucher-pki/intermediate3-ca && make generate_vrl
+	# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
+	#cd vendor/ownership-voucher-pki/trust-anchor-ca && make generate_crl
+	#cd vendor/ownership-voucher-pki/intermediate1-ca && make generate_crl
+	#cd vendor/ownership-voucher-pki/intermediate2-ca && make generate_crl
+	#cd vendor/ownership-voucher-pki/intermediate3-ca && make generate_vrl
 	cd 3rd-party-ca/owner-certificate-pki/trust-anchor-ca && make generate_crl
 	cd 3rd-party-ca/owner-certificate-pki/intermediate-ca && make generate_crl
 	cd 3rd-party-ca/tls-server-certificate-pki/trust-anchor-ca && make generate_crl

@@ -1,0 +1,15 @@
+{
+  "ietf-voucher:voucher": {
+    "created-on": "CREATED-ON",
+    "expires-on": "EXPIRES-ON",
+    "assertion": "verified",
+    "serial-number": "SERIAL-NUMBER",
+    "serial-number-issuer": "SERIAL-NUMBER-ISSUER",
+    "domain-cert-trusted-ca": "DOMAIN-CERT-TRUSTED-CA",
+    "domain-cert-identifier": {
+      "subject": "DOMAIN-CERT-IDENTIFIER-SUBJECT"
+    },
+    "assert-revocations-on-PKIX-certs": "false",
+    "last-renewal-date": "LAST-RENEWAL-DATE"
+  }
+}

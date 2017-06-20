@@ -1,9 +1,0 @@
-<!-- '\' line wrapping added for formatting purposes only -->
-
-<device
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
-  <unique-id>123456789</unique-id>
-  <zerotouch-information>\
-    Base64-encoded Zero Touch Information artifact\
-  <zerotouch-information>
-</device>

@@ -7,7 +7,7 @@ cert_request:
 
 sign_ownership_voucher:
 	@echo "[5.1] Signing Ownership Voucher..."
-	@make sign_file INPUT=../../../device/ownership-voucher/unsigned-ownership-voucher.xml OUTPUT=../../../device/ownership-voucher/ownership-voucher.pk7 NOCERTS=""
+	@make sign_file INPUT=../../../device/ownership-voucher/unsigned-ownership-voucher.json OUTPUT=../../../device/ownership-voucher/ownership-voucher.pk7 NOCERTS=""
 
 
 generate_vrl:
@@ -19,12 +19,11 @@ generate_vrl:
 
 
 sign_file:
-	#@cat ../intermediate1-ca/ca_cert.pem ../intermediate2-ca/ca_cert.pem > tmp_certfile
 	@cat ../intermediate2-ca/ca_cert.pem ../intermediate1-ca/ca_cert.pem > tmp_certfile
 	$(OPENSSL) smime -sign -signer ca_cert.pem -inkey private_key.pem -certfile tmp_certfile -binary -in $(INPUT) $(NOCERTS) -noattr -nodetach -out _temp_.smime >> /dev/null 2>&1
 	@rm tmp_certfile
 	$(OPENSSL) smime -pk7out -in _temp_.smime | $(OPENSSL) pkcs7 -out $(OUTPUT) -outform DER >> /dev/null 2>&1
-	@rm _temp_.smime
+	@rm _temp_.smime 
 
 
 clean:
