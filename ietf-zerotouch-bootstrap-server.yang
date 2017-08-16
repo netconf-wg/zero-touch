@@ -19,7 +19,7 @@ module ietf-zerotouch-bootstrap-server {
     by RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
     Management.
 
-    Copyright (c) 2014 IETF Trust and the persons identified as 
+    Copyright (c) 2017 IETF Trust and the persons identified as 
     authors of the code. All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ module ietf-zerotouch-bootstrap-server {
           Encoding Rules (DER).";
   }  
 
-  // protocol accessible node
+  // protocol accessible nodes
 
   list device {
     key unique-id;
@@ -148,9 +148,9 @@ module ietf-zerotouch-bootstrap-server {
            Protocols";
     }
 
-    action notification {
+    action update-progress {
       input {
-        leaf notification-type {
+        leaf update-type {
           type enumeration {
             enum bootstrap-initiated {
               description
@@ -175,7 +175,7 @@ module ietf-zerotouch-bootstrap-server {
                  data is provided, because the ownership voucher didn't
                  include the device's unique identifier, or because the
                  signature didn't match.  The 'message' field below
-                 SHOULD indicate the specific error.  This notification
+                 SHOULD indicate the specific error.  This update type
                  also indicates that the device has abandoned trying to
                  bootstrap off this bootstrap server.";
             }
@@ -195,7 +195,7 @@ module ietf-zerotouch-bootstrap-server {
                  reasons such as a file server being unreachable,
                  file not found, signature mismatch, etc.  The
                  'message' field SHOULD indicate the specific error
-                 that occurred.  This notification also indicates
+                 that occurred.  This update type also indicates
                  that the device has abandoned trying to bootstrap
                  off this bootstrap server.";
             }
@@ -215,7 +215,7 @@ module ietf-zerotouch-bootstrap-server {
                  The 'message' field below SHOULD indicate both the
                  resulting exit status code, as well as capture any
                  stdout/stderr messages the script may have produced.
-                 This notification also indicates that the device has 
+                 This update type also indicates that the device has 
                  abandoned trying to bootstrap off this bootstrap
                  server.";
             }
@@ -231,7 +231,7 @@ module ietf-zerotouch-bootstrap-server {
                 "Indicates that the device obtained error messages
                  when it committed the initial configuration.  The
                  'message' field below SHOULD indicate the error
-                 messages that were generated.  This notification
+                 messages that were generated.  This update type
                  also indicates that the device has abandoned trying
                  to bootstrap off this bootstrap server.";
             }
@@ -251,7 +251,7 @@ module ietf-zerotouch-bootstrap-server {
                  The 'message' field below SHOULD indicate both the
                  resulting exit status code, as well as capture any
                  stdout/stderr messages the script may have produced.
-                 This notification also indicates that the device has 
+                 This update type also indicates that the device has 
                  abandoned trying to bootstrap off this bootstrap
                  server.";
             }
@@ -261,14 +261,14 @@ module ietf-zerotouch-bootstrap-server {
                  all the bootstrapping data and that it is ready to be
                  managed.  The 'message' field below MAY contain any
                  additional information that the manufacturer thinks
-                 might be useful.  After sending this notification,
+                 might be useful.  After sending this update type,
                  the device is not expected to access the bootstrap
                  server again.";
             }
             enum informational {
               description
                 "Indicates any additional information not captured by
-                 any of the other notification-type. For instance, a
+                 any of the other update type. For instance, a
                  message indicating that the device is about to reboot
                  after having installed a boot-image could be provided.
                  The 'message' field below SHOULD contain information
@@ -277,7 +277,7 @@ module ietf-zerotouch-bootstrap-server {
           }
           mandatory true;
           description
-            "The type of notification provided.";
+            "The type of update provided.";
         }
         leaf message {
           type string;
@@ -285,10 +285,10 @@ module ietf-zerotouch-bootstrap-server {
             "An optional human-readable value.";
         }
         container ssh-host-keys {
-          when "../notification-type = 'bootstrap-complete'" {
+          when "../update-type = 'bootstrap-complete'" {
             description
-              "SSH host keys are only sent when the notification
-               type is 'bootstrap-complete'.";
+              "SSH host keys are only sent when the update type
+               is 'bootstrap-complete'.";
           }
           description
             "A list of SSH host keys an NMS may use to authenticate
@@ -314,10 +314,10 @@ module ietf-zerotouch-bootstrap-server {
           }
         }
         container trust-anchors {
-          when "../notification-type = 'bootstrap-complete'" {
+          when "../update-type = 'bootstrap-complete'" {
             description
-              "Trust anchors are only sent when the notification
-               type is 'bootstrap-complete'.";
+              "Trust anchors are only sent when the update type
+               is 'bootstrap-complete'.";
           }
           description
             "A list of trust anchor certificates an NMS may use to

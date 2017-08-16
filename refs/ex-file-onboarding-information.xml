@@ -1,10 +1,8 @@
-<-- '\' line wrapping added for formatting purposes only -->
-
 <onboarding-information
   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
   <boot-image>
     <name>boot-image-v3.2R1.6.img</name>
-    <sha256>Hex-encoded SHA256 hash</sha256>
+    <sha256>base64encodedvalue==</sha256>
     <uri>file:///some/path/to/raw/file </uri>
   </boot-image>
   <configuration-handling>merge</configuration-handling>
@@ -17,13 +15,7 @@
           <authorized-key>
             <name>admin's rsa ssh host-key</name>
             <algorithm>ssh-rsa</algorithm>
-            <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDeJMV8zrtsi8CgEsRC\
-            jCzfve2m6zD3awSBPrh7ICggLQvHVbPL89eHLuecStKL3HrEgXaI/O2Mwj\
-            E1lG9YxLzeS5p2ngzK61vikUSqfMukeBohFTrDZ8bUtrF+HMLlTRnoCVcC\
-            WAw1lOr9IDGDAuww6G45gLcHalHMmBtQxKnZdzU9kx/fL3ZS5G76Fy6sA5\
-            vg7SLqQFPjXXft2CAhin8xwYRZy6r/2N9PMJ2Dnepvq4H2DKqBIe340jWq\
-            EIuA7LvEJYql4unq4Iog+/+CiumTkmQIWRgIoj4FCzYkO9NvRE6fOSLLf6\
-            gakWVOZZgQ8929uWjCWlGlqn2mPibp2Go1</key-data>
+            <key-data>base64encodedvalue==</key-data>
           </authorized-key>
         </user>
       </authentication>
@@ -38,11 +30,11 @@
             <endpoints>
               <endpoint>
                 <name>east-data-center</name>
-                <address>11.22.33.44</address>
+                <address>east.config-mgr.example.com</address>
               </endpoint>
               <endpoint>
                 <name>west-data-center</name>
-                <address>55.66.77.88</address>
+                <address>west.config-mgr.example.com</address>
               </endpoint>
             </endpoints>
             <host-keys>
@@ -52,8 +44,12 @@
               </host-key>
             </host-keys>
             <client-cert-auth>
-              <trusted-ca-certs>deployment-specific-ca-certs</trusted-ca-certs>
-              <trusted-client-certs>explicitly-trusted-client-certs</trusted-client-certs>
+              <trusted-ca-certs>
+                deployment-specific-ca-certs
+              </trusted-ca-certs>
+              <trusted-client-certs>
+                explicitly-trusted-client-certs
+              </trusted-client-certs>
             </client-cert-auth>
           </ssh>
           <connection-type>

@@ -30,7 +30,7 @@ module ietf-zerotouch-information {
     artifact defined by RFC XXXX: Zero Touch Provisioning for NETCONF
     or RESTCONF based Management.
 
-    Copyright (c) 2014 IETF Trust and the persons identified as 
+    Copyright (c) 2017 IETF Trust and the persons identified as 
     authors of the code. All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -63,9 +63,9 @@ module ietf-zerotouch-information {
 
       container redirect-information {
         description
-          "This is redirect information, as described in Section 2.1 
-           in RFC XXXX.  Its purpose is to redirect a device to another
-           bootstrap server.";
+          "Redirect information is described in Section 2.1 in
+           RFC XXXX.  Its purpose is to redirect a device to 
+           another bootstrap server.";
         reference
           "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF
            based Management";
@@ -86,17 +86,19 @@ module ietf-zerotouch-information {
             type inet:port-number;
             default 443;
             description
-             "The port number the bootstrap server listens on.";
+             "The port number the bootstrap server listens on.  If no
+              port is specified, the IANA-assigned port for 'https'
+              (443) is used.";
           }
-          leaf trust-anchor { //should there be two fields like voucher?
+          leaf trust-anchor {
             type binary;
             description
               "An X.509 v3 certificate structure as specified by RFC
                5280, Section 4, encoded using ASN.1 distinguished
                encoding rules (DER), as specified in ITU-T X.690.  A
-               certificate that a device can use as a trust anchor 
-               to authenticate the bootstrap server it is being 
-               redirected to.";
+               certificate that  device can use as the trust anchor 
+               to authenticate the bootstrap server the device is
+               being redirected to.";
             reference
               "RFC 5280:
                  Internet X.509 Public Key Infrastructure Certificate
@@ -111,11 +113,10 @@ module ietf-zerotouch-information {
       }
 
       container onboarding-information {
-
         description
-          "This is bootstrap information, as described in Section 2.2 in
-           RFC XXXX.  Its purpose is to provide the device everything it
-           needs to bootstrap itself.";
+          "Bootstrap information is described in Section 2.2 in
+           RFC XXXX.  Its purpose is to provide the device 
+           everything it needs to bootstrap itself.";
         reference
           "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF
            based Management";
@@ -125,7 +126,7 @@ module ietf-zerotouch-information {
             "Specifies criteria for the boot image the device MUST 
              be running.";
 
-          leaf name {  // maybe this should be a regex?
+          leaf name {
             type string;
             mandatory true;
             description
