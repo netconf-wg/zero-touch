@@ -4,12 +4,9 @@
     "expires-on": "EXPIRES-ON",
     "assertion": "verified",
     "serial-number": "SERIAL-NUMBER",
-    "serial-number-issuer": "SERIAL-NUMBER-ISSUER",
-    "domain-cert-trusted-ca": "DOMAIN-CERT-TRUSTED-CA",
-    "domain-cert-identifier": {
-      "subject": "DOMAIN-CERT-IDENTIFIER-SUBJECT"
-    },
-    "assert-revocations-on-PKIX-certs": "false",
+    "idevid-issuer": "IDEVID-ISSUER",
+    "pinned-domain-cert": "DOMAIN-CERT-TRUSTED-CA",
+    "domain-cert-revocation-checks": "true",
     "last-renewal-date": "LAST-RENEWAL-DATE"
   }
 }

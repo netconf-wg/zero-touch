@@ -5,8 +5,6 @@ generate_offline_data:
 	@#+--ro signature?                binary
 	@#+--ro ownership-voucher?        binary
 	@#+--ro owner-certificate?        binary
-	@#+--ro voucher-revocation?       binary
-	@#+--ro certificate-revocation?   binary
 
 
 	@echo "\n[6.1] constructing information-type..."
@@ -14,7 +12,8 @@ generate_offline_data:
 	@sed 's#BOOSTRAP_SERVER_TRUST_ANCHOR#$(B64)#' .redirect-information-template.xml > information-type.xml
 
 	@echo "\n[6.2] generating signature..."
-	$(OPENSSL) smime -sign -signer ../owner-certificate/owner_certificate.pem -binary -in information-type.xml -inkey ../owner-certificate/private_key.pem -nocerts -noattr -nodetach -out signature.smime
+	#$(OPENSSL) smime -sign -signer ../owner-certificate/owner_certificate.pem -binary -in information-type.xml -inkey ../owner-certificate/private_key.pem -nocerts -noattr -nodetach -out signature.smime
+	$(OPENSSL) smime -sign -signer ../owner-certificate/owner_certificate.pem -binary -in information-type.xml -inkey ../owner-certificate/private_key.pem -noattr -nodetach -out signature.smime
 	$(OPENSSL) smime -pk7out -in signature.smime | $(OPENSSL) pkcs7 -out signature.pk7 -outform DER
 	@#$(OPENSSL) asn1parse -inform DER -in signature.pk7 -i
 	@rm -f signature.smime
@@ -34,6 +33,7 @@ generate_offline_data:
 	#@rm tmp_crls.pem
 
 	@echo "\n[6.6] assembling owner-certificate-revocation bundle..."
+	@echo "FIXME *** THE CRLS ARE SUPPOSED TO BE INSIDE THE OWNER_CERT.PK7 NOW !!! FIXME"
 	cat ../../3rd-party-ca/owner-certificate-pki/intermediate-ca/crl.pem ../../3rd-party-ca/owner-certificate-pki/trust-anchor-ca/crl.pem > tmp_crls.pem
 	../../tools/pack-crls -i tmp_crls.pem -o owner-certificate-revocation.pk7
 	@rm tmp_crls.pem

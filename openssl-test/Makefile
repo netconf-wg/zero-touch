@@ -46,17 +46,20 @@ all:
 
 	@# Now, let's see if the device can process the signed data
 	@echo "\n[7] Device processing signed bootstrapping data..."
-	cp owner/removable-storage-device/*.* device/removable-storage-device/
+	cp owner/removable-storage-device/signature.pk7 device/removable-storage-device/
+	cp owner/removable-storage-device/ownership-voucher.pk7 device/removable-storage-device/
+	cp owner/removable-storage-device/owner_certificate.pk7 device/removable-storage-device/
+	@echo "FIXME *** CRLS ARE NOW SUPPOSD TO BE INSIDE THE owner_certificate.pk7 FILE !!! FIXME"
+	cp owner/removable-storage-device/owner-certificate-revocation.pk7 device/removable-storage-device/
 	cd device/removable-storage-device && make process_offline_data
 
 
 	@echo "\nTo Do:"
-	@echo "  - replace PKCS#7 with CMS..."
-	@echo "  - add hardwareModule to DevID..."
-	@echo "  - replace voucher PKCS#7 with CWS?..."
-	@echo "  - add subject or subject-hash to Owner Cert?..."
+	@echo "  - replace PKCS#7 with CMS."
+	@echo "  - add hardwareModule to DevID."
+	@echo "  - merge owner-certificate revocations into owner certificate."
+	@echo "  - add subject or subject-hash to Owner Cert?."
 	@echo "  - replace CRL with OCSP Response?"
-	@echo "  - let owner generate signing certs below owner cert? - what is an owner/identity cert from a CA perspective?"
 
 
 
