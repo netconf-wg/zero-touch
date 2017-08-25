@@ -24,13 +24,8 @@ generate_offline_data:
 	@echo "\n[6.4] collecting owner-certificate..."
 	cp ../owner-certificate/owner_certificate.pk7 .
 
-	@echo "\n[6.5] assembling voucher-revocation bundle..."
-	@# already the voucher is a PKCS#7, so what we can do is add all the CRLs from the
-	@# cert chain CAs into it as 'helper objects'
-	# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	#cat ../../vendor/ownership-voucher-pki/intermediate2-ca/crl.pem ../../vendor/ownership-voucher-pki/intermediate1-ca/crl.pem ../../vendor/ownership-voucher-pki/trust-anchor-ca/crl.pem > tmp_crls.pem
-	#../../tools/pack-ovr-bundle -c tmp_crls.pem -v ../../vendor/ownership-voucher-pki/intermediate3-ca/ownership-voucher-revocation.pk7 -b ownership-voucher-revocation.pk7
-	#@rm tmp_crls.pem
+	@# NOTE: this code no longer assembles a voucher-revocation object due
+	@#       to the new irrevocable-voucher strategy (see voucher draft)
 
 	@echo "\n[6.6] assembling owner-certificate-revocation bundle..."
 	@echo "FIXME *** THE CRLS ARE SUPPOSED TO BE INSIDE THE OWNER_CERT.PK7 NOW !!! FIXME"
@@ -47,8 +42,6 @@ clean:
 	@rm -f signature.pk7 signature.smime
 	@rm -f ownership-voucher.pk7
 	@rm -f owner_certificate.pk7
-	@rm -f voucher-revocation.pk7
 	@rm -f owner-certificate-revocation.pk7
-	@rm -f ownership-voucher-revocation.pk7
 
 

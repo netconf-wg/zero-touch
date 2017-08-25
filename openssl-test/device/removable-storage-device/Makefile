@@ -22,52 +22,8 @@ process_offline_data:
 	@#$(OPENSSL) smime -verify -inform DER -in ownership-voucher.pk7 -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -out unsigned-ownership-voucher.json >> /dev/null 2>&1
 	$(OPENSSL) smime -verify -inform DER -in ownership-voucher.pk7 -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -out unsigned-ownership-voucher.json 
 
-	@# Extract the cert-chain from the voucher
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	#$(OPENSSL) pkcs7 -inform DER -in ownership-voucher.pk7 -print_certs -out voucher-certs.pem
-
-	@# The VRL here is actually a bundle containing the VRL itself plus the CRL for the
-	@# vendor's voucher-pki cert chain.  To be symmetric with the sequence of operations
-	@# in creating the bundle, we first unbundle the bundled-VRL into its parts...
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	#../../tools/pack-ovr-bundle -r -b ownership-voucher-revocation.pk7 -c voucher-pki-crls.pem -v voucher-revocation-itself.pk7
-
-	@# The VRL itself is a payload and a signature and, like a CRL, there is no stapled
-	@# cert chain.  However, verifying the VRL itself requires the cert chain (same as
-	@# the voucher verification above), so use the cert-chain from the voucher.  This
-	@# step also outputs the unsigned voucher revocation payload.
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	#$(OPENSSL) smime -verify -inform DER -in voucher-revocation-itself.pk7 -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -certfile voucher-certs.pem -out unsigned-ownership-voucher-revocation.xml >> /dev/null 2>&1
-
-	@# Now we need to ensure none of the certificates have been revoked.
-	@# note: we need to extract leaf cert first
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	@#split -p "BEGIN" voucher-certs.pem  frag
-	@#LEAF_CERT=`ls frag* | sort -r | head -1`; \
-	$(OPENSSL) verify -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -untrusted voucher-certs.pem -crl_check_all -CRLfile voucher-pki-crls.pem $$LEAF_CERT >> /dev/null 2>&1
-	@#rm frag*
-
-	@# Now we need to check if the voucher itself has been revoked
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	@#DGST=`$(OPENSSL) dgst -sha256 unsigned-ownership-voucher.json | sed 's/.*= //'`; \
-	GREP_OUTPUT=`grep $$DGST unsigned-ownership-voucher-revocation.xml`; \
-	if [ -n "$$GREP_OUTPUT" ]; then \
-	  "The voucher has been revoked, another voucher is needed..."; \
-	  exit -1; \
-	fi
-
-	@# Ensure the voucher-revocation hasn't expired 
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	@#EXPIRES_ON_LINE=`grep expires-on unsigned-ownership-voucher-revocation.xml`; \
-	if [ -n $$EXPIRES_ON_LINE ]; then \
-	  CURR_TS=`date +'%s'`; \
-	  EXPIRES_ON=`echo $$EXPIRES_ON_LINE | sed 's/.*>\(.*\)<.*/\1/'`; \
-	  EXPIRES_ON_TS=`date -j -f '%Y%m%dT%H%M%SZ' $$EXPIRES_ON +"%s"`; \
-	  if [ $$CURR_TS -gt $$EXPIRES_ON_TS ]; then \
-	    echo "The voucher-revocation expired, a more recent revocation file is needed..."; \
-	    exit -1; \
-	  fi; \
-	#fi  
+	@# NOTE: this code no longer checks to see if the voucher has been revoked
+	@#       due to the new irrevocable-voucher strategy (see voucher draft)
 
 	@# Ensure the voucher hasn't expired 
 	@EXPIRES_ON_LINE=`grep expires-on unsigned-ownership-voucher.json`; \
@@ -90,9 +46,6 @@ process_offline_data:
 	  echo " DEBUG: $$TMP"; \
 	  exit -1; \
 	fi
-
-	@# COMMENTED OUT WITH NEW IRREVOCABLE VOUCHER STRATEGY
-	@#rm unsigned-ownership-voucher-revocation.xml # don't need this anymore
 
 	@# DONE!
 	@echo "The ownership voucher is valid"
@@ -123,7 +76,8 @@ process_offline_data:
 	cp fragab owner-cert.pem
 	#$(OPENSSL) x509 -in owner-cert.pem -noout -text
 
-	@# now do verification (including crls)
+	@# now do verification (including crls) 
+	@# this assumes chain to root, but draft allows partial or no chain (use -partial-chain option?)
 	$(OPENSSL) verify -CAfile owner_cert_trust_anchor.pem -untrusted owner-cert-certs.pem -crl_check_all -CRLfile owner-cert-pki-crls.pem owner-cert.pem >> /dev/null 2>&1
 
 	@# cleanup
