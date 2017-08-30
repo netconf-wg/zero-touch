@@ -165,12 +165,12 @@ module ietf-zerotouch-information {
           type enumeration {
             enum merge {
               description 
-               "Merge configuration into existing running configuration.";
+               "Merge configuration into the running datastore.";
             }
             enum replace {
               description
-                "Replace existing running configuration with the passed
-                 configuration.";
+                "Replace the existing running datastore with the
+                 passed configuration.";
             }
           }
           description

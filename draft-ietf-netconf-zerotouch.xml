@@ -44,9 +44,9 @@
         <abstract>
             <t>This draft presents a secure technique for establishing a
             NETCONF or RESTCONF connection between a newly deployed
-            device, configured with just its factory
-            default settings, and its deployment specific network
-            management system (NMS).</t>
+            device, configured with just its preconfigured initial state
+            (e.g., factory default settings), and its deployment specific
+            network management system (NMS).</t>
         </abstract>
         <note title="Editorial Note (To be removed by RFC Editor)">
           <t>This draft contains many placeholder values that need to be replaced
@@ -102,6 +102,16 @@
         or RESTCONF <xref target="RFC8040"/> connection to a deployment specific
         network management system (NMS).</t>
 
+        <t>This document primarily regards physical devices, where the setting
+        of the device's initial state, described in <xref target="initial-state"/>,
+        occurs during the device's manufacturing process.  However, the zerotouch solution may be
+        extensible to virtual machines whereby, for instance, the host-system
+        has an IDevID certificate and some ability to verify the virtual
+        machine's image before loading it and also provision a just-in-time
+        IDevID certificate.  Details for how this may be accomplished can be
+        defined in future work.</t>
+
+
         <section title="Use Cases" anchor="use-cases">
           <t>
             <list style="symbols">
@@ -127,9 +137,8 @@
               </t>
             </list>
           </t>
-<!--
-          <t><vspace blankLines="30"/></t>
--->
+          <t>Conceptual workflows for how zerotouch might be deployed are 
+          provided in <xref target="workflow-overview"/>.</t>
         </section>
 
 
@@ -435,32 +444,25 @@
           contain a 'signerInfo' structure, as described in Section 9.1 of 
           <xref target="RFC2315"/>, containing a signature generated over the
           content using the private key associated with the owner certificate
-          (<xref target="owner-certificate"/>).</t>
+          (<xref target="owner-certificate"/>).  In order to simplify the
+          verification process, the PKCS#7 structure MUST also contain the
+          signing X.509 certificate.</t>
         </section>
 
         <section title="Owner Certificate" anchor="owner-certificate">
           <t>The owner certificate artifact is a certificate that is used to
-          identify an 'owner' (e.g., an organization), as known to a trusted certificate
-          authority.  The owner certificate is signed by a trusted certificate
-          authority (CA), whose certificate is placed into the ownership voucher
-          (<xref target="ownership-voucher"/>).</t>
+          identify an 'owner' (e.g., an organization).  The owner certificate
+          can be signed by any certificate authority (CA).  The owner certificate
+          MUST either have no Key Usage specified, or the Key Usage MUST set the
+          "digitalSignature" bit.  The values for the owner certificate's "subject"
+          and/or "subjectAltName" are not constrained by this document.</t>
 
           <t>The owner certificate is used by a device to verify the signature 
-          attached to the zero touch information artifact (<xref target="zerotouch-information"/>)
-          that the device SHOULD have also received, as described in 
+          for the zero touch information artifact (<xref target="zerotouch-information"/>),
+          the device SHOULD also have received, as described in 
           <xref target="artifact-groupings"/>.  In particular, the device verifies
           signature using the public key in the owner certificate over the content
           contained within the zero touch information artifact.</t>
-
-          <t>In order to validate the owner certificate, a device MUST verify
-          that the owner certificate's certificate-chain includes the certificate
-          specified by the ownership voucher (<xref target="ownership-voucher"/>)
-          that the device SHOULD have also received, as described in
-          <xref target="artifact-groupings"/>, and the device MUST verify that
-          owner certificate contains an identifier matching the one specified
-          in the voucher and, for devices that verify certificate revocation
-          status, the device MUST also verify that the certificate has neither
-          expired nor been revoked.</t>
 
           <t>The owner certificate artifact is formally an unsigned PKCS #7 
           SignedData structure as specified by Section 9.1 in <xref target="RFC2315"/>,
@@ -469,7 +471,7 @@
 
           <t>The owner certificate PKCS#7 structure MUST contain the owner
           certificate itself, as well as all intermediate certificates leading
-          up to the trust anchor certificate specified in the ownership voucher.
+          up to the 'pinned-domain-cert' certificate specified in the ownership voucher.
           The owner certificate artifact MAY optionally include the trust anchor
           certificate.</t>
 
@@ -493,14 +495,6 @@
           In particular, the device verifies that the owner certificate has
           a chain of trust leading to the trusted certificate included in the 
           ownership voucher, even if it is itself (e.g., self-signed certificate).</t>
-
-          <t>In order to validate the ownership voucher, a device MUST perform a
-          number of checks.  The device MUST verify that the voucher specifies
-          the device's serial number. The device MUST verify that the ownership
-          voucher has a chain of trust to a trusted certificate known to the device
-          (<xref target="factory-defaults"/>).  If the ownership voucher contains
-          an expiration date, the device MUST also verify that the ownership voucher
-          has not expired.</t>
 
           <t>The ownership voucher artifact, including its encoding, is formally defined
           in <xref target="I-D.ietf-anima-voucher"/>.</t>
@@ -706,7 +700,7 @@ with revocations                         revocations     revocations
 
           <t>To use a bootstrap server as a source of bootstrapping data, a device MUST 
           use the RESTCONF protocol to access the YANG container node /device,
-          passing its own serial number in the URL as the key to the 'device' list.</t>
+          passing its unique identifier in the URL as the key to the 'device' list.</t>
 
           <t>Using a bootstrap server as a source of bootstrapping data is a compelling
           option as it MAY use transport-level security, in lieu of signed data, which
@@ -762,10 +756,10 @@ with revocations                         revocations     revocations
       <section title="Device Details" anchor="device-details">
 
           <t>Devices supporting the bootstrapping strategy described in this document
-          MUST have the preconfigured factory default state and bootstrapping logic
+          MUST have the preconfigured state and bootstrapping logic
           described in the following sections.</t>
 
-          <section title="Factory Default State" anchor="factory-defaults">
+          <section title="Initial State" anchor="initial-state">
             <figure>
                 <artwork><![CDATA[
 +--------------------------------------------------------------+
@@ -792,17 +786,16 @@ with revocations                         revocations     revocations
             <t>Each numbered item below corresponds to a numbered item in the diagram above.
             <list style="numbers">
 
-              <t>Devices MUST be manufactured with an initial device identifier (IDevID),
+              <t>Devices MUST possess an initial device identifier (IDevID),
               as defined in <xref target="Std-802.1AR-2009"/>.  The IDevID is an X.509
               certificate, encoding e.g., the device's serial number and hardware
               manufacturer.  The device MUST also possess any intermediate certificates
-              between the IDevID certificate and the manufacturer's IDevID trust anchor
+              between the IDevID certificate and the IDevID trust anchor
               certificate, which is provided to prospective owners separately 
               (e.g., <xref target="onboarding-and-ordering"/>).</t>
 
               <t>Devices that support loading bootstrapping data from an Internet-based
-              bootstrap server (see <xref target="bootstrap-server"/>) MUST be manufactured
-              with 
+              bootstrap server (see <xref target="bootstrap-server"/>) MUST possess:
                 <list style="symbols">
                   <t>A configured list of trusted bootstrap servers.  Consistent with 
                   redirect information (<xref target="redirect-information"/>, each bootstrap
@@ -814,10 +807,10 @@ with revocations                         revocations     revocations
               </t>
 
               <t>Devices that support loading signed data (see <xref target="terminology"/>)
-              MUST be manufactured with the manufacturer's trust anchor certificate for 
+              MUST possess the manufacturer's trust anchor certificate for 
               validating ownership vouchers.</t> 
 
-              <t>Devices MUST be manufactured with a private key that corresponds to the
+              <t>Devices MUST possess a private key that corresponds to the
               public key encoded in the device's IDevID certificate.  This private key SHOULD be
               securely stored, ideally by a cryptographic processor (e.g., a TPM).</t>
             </list>
@@ -832,8 +825,8 @@ with revocations                         revocations     revocations
               <artwork><![CDATA[
     Power On
         |
-        v                        No
- 1. Running default config?   -------->  Boot normally
+        v                                  No
+ 1. Zerotouch bootstrapping configured  -------->  Boot normally
         |
         | Yes
         v
@@ -842,7 +835,7 @@ with revocations                         revocations     revocations
         |
         |
         v                               Yes
- 3. Able to bootstrap from any source?  -----> Run with new configuration
+ 3. Able to bootstrap from any source?  ----> Run with new configuration
         |
         | No
         v
@@ -854,9 +847,10 @@ with revocations                         revocations     revocations
 
           <t>Each numbered item below corresponds to a numbered item in the diagram above.
             <list style="numbers">
-              <t>When the device powers on, it first checks to see if
-              it is running the factory default configuration.  If it is
-              running a modified configuration, then it boots normally.</t>
+              <t>When the device powers on, it first checks to see if zerotouch bootstrapping
+              is configured, as is expected to be the case for the device's preconfigured
+              state.   If zerotouch bootstrapping is not configured, then the device
+              boots normally.</t>
               <t>The device iterates over its list of sources for
               bootstrapping data (<xref target="sources"/>).  Details for
               how to processes a source of bootstrapping data are provided
@@ -975,30 +969,39 @@ with revocations                         revocations     revocations
           signed data is provided by a trusted source, a redundant trust case,
           the device MAY skip verifying the signature.</t>
           <t>Whenever there is signed data, the device MUST also be provided
-          an ownership voucher and an owner certificate.  Depending on circumstances,
-          the device MAY also be provided certificate revocations.  How
-          all the needed artifacts are provided for each source of bootstrapping 
-          data is defined in <xref target="sources"/>.</t>
+          an ownership voucher and an owner certificate.  How all the needed
+          artifacts are provided for each source of bootstrapping data is
+          defined in <xref target="sources"/>.</t>
+
           <t>The device MUST first authenticate the ownership voucher by validating
           the signature on it to one of its preconfigured trust anchors (see
-          <xref target="factory-defaults"/>) and verify that the ownership voucher
-          contains the device's serial number.  If the ownership voucher contains
-          an expiration timestamp, the device MUST also verify that the ownership
-          voucher has not expired.  If the authentication of the ownership voucher
-          is successful, the device extracts from it information that can be used
-          to verify the owner certificate in the next step.</t>
-          <t>Next the device MUST authenticate the owner certificate by performing
-          X.509 certificate path verification to the trusted certificate provided
-          in the voucher.  If the device insists on verifying revocation status, it
-          MUST also verify that none of the certificates in the chain of certificates
-          have been revoked or expired.  If the authentication of the owner certificate
-          is successful, the device extracts the owner's public key from the owner 
-          certificate for use in the next step.</t>
+          <xref target="initial-state"/>).  If the device has an accurate
+          clock, it MUST ensure that the ownership voucher was created in the past
+          (i.e., 'created-on' &lt; now).  If the 'expires-on' leaf is present, the
+          device MUST verify that the ownership voucher has not yet expired
+          (i.e., now &lt; 'expires-on'), which requires an accurate clock.  The
+          device MUST verify that the ownership voucher's 'assertion' value is
+          acceptable (e.g., some devices may only accept the assertion value
+          'verified').  The device MUST verify that the ownership voucher specifies
+          the device's serial number in the 'serial-number' leaf.  If the 
+          'idevid-issuer' leaf is present, the device MUST verify that the
+          value is set correctly.  If the authentication of the ownership voucher
+          is successful, the device extracts the 'pinned-domain-certificate' node,
+          an X.509 certificate, that is needed to verify the owner certificate in
+          the next step.</t>
+          <t>The device MUST next authenticate the owner certificate by performing
+          X.509 certificate path verification to the trusted certificate extracted
+          from the voucher's 'pinned-domain-cert' node.  If the ownership voucher's 
+          'domain-cert-revocation-checks' node's value is set to "true", the device
+          MUST verify the revocation status of the certificate chain used to sign
+          the owner certificate and, if the revocation status is not attainable or
+          if it is determined that a certificate has been revoked, the device
+          MUST not validate the owner certificate.</t>
           <t>Finally the device MUST verify the signature over information
           artifact was generated by the private key matching the public
-          key extracted from the owner certificate in the previous step.</t>
+          key from the owner certificate.</t>
           <t>If any of these steps fail, then the device MUST mark the data as
-          invalid and not perform any of the subsequent steps.</t>
+          invalid and not perform any subsequent processing step.</t>
         </section>  <!-- end validating signed data -->
 
         <section title="Processing Redirect Information" anchor="process-redirect-information">
@@ -1044,8 +1047,8 @@ with revocations                         revocations     revocations
           MUST download (using the supplied URI), verify, and install the specified boot image,
           and then reboot.  To verify the boot image, the device MUST check that the boot image
           file matches the fingerprint (e.g., sha256) supplied by the bootstrapping
-          information.  Upon rebooting, the device MUST still be in its factory default
-          state, causing the bootstrapping process to run again, which will eventually
+          information.  Upon rebooting, the device MUST still be in its initial state,
+          causing the bootstrapping process to run again, which will eventually
           come to this very point, but this time the device's running image will satisfy
           the specified criteria, and thus the device will move to processing the next step.</t>
 
@@ -1071,10 +1074,10 @@ with revocations                         revocations     revocations
           'bootstrap-complete' progress update now, using the bootstrap server's
           'update-progress' action.</t>
 
-          <t>At this point the device is configured and no longer running its factory
-          default configuration.  Notably, if the onboarding information configured
-          the device it initiate a call home connection, the device would proceed
-          to do so now.</t>
+          <t>At this point the device is running its initial configuration.  Notably,
+          if NETCONF Call Home or RESTCONF Call Home <xref target="RFC8071"/> is
+          configured, the device initiates trying to establish a call home connection
+          at this time.</t>
 
         </section>
       </section>  <!-- end device details -->
@@ -1432,7 +1435,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
   o uri-length: variable, in octets.
 
-  o URI: URI of Netconf zerotouch bootstrap server, using the HTTPS URI
+  o URI: URI of zerotouch bootstrap server, using the HTTPS URI
     scheme defined in Section 2.7.2 of RFC7230.
 ]]></artwork>
           </figure>
@@ -1467,13 +1470,13 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>If it is not possible to ensure clock accuracy, it is
           RECOMMENDED that implementations disable the aspects of the
           solution having clock sensitivity. In particular, such
-          implementations should assume that TLS certificates and
-          owner certificates are not revokable.
-          In real-world terms, this means that manufacturers SHOULD 
-          only issue a single ownership voucher for the lifetime of 
-          some devices.</t>
-          <t>It is important to note that implementations SHOULD NOT
-          rely on NTP for time, as it is not a secure protocol.</t>
+          implementations should assume that TLS certificates,
+          ownership vouchers, and owner certificates never expire
+          and are not revokable.  In real-world terms, this means
+          that manufacturers SHOULD only issue a single ownership
+          voucher for the lifetime of such devices.</t>
+          <t>Implementations SHOULD NOT rely on NTP for time, as
+          NTP is not a secure protocol.</t>
         </section>
         <section title="Blindly authenticating a bootstrap server">
           <t>This document allows a device to blindly authenticate a
@@ -1497,7 +1500,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         <section title="Serial Numbers">
           <t>This draft uses the device's serial number both in the
           IDevID certificate as well as in the bootstrap server API.
-          Serial numbers are are ubiquitous and prominently contained
+          Serial numbers are ubiquitous and prominently contained
           in invoices and on labels affixed to devices and their
           packaging.  That said, serial numbers many times encode
           revealing information, such as the device's model number,
@@ -1563,15 +1566,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>
             <figure>
                 <artwork><![CDATA[
-   name:         ietf-zerotouch-information
-   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch-information
-   prefix:       zt
-   reference:    RFC XXXX
+   name:      ietf-zerotouch-information
+   namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-information
+   prefix:    zti
+   reference: RFC XXXX
 
    name:         ietf-zerotouch-bootstrap-server
-   namespace:    urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
-   prefix:       zt
-   reference:    RFC XXXX
+   namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
+   prefix:    ztbs
+   reference: RFC XXXX
 ]]></artwork>
           </figure>
         </t>
@@ -1647,7 +1650,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         </references>
 
 
-        <section title="Workflow Overview">
+        <section title="Workflow Overview" anchor="workflow-overview">
   
           <t>The zero touch solution presented in this document is conceptualized
           to be composed of the non-normative workflows described in this section.
@@ -1762,40 +1765,40 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             <t>
               <figure>
                 <artwork><![CDATA[
-                  +----------+ +------------+
-                  |Deployment| |Manufacturer| +------+ +------+
-                  | Specific | |   Hosted   | | Local| | Local| +---------+
-            +---+ |Bootstrap | | Bootstrap  | |  DNS | | DHCP | |Removable|
-            |NMS| |  Server  | |   Server   | |Server| |Server| | Storage |
-            +---+ +----------+ +------------+ +------+ +------+ +---------+
-              |        |             |            |        |         |
-     activate |        |             |            |        |         |
-     modeled  |        |             |            |        |         |
-  1. device   |        |             |            |        |         |
-  ----------->|        |             |            |        |         |
-              | 2. (optional)        |            |        |         |
-              |    configure         |            |        |         |
-              |    bootstrap         |            |        |         |
-              |    server            |            |        |         |
-              |------->|             |            |        |         |
-              |        |             |            |        |         |
-              | 3. (optional) configure           |        |         |
-              |    bootstrap server  |            |        |         |
-              |--------------------->|            |        |         |
-              |        |             |            |        |         |
-              |        |             |            |        |         |
-              | 4. (optional) configure DNS server|        |         |
-              |---------------------------------->|        |         |
-              |        |             |            |        |         |
-              |        |             |            |        |         |
-              | 5. (optional) configure DHCP server        |         |
-              |------------------------------------------->|         |
-              |        |             |            |        |         |
-              |        |             |            |        |         |
-              | 6. (optional) store bootstrapping artifacts on media |
-              |----------------------------------------------------->|
-              |        |             |            |        |         |
-              |        |             |            |        |         |
+                +----------+ +------------+
+                |Deployment| |Manufacturer| +------+ +------+
+                | Specific | |   Hosted   | | Local| | Local| +---------+
+          +---+ |Bootstrap | | Bootstrap  | |  DNS | | DHCP | |Removable|
+          |NMS| |  Server  | |   Server   | |Server| |Server| | Storage |
+          +---+ +----------+ +------------+ +------+ +------+ +---------+
+            |        |             |            |        |         |
+   activate |        |             |            |        |         |
+   modeled  |        |             |            |        |         |
+1. device   |        |             |            |        |         |
+----------->|        |             |            |        |         |
+            | 2. (optional)        |            |        |         |
+            |    configure         |            |        |         |
+            |    bootstrap         |            |        |         |
+            |    server            |            |        |         |
+            |------->|             |            |        |         |
+            |        |             |            |        |         |
+            | 3. (optional) configure           |        |         |
+            |    bootstrap server  |            |        |         |
+            |--------------------->|            |        |         |
+            |        |             |            |        |         |
+            |        |             |            |        |         |
+            | 4. (optional) configure DNS server|        |         |
+            |---------------------------------->|        |         |
+            |        |             |            |        |         |
+            |        |             |            |        |         |
+            | 5. (optional) configure DHCP server        |         |
+            |------------------------------------------->|         |
+            |        |             |            |        |         |
+            |        |             |            |        |         |
+            | 6. (optional) store bootstrapping artifacts on media |
+            |----------------------------------------------------->|
+            |        |             |            |        |         |
+            |        |             |            |        |         |
   ]]></artwork>
               </figure>
             </t>
@@ -1814,7 +1817,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 the steps, but they may be performed manually or through some other
                 mechanism.</t>
                 <t>If it is desired to use a deployment specific bootstrap server,
-                it must`be configured to provide the bootstrapping information for
+                it must be configured to provide the bootstrapping information for
                 the specific devices.   Configuring the bootstrap server may occur
                 via a programmatic API not defined by this document.  Illustrated
                 here as an external component, the bootstrap server may be
@@ -1865,9 +1868,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
   +------+                            +-----------+  +----------+  +---+
      |                                      |              |         |
      |                                      |              |         |
-     | 1. if running a modified (not        |              |         |
-     |    factory default) configuration,   |              |         |
-     |    then exit.                        |              |         |
+     | 1. if zerotouch bootstrap is not     |              |         |
+     |    configured, then exit.            |              |         |
      |                                      |              |         |
      | 2. for each source supported, check  |              |         |
      |------------------------------------->|              |         |
@@ -1898,10 +1900,11 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             </t>
             <t>The interactions in the above diagram are described below.
               <list style="numbers">
-                <t>Upon power being applied, the device's bootstrapping logic
-                first checks to see if it is running in its factory default
-                state.  If it is in a modified state, then the bootstrapping
-                logic exits and none of the following interactions occur.</t>
+                <t>Upon power being applied, the device checks to see if zerotouch
+                bootstrapping is configured, such as is the case when running its
+                "factory default" configuration.  If zerotouch bootstrapping is
+                not configured, then the bootstrapping logic exits and none of the
+                following interactions occur.</t>
                 <t>For each source of bootstrapping data the device supports, preferably 
                 in order of closeness to the device (e.g., removable storage before
                 Internet based servers), the device checks to see if there is any
@@ -1928,7 +1931,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                     can use to authenticate subsequent connections to the device.</t>
                   </list>
                   If the device successfully completes the bootstrapping process
-                  (i.e., no longer running its factory default configuration), it exits
+                  (i.e., zerotouch bootstrapping is no longer configured), it exits
                   the bootstrapping logic without considering any additional sources of
                   bootstrapping data.
                 </t>
@@ -1944,8 +1947,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 device may retry again all the sources and/or provide manageability
                 interfaces for manual configuration (e.g., CLI, HTTP, NETCONF, etc.).
                 If manual configuration is allowed, and such configuration is provided,
-                the device must immediately cease trying to obtain bootstrapping data, as
-                it would then no longer be in running its factory default configuration.</t>
+                the device should cease trying to obtain bootstrapping data, as the
+                need to do so would no longer be present.</t>
               </list>
             </t>
           </section>
@@ -2164,6 +2167,32 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
               <t>Renamed 'bootstrap information' to 'update information'.</t>
               <t>Removed 'Other Considerations' section.</t>
               <t>Tons of editorial updates.</t>
+            </list>
+            </t>
+          </section>
+          <section title="15 to 16">
+            <t>
+            <list style="symbols">
+              <t>tweaked language to refer to "initial state" rather than "factory
+              default configuration", so as accomodate white-box scenarios.</t>
+              <t>added a paragraph to Intro regarding how the solution primarily regards
+              physical machines, but could be extended to VMs by a future document.</t>
+              <t>added a pointer to the Workflow Overview section (recently moved to
+              the Appendix) to the Intro.</t>
+              <t>added a note that, in order to simplify the verification process,
+              the "Zerotouch Information" PKCS#7 structure MUST also contain the
+              signing X.509 certificate.</t>
+              <t>noted that the owner certificate's must either have no Key Usage or
+              the Key Usage must set the "digitalSignature" bit.</t>
+              <t>noted that the owner certificate's subject and subjectAltName values
+              are not constrained.</t>
+              <t>moved/consolidated some text from the Artifacts section down to the
+              Device Details section.</t>
+              <t>tightened up some ambigous language, for instance, by refering to
+              specific leaf names in the Voucher artifact.</t>
+              <t>reverted a previously overzealous s/unique-id/serial-number/ change.</t>
+              <t>modified language for when ZTP runs from when factory-default config
+              is running to when ZTP is confgured, which the factory-defaults should set .</t>
             </list>
             </t>
           </section>
