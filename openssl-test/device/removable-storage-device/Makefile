@@ -17,13 +17,11 @@ process_offline_data:
 
 	@# First verify the payload is signed by a chain of certs leading to the hardcoded
 	@# trust anchor (and output the unsigned payload).  Note: this step does NOT verify the
-	@# revocation status of the stapled certificates, or if the voucher contains the
-	@# device's unique-id
+	@# revocation status of the stapled certificates (due to the new irrevocable-voucher
+	@# strategy), or if the voucher has expired, or if the voucher contains the device's
+	@# unique-id.
 	@#$(OPENSSL) smime -verify -inform DER -in ownership-voucher.pk7 -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -out unsigned-ownership-voucher.json >> /dev/null 2>&1
 	$(OPENSSL) smime -verify -inform DER -in ownership-voucher.pk7 -CAfile ../../vendor/ownership-voucher-pki/trust-anchor-ca/ca_cert.pem -out unsigned-ownership-voucher.json 
-
-	@# NOTE: this code no longer checks to see if the voucher has been revoked
-	@#       due to the new irrevocable-voucher strategy (see voucher draft)
 
 	@# Ensure the voucher hasn't expired 
 	@EXPIRES_ON_LINE=`grep expires-on unsigned-ownership-voucher.json`; \
@@ -37,7 +35,7 @@ process_offline_data:
 	  fi; \
 	fi
 
-	@# Lastly, make sure the voucher contains this device's unique-id
+	@# Lastly, ensure the voucher contains this device's unique-id
 	@MY_SERIAL_NUMBER=`$(OPENSSL) x509 -in ../../device/idevid-certificate/idevid_cert.pem -noout -subject | sed -e 's/.*serialNumber = //' | tr -d '\n'`; \
 	GREP_OUTPUT=`grep serial-number unsigned-ownership-voucher.json | grep $$MY_SERIAL_NUMBER`; \
 	if [ -z "$$GREP_OUTPUT" ]; then \
