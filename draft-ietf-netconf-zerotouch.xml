@@ -184,7 +184,7 @@
               herein to refer to one of the two types of 'zero touch information' (see term)
               defined in this document, the other being 'redirect information'.  Specifically, 
               onboarding information is defined by the 'onboarding-information' YANG-data
-              struture in <xref target="info-yang-module"/>.</t>
+              structure in <xref target="info-yang-module"/>.</t>
 
               <t hangText="Owner:">The term "owner" is used throughout this document
               to refer to the person or organization that purchased or otherwise owns
@@ -577,13 +577,13 @@ with revocations                         revocations     revocations
             <list style="hanging" hangIndent="6">
               <t hangText="   Zero Touch Information:">Mapped to a file containing 
               the binary artifact described in <xref target="zerotouch-information"/>
-              (e.g., zerotouch-information.pkcs7).</t>
+              (e.g., zerotouch-information.pk7).</t>
               <t hangText="   Owner Certificate:">Mapped to a file containing the
               binary artifact described in <xref target="owner-certificate"/>
-              (e.g., owner-certificate.pkcs7).</t>
+              (e.g., owner-certificate.pk7).</t>
               <t hangText="   Ownership Voucher:">Mapped to a file containing the
               binary artifact described in <xref target="ownership-voucher"/>
-              (e.g., ownership-voucher.pkcs7).</t>
+              (e.g., ownership-voucher.pk7).</t>
             </list>
           </t>
           <t>The format of the removable storage device's filesystem and the naming of the
@@ -867,12 +867,12 @@ with revocations                         revocations     revocations
         <section title="Processing a Source of Bootstrapping Data" anchor="processing-a-source">
           <t>This section describes a recursive algorithm that devices can use to,
           ultimately, obtain onboarding information.  The algorithm is recursive
-          only because sources of bootstrapping data MAY return redirect information,
+          because sources of bootstrapping data MAY return redirect information,
           which causes the algorithm to run again, for the newly discovered sources
-          of information.  To be clear, an expression that captures all possible
-          combinations is "(redirect information)* onboarding information".  That is,
-          zero or more redirect information responses, followed by one bootstrap
-          information response.</t>
+          of bootstrapping information.  An ANBF-like expression that captures all
+          possible sequences of bootstrapping information is "(redirect information)*
+          onboarding information".  That is, zero or more redirect information responses,
+          followed by one bootstrap information response.</t>
 
           <t>An important aspect of the algorithm is knowing when data needs to be
           signed or not.  The following figure provides a summary of options:
@@ -896,29 +896,15 @@ with revocations                         revocations     revocations
 ]]></artwork>
           </figure></t>
 
-          <t>As an example, imagine a device initially obtains unsigned
-          redirect information, which redirects it to an [untrusted]
-          bootstrap server where it obtains more unsigned redirect
-          information, which redirects it to another [untrusted] 
-          bootstrap server where it obtains signed redirect information,
-          which redirects it to a [trusted] bootstrap server where it
-          obtains redirect information (signed or unsigned doesn't matter,
-          its trusted either way), but without an included trust anchor
-          certificate, which is unexpected but possible, so the device
-          can't trust the server it's redirected to, and so on, until
-          finally the device obtains some onboarding information.</t>
 
-          <t>To support this behavior, this recursive algorithm uses a
-          conceptually global-scoped algorithm variable called
-          "trust-state".  The trust-state variable is initialized to FALSE.
+          <t>The recursive algorithm uses a conceptual global-scoped variable
+          called "trust-state".  The trust-state variable is initialized to FALSE.
           The ultimate goal of this algorithm is for the device to process
           onboarding information (<xref target="onboarding-information"/>)
           while the trust-state variable is TRUE.</t>
 
-          <t>If the data source is a bootstrap server, the only source of
-          bootstrapping data defined in this document that can be trusted
-          via transport level security, and the device is able to 
-          authenticate the server using X.509 certificate path validation
+          <t>If the data source is a bootstrap server, and the device is able to 
+          authenticate the bootstrap server using X.509 certificate path validation
           (<xref target="RFC6125"/>, Section 6) to one of the device's
           preconfigured trust anchors, or to a trust anchor that it learned
           from a previous step, then the device MUST set trust-state to TRUE.</t>
@@ -959,24 +945,22 @@ with revocations                         revocations     revocations
           This is the recursion step, it will cause to device to reenter this algorithm,
           but this time the data source will most definitely be a bootstrap server, as
           that is all redirect information is able to redirect a device to.</t>
-
-
         </section>
 
         <section title="Validating Signed Data" anchor="validating-signed-data">
-          <t>Whenever a device is presented signed data from an untrusted source,
-          it MUST validate the signed data as described in this section.  If the
-          signed data is provided by a trusted source, a redundant trust case,
-          the device MAY skip verifying the signature.</t>
+          <t>Whenever a device is presented signed data, it MUST validate the
+          signed data as described in this section.  This includes the case
+          where the signed data is provided by a trusted source.</t>
           <t>Whenever there is signed data, the device MUST also be provided
           an ownership voucher and an owner certificate.  How all the needed
           artifacts are provided for each source of bootstrapping data is
           defined in <xref target="sources"/>.</t>
-
-          <t>The device MUST first authenticate the ownership voucher by validating
-          the signature on it to one of its preconfigured trust anchors (see
-          <xref target="initial-state"/>).  If the device has an accurate
-          clock, it MUST ensure that the ownership voucher was created in the past
+          <t>The device MUST first authenticate the ownership voucher 
+          by validating the signature on it to one of its preconfigured
+          trust anchors (see <xref target="initial-state"/>), which 
+          may entail using additional intermediate certificates attached 
+          to the ownership voucher.  If the device has an accurate clock,
+          it MUST ensure that the ownership voucher was created in the past
           (i.e., 'created-on' &lt; now).  If the 'expires-on' leaf is present, the
           device MUST verify that the ownership voucher has not yet expired
           (i.e., now &lt; 'expires-on'), which requires an accurate clock.  The
@@ -991,12 +975,15 @@ with revocations                         revocations     revocations
           the next step.</t>
           <t>The device MUST next authenticate the owner certificate by performing
           X.509 certificate path verification to the trusted certificate extracted
-          from the voucher's 'pinned-domain-cert' node.  If the ownership voucher's 
+          from the voucher's 'pinned-domain-cert' node.  This verification may
+          entail using additional intermediate certificates attached to the
+          owner certificate artifact.  If the ownership voucher's 
           'domain-cert-revocation-checks' node's value is set to "true", the device
           MUST verify the revocation status of the certificate chain used to sign
           the owner certificate and, if the revocation status is not attainable or
           if it is determined that a certificate has been revoked, the device
           MUST not validate the owner certificate.</t>
+
           <t>Finally the device MUST verify the signature over information
           artifact was generated by the private key matching the public
           key from the owner certificate.</t>
@@ -1083,12 +1070,12 @@ with revocations                         revocations     revocations
       </section>  <!-- end device details -->
 
       <section title="The Zero Touch Information Artifact" anchor="artifact">
-        <t>This section defines a YANG <xref target="RFC6020"/> module that is used to
+        <t>This section defines a YANG 1.1 <xref target="RFC7950"/> module that is used to
         define the data model for the zero touch information artifact described in
         <xref target="zerotouch-information"/>.  Examples illustrating this artifact in
         use are provided in <xref target="artifact-examples"/>.</t>
 
-        <section title="Tree Diagram">
+        <section title="Data Model Overview">
           <t>The following tree diagram provides an overview of the data model for the
           zero touch information artifact.  The syntax used for this tree diagram is
           described in <xref target="tree-diagram"/>.</t>
@@ -1143,12 +1130,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-information@YYYY-MM-DD.yang)
       </section>
 
       <section title="The Zero Touch Bootstrap Server API" anchor="api">
-        <t>This section defines a YANG <xref target="RFC6020"/> module that is used to
-        define the RESTCONF <xref target="RFC8040"/> API used by the
-        bootstrap server defined in <xref target="bootstrap-server"/>.  Examples
-        illustrating this API in use are provided in <xref target="api-examples"/>.</t>
 
-        <section title="Tree Diagram">
+        <t>This section defines the API for bootstrap servers.  The API is
+        defined as the API produced by a RESTCONF <xref target="RFC8040"/>
+        server that supports the YANG 1.1 <xref target="RFC7950"/> module
+        defined in this section.  The bootstrap server MAY also support
+        the query parameters defined in this section.</t>
+
+        <section title="API Overview">
           <t>The following tree diagram provides an overview for the bootstrap server
           RESTCONF API.  The syntax used for this tree diagram is described in 
           <xref target="tree-diagram"/>.</t>
@@ -1161,31 +1150,74 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
           to assert that devices can only pull data from the bootstrap server.</t>
           <t>Also notice that the module defines an action statement, which devices use to provide
           progress updates to the bootstrap server.</t>
-<!-- KENT FIXME (later)
+        </section>
+
+        <section title="Query Parameters">
+          <t>Bootstrap servers may optionally support the query parameters
+          defined in this section.</t>
+          <t>
             <list style="symbols">
-              <t>The boot image criteria is used to ensure the device is running a version
-              of software that will be able to understand the configuration and script, if
-              any.  The criteria is flexible in that it allows for both an absolute
-              specification of the boot image a device MUST be running, or just a list
-              of YANG modules that the device MUST be able to understand.</t>
-
-              <t>The configuration can configure any aspect of the device
-              but, in order to fulfill the goal of the zero touch bootstrapping process, to establish
-              a NETCONF or RESTCONF connection to the device's deployment specific NMS, the
-              configuration MUST minimally configure an administrator account (e.g., username,
-              SSH public key) that the NMS can use to log into the device with, and configure
-              the device to either listen for inbound NETCONF/RESTCONF connections, or for the
-              device to initiate an outbound NETCONF/RESTCONF call home connection
-              <xref target="RFC8071"/>.  The onboarding information examples
-              provided in <xref target="api-ex-3"/>, <xref target="api-ex-4"/>, and
-              <xref target="art-ex-2"/> all illustrate a minimal initial configuration.</t>
-
-              <t>The script, if any, is used to perform non-configuration related activities
-              deemed necessary.  The script format is manufacturer specific.  Requirements for
-              scripts, such as exit status codes, are defined in the "script" node's description
-              statement provided in the YANG module defined in <xref target="yang-module"/>.</t>
+              <t>The "os-name" Query Parameter
+                <list style="empty">
+                  <t>The "os-name" query parameter indicates the name of the
+                  operating system the device is running.  This parameter is
+                  only needed if it is possible for the device, as identified
+                  by its &lt;unique-id&gt; to run more than one type of operating
+                  system.  This query parameter MUST be supported by servers
+                  needing to support such devices.</t>
+                  <t>HTTP Methods: GET, HEAD</t>
+                  <t>Capability URI: urn:ietf:params:restconf:capability:os-name:1.0</t>
+                </list>
+              </t>
+              <t>The "os-version" Query Parameter
+                <list style="empty">
+                  <t>The "os-version" query parameter indicates the version of the
+                  operating system the device is running.  This parameter enables
+                  the server to dynamically generate an optimal response for the
+                  device negating, for instance, the need for a potentially
+                  expensive boot-image update.  This query parameter MUST be
+                  supported by servers wanting to support such use-cases.</t>
+                  <t>HTTP Methods: GET, HEAD</t>
+                  <t>Capability URI: urn:ietf:params:restconf:capability:os-version:1.0</t>
+                </list>
+              </t>
+              <t>The "circuit-id" Query Parameter
+                <list style="empty">
+                  <t>The "circuit-id" query parameter, along with the "remote-id"
+                  query parameter, enables a device to propagate information collected
+                  (e.g., via DHCP Option 82) to the bootstrap server.  This information
+                  enables the bootstrap server to return a customized response independent
+                  of the device's unique identifier.</t>
+                  <t>HTTP Methods: GET, HEAD</t>
+                  <t>Capability URI: urn:ietf:params:restconf:capability:circuit-id:1.0</t>
+                </list>
+              </t>
+              <t>The "remote-id" Query Parameter
+                <list style="empty">
+                  <t>The "remote-id" query parameter, along with the "circuit-id"
+                  query parameter, enables a device to propogate information collected
+                  (e.g., via DHCP Option 82) to the bootstrap server.  This information
+                  enables the bootstrap server to return a customized response independent
+                  of the device's unique identifier.</t>
+                  <t>HTTP Methods: GET, HEAD</t>
+                  <t>Capability URI: urn:ietf:params:restconf:capability:remote-id:1.0</t>
+                </list>
+              </t>
+              <t>The "nonce" Query Parameter
+                <list style="empty">
+                  <t>The "nonce" query parameter enables a device without an accurate
+                  clock to obtain a one-time use voucher, as opposed to a never-expiring
+                  voucher that it would otherwise receive.  This query parameter is
+                  only useful for cases where the device is connected to an untrusted
+                  bootstrap server, when signed data must be returned.   The bootstrap
+                  server uses backend APIs not described in this document to dynamically
+                  obtain the one-time use voucher from the device's manufacturer.</t>
+                  <t>HTTP Methods: GET, HEAD</t>
+                  <t>Capability URI: urn:ietf:params:restconf:capability:nonce:1.0</t>
+                </list>
+              </t>
             </list>
--->
+          </t>
         </section>
 
         <section title="Example Usage" anchor="api-examples">
@@ -1508,6 +1540,39 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           information may provide an adversary with details needed
           to launch an attack.</t>
         </section>
+        <section title="Disclosing Information to Untrusted Servers">
+          <t>This document enables devices to establish provisional
+          connections to untrusted bootstrap servers, in order for the
+          server to provide signed data to the device.  However, since
+          the server is untrusted, it may be under the control of an
+          adversary, and therefore devices should be cautious about
+          the data they send in such cases.</t>
+          <t>Already this document prevents devices from sending either
+          their IDevID certificate or their progress updates to untrusted
+          servers, however potentially identifying values (e.g., unique-id,
+          os-name, os-version) are still potentially encoded in the HTTP
+          request sent to the servers.  This information could be used by
+          an adversary to mount an attack against the device.</t>
+          <t>Devices concerned about such disclosures, when connecting to
+          an untrusted server, should 1) use a 'unique-id' value that
+          is not easily associated to the type of device it is (e.g., use
+          a key derivation function over the unique-id value) and 2) be
+          very selective about which HTTP query parameters are sent
+          (ideally none).</t>
+          <t>Building on top of the recursive nature of the solution
+          presented in this document, a server, seeing that a device is
+          following the recommendation from the previous paragraph, 
+          should return signed redirect information, not signed onboarding
+          information, as would normally be expected.  The redirect
+          information should point the device back to the same server
+          but, because the signed redirect information contained the
+          trust anchor certificate for the server, the device would then
+          establish a trusted connection to the server, and thereby be
+          able to freely send data to the server, including its IDevID
+          certificate, unique-id, query parameters, and various progress
+          updates.  Please see <xref target="untrust2trust"/> for more
+          information on this.</t>
+        </section>
         <section title="Sequencing Sources of Bootstrapping Data">
           <t>For devices supporting more than one source for bootstrapping
           data, no particular sequencing order has to be observed for 
@@ -1579,6 +1644,23 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           </figure>
         </t>
         </section>
+        <section title="RESTCONF Capability URNs">
+          <t>This document registers several capability identifiers in
+          the "RESTCONF Capability URNs" registry per <xref target="RFC8040"/>:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+   Index           Capability Identifier
+   ---------------------------------------------------------------------
+   :os-name        urn:ietf:params:restconf:capability:os-name:1.0
+   :os-version     urn:ietf:params:restconf:capability:os-version:1.0
+   :circuit-id     urn:ietf:params:restconf:capability:circuit-id:1.0
+   :remote-id      urn:ietf:params:restconf:capability:remote-id:1.0
+   :nonce          urn:ietf:params:restconf:capability:nonce:1.0
+]]></artwork>
+            </figure>
+          </t>
+        </section>
       </section>
 
       <section title="Acknowledgements">
@@ -1623,6 +1705,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <?rfc include="reference.RFC.6991.xml"?>
           <?rfc include="reference.RFC.7227.xml"?>
           <?rfc include="reference.RFC.7468.xml"?>
+          <?rfc include="reference.RFC.7950.xml"?>
           <?rfc include="reference.RFC.8040.xml"?>
           <?rfc include="reference.RFC.8174.xml"?>
           <?rfc include="reference.I-D.ietf-anima-voucher"?>
@@ -1734,7 +1817,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
                 trust anchor certificate that the prospective owner would like the
                 manufacturer to place into the ownership vouchers it generates, thereby
                 enabling devices to trust the owner's owner certificate.  How this trust
-                anchor certifiate is used to enable devices to validate signed bootstrapping
+                anchor certificate is used to enable devices to validate signed bootstrapping
                 data is described in <xref target="validating-signed-data"/>.</t>
                 <t>Some time later, the prospective owner places an order
                 with the manufacturer or delegate, perhaps with a special
@@ -1953,7 +2036,63 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             </t>
           </section>
         </section>
-
+        <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
+          <t>The following diagram illustrates a sequence of
+          bootstrapping activities that promote an untrusted
+          connection to a bootstrap server to a trusted connection
+          to the same bootstrap server.</t>
+          <t><figure>
+            <artwork><![CDATA[
+                                                      +----------+
+                                                      |Deployment|
+                                                      | Specific |
++------+                                              |Bootstrap |
+|Device|                                              |  Server  |
++------+                                              +----------+
+   |                                                        |
+   | 1. "HTTPS" Request (GET /device=<kdf(unique-id)>)      |
+   |------------------------------------------------------->|
+   | 2. "HTTPS" Response (signed redirect information)      |
+   |<-------------------------------------------------------|
+   |                                                        |
+   |                                                        |
+   | 3. HTTPS Request (GET /device=unique-id?os-name=xyz)   |
+   |------------------------------------------------------->|
+   | 4. HTTPS Response (unsigned onboarding information     |
+   |<-------------------------------------------------------|
+   |                                                        |
+]]></artwork>
+          </figure></t>
+          <t>The interactions in the above diagram are described below.</t>
+          <t><list style="numbers">
+            <t>The device initiates an untrusted connection to a bootstrap
+            server, as is indicated by putting "HTTPS" in doublequotes
+            above.  Because the device is unable to trust the server, it
+            does not send its IDevID certificate, or its raw unique id,
+            or any HTTP query parameters it may have.  The diagram above
+            uses &lt;kdf(unique-id)&gt; to indicate that the device used
+            a key derivation function, KDF, over its unique-id to protect
+            the device's identity in case the server is owned by an
+            adversary.</t>
+            <t>The bootstrap server iterates over some internal database
+            of devices until finding one for which the key derivation
+            function over its unique-id generates a match.  In this example,
+            the bootstrap server wants the device to have a secure connection
+            to it so, rather than sending the device signed onboarding
+            information, it sends signed redirect information instead,
+            redirecting the device back to it again.</t>
+            <t>Upon validating the signed redirect information, the
+            device establishes a secure connection to the bootstrap
+            server.  Unbeknownst to the device, it is the same bootstrap
+            server it was connected to previously.  Because the device
+            is able to authenticate the bootstrap server, it sends its
+            IDevID certificate, raw unique-id, and any additional
+            query parameters it has ("os-name" shown above) to the
+            bootstrap server.</t>
+            <t>This time the bootstrap server returns unsigned onboarding
+            information to the device.</t>
+          </list></t>
+        </section>
         <section title="Change Log">
           <section title="ID to 00">
             <t>
@@ -2172,28 +2311,40 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           </section>
           <section title="15 to 16">
             <t>
-            <list style="symbols">
-              <t>tweaked language to refer to "initial state" rather than "factory
-              default configuration", so as accomodate white-box scenarios.</t>
-              <t>added a paragraph to Intro regarding how the solution primarily regards
-              physical machines, but could be extended to VMs by a future document.</t>
-              <t>added a pointer to the Workflow Overview section (recently moved to
-              the Appendix) to the Intro.</t>
-              <t>added a note that, in order to simplify the verification process,
-              the "Zerotouch Information" PKCS#7 structure MUST also contain the
-              signing X.509 certificate.</t>
-              <t>noted that the owner certificate's must either have no Key Usage or
-              the Key Usage must set the "digitalSignature" bit.</t>
-              <t>noted that the owner certificate's subject and subjectAltName values
-              are not constrained.</t>
-              <t>moved/consolidated some text from the Artifacts section down to the
-              Device Details section.</t>
-              <t>tightened up some ambigous language, for instance, by refering to
-              specific leaf names in the Voucher artifact.</t>
-              <t>reverted a previously overzealous s/unique-id/serial-number/ change.</t>
-              <t>modified language for when ZTP runs from when factory-default config
-              is running to when ZTP is confgured, which the factory-defaults should set .</t>
-            </list>
+              <list style="symbols">
+                <t>tweaked language to refer to "initial state" rather than "factory
+                default configuration", so as accommodate white-box scenarios.</t>
+                <t>added a paragraph to Intro regarding how the solution primarily regards
+                physical machines, but could be extended to VMs by a future document.</t>
+                <t>added a pointer to the Workflow Overview section (recently moved to
+                the Appendix) to the Intro.</t>
+                <t>added a note that, in order to simplify the verification process,
+                the "Zerotouch Information" PKCS#7 structure MUST also contain the
+                signing X.509 certificate.</t>
+                <t>noted that the owner certificate's must either have no Key Usage or
+                the Key Usage must set the "digitalSignature" bit.</t>
+                <t>noted that the owner certificate's subject and subjectAltName values
+                are not constrained.</t>
+                <t>moved/consolidated some text from the Artifacts section down to the
+                Device Details section.</t>
+                <t>tightened up some ambiguous language, for instance, by referring to
+                specific leaf names in the Voucher artifact.</t>
+                <t>reverted a previously overzealous s/unique-id/serial-number/ change.</t>
+                <t>modified language for when ZTP runs from when factory-default config
+                is running to when ZTP is configured, which the factory-defaults should set .</t>
+              </list>
+            </t>
+          </section>
+          <section title="16 to 17">
+            <t>
+              <list style="symbols">
+                <t>Added an example for how to promote an untrusted connection to a
+                trusted connection.</t>
+                <t>Added a "query parameters" section defining some parameters enabling
+                scenarios raised in last call.</t>
+                <t>Added a "Disclosing Information to Untrusted Servers" section to
+                the Security Considerations.</t>
+              </list>
             </t>
           </section>
         </section>

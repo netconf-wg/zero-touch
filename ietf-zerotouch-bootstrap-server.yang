@@ -62,12 +62,10 @@ module ietf-zerotouch-bootstrap-server {
   list device {
     key unique-id;
     config false;
-
     description
-      "A device's record entry.  This is the only RESTCONF resource
-       that a device will GET, as described in Section 8.2 in RFC XXXX.
-       Getting just this top-level node provides a device with all the
-       data it needs in a single request.";
+      "A device record containing bootstrapping data for the device
+       with the specified identifier.  This top-level node provides
+       a device with all the data it needs in a single request.";
     reference
       "RFC XXXX: Zero Touch Provisioning for NETCONF or
        RESTCONF based Management";
@@ -141,7 +139,7 @@ module ietf-zerotouch-bootstrap-server {
          who it's 'owner' is.  The voucher encodes the device's
          serial number, so that the device can be ensured that
          the voucher applies to it.  The voucher is signed by
-         the device's manufacturer or delagate.";
+         the device's manufacturer or delegate.";
       reference
         "I-D.etf-anima-voucher:
            Voucher and Voucher Revocation Profiles for Bootstrapping
