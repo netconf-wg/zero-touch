@@ -1,66 +1,68 @@
 module ietf-zerotouch-bootstrap-server {
-  yang-version "1.1";
-
+  yang-version 1.1;
   namespace
     "urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server";
-  prefix    "ztbs";
+  prefix ztbs;
 
   organization
-   "IETF NETCONF (Network Configuration) Working Group";
-
+    "IETF NETCONF (Network Configuration) Working Group";
   contact
-   "WG Web:   <http://tools.ietf.org/wg/netconf/>
-    WG List:  <mailto:netconf@ietf.org>
-    Author:   Kent Watsen
-              <mailto:kwatsen@juniper.net>";
-
+    "WG Web:   <http://tools.ietf.org/wg/netconf/>
+     WG List:  <mailto:netconf@ietf.org>
+     Author:   Kent Watsen
+               <mailto:kwatsen@juniper.net>";
   description
-   "This module defines an interface for bootstrap servers, as defined
-    by RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
-    Management.
+    "This module defines an interface for bootstrap servers, as
+     defined by RFC XXXX: Zero Touch Provisioning for NETCONF or
+     RESTCONF based Management.
 
-    Copyright (c) 2017 IETF Trust and the persons identified as 
-    authors of the code. All rights reserved.
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
+     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY', and 
+     'OPTIONAL' in the module text are to be interpreted as described
+     in RFC 2119.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, is permitted pursuant to, and subject to the license
-    terms contained in, the Simplified BSD License set forth in Section
-    4.c of the IETF Trust's Legal Provisions Relating to IETF Documents
-    (http://trustee.ietf.org/license-info).
+     Copyright (c) 2017 IETF Trust and the persons identified as 
+     authors of the code. All rights reserved.
 
-    This version of this YANG module is part of RFC XXXX; see the RFC
-    itself for full legal notices.";
+     Redistribution and use in source and binary forms, with or 
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents (http://trustee.ietf.org/license-info)
 
-  revision "YYYY-MM-DD" {
+     This version of this YANG module is part of RFC XXXX; see the
+     RFC itself for full legal notices.";
+
+  revision YYYY-MM-DD {
     description
-     "Initial version";
+      "Initial version";
     reference
-     "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
-      Management";
+      "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
+       Management";
   }
 
   // typedefs
 
   typedef pkcs7 {
     type binary;
-    description 
+    description
       "A PKCS #7 SignedData structure, as specified by Section 9.1
        in RFC 2315, encoded using ASN.1 distinguished encoding rules
        (DER), as specified in ITU-T X.690.";
-     reference
-       "RFC 2315:
-          PKCS #7: Cryptographic Message Syntax Version 1.5.
-        ITU-T X.690:
-          Information technology – ASN.1 encoding rules:
-          Specification of Basic Encoding Rules (BER), 
-          Canonical Encoding Rules (CER) and Distinguished
-          Encoding Rules (DER).";
-  }  
+    reference
+      "RFC 2315:
+         PKCS #7: Cryptographic Message Syntax Version 1.5.
+       ITU-T X.690:
+         Information technology – ASN.1 encoding rules:
+         Specification of Basic Encoding Rules (BER), 
+         Canonical Encoding Rules (CER) and Distinguished
+         Encoding Rules (DER).";
+  }
 
   // protocol accessible nodes
 
   list device {
-    key unique-id;
+    key "unique-id";
     config false;
     description
       "A device record containing bootstrapping data for the device
@@ -69,7 +71,6 @@ module ietf-zerotouch-bootstrap-server {
     reference
       "RFC XXXX: Zero Touch Provisioning for NETCONF or
        RESTCONF based Management";
-     
     leaf unique-id {
       type string;
       description
@@ -77,14 +78,13 @@ module ietf-zerotouch-bootstrap-server {
          Each device accesses its bootstrapping record by its unique
          identifier.";
     }
-
     leaf zerotouch-information {
       type pkcs7;
       mandatory true;
       description
         "A 'zerotouch-information' artifact, as described in Section
-         4.1 of RFC XXXX.  When conveyed over an untrusted transport, in 
-         order to be processed by a device, this PKCS#7 SignedData 
+         4.1 of RFC XXXX.  When conveyed over an untrusted transport,
+         in order to be processed by a device, this PKCS#7 SignedData 
          structure  MUST contain a 'signerInfo' structure, described
          in Section 9.1 of RFC 2315, containing a signature generated
          using the owner's private key.";
@@ -94,7 +94,6 @@ module ietf-zerotouch-bootstrap-server {
          RFC 2315:
             PKCS #7: Cryptographic Message Syntax Version 1.5";
     }
-
     leaf owner-certificate {
       type pkcs7;
       description
@@ -111,27 +110,26 @@ module ietf-zerotouch-bootstrap-server {
          X.509 certificates and CRLs are described in RFC 5280.
          OCSP Responses are described in RFC 6960.";
       reference
-       "RFC 2315:
-          PKCS #7: Cryptographic Message Syntax Version 1.5.
-        RFC 5280:
-          Internet X.509 Public Key Infrastructure Certificate
-          and Certificate Revocation List (CRL) Profile.
-        RFC 6960:
-          X.509 Internet Public Key Infrastructure Online
-          Certificate Status Protocol - OCSP.
-        ITU-T X.690:
-          Information technology – ASN.1 encoding rules:
-          Specification of Basic Encoding Rules (BER), 
-          Canonical Encoding Rules (CER) and Distinguished
-          Encoding Rules (DER).";
+        "RFC 2315:
+           PKCS #7: Cryptographic Message Syntax Version 1.5.
+         RFC 5280:
+           Internet X.509 Public Key Infrastructure Certificate
+           and Certificate Revocation List (CRL) Profile.
+         RFC 6960:
+           X.509 Internet Public Key Infrastructure Online
+           Certificate Status Protocol - OCSP.
+         ITU-T X.690:
+           Information technology – ASN.1 encoding rules:
+           Specification of Basic Encoding Rules (BER), 
+           Canonical Encoding Rules (CER) and Distinguished
+           Encoding Rules (DER).";
     }
-
     leaf ownership-voucher {
       type pkcs7;
-      must "../owner-certificate" {
+      must '../owner-certificate' {
         description
           "An owner certificate must be present whenever an ownership
-           voucher is presented."; 
+           voucher is presented.";
       }
       description
         "A 'voucher' artifact, as described in Section 5 of 
@@ -145,39 +143,48 @@ module ietf-zerotouch-bootstrap-server {
            Voucher and Voucher Revocation Profiles for Bootstrapping
            Protocols";
     }
-
     action update-progress {
+      description
+        "This operation enables a device to report its 
+         bootstrapping progress.  Under ideal circumstances, a
+         device should send both an initial bootstrap-initiated
+         progress report and a final bootstrap-complete progress
+         report.  Additionally warning and/or informational reports
+         may be sent in between.  If a processing error occurs, the
+         device should send the appropriate error report in lieu of
+         a bootstrap-complete.";
       input {
         leaf update-type {
           type enumeration {
-            enum bootstrap-initiated {
+            enum "bootstrap-initiated" {
               description
                 "Indicates that the device has just accessed the
                  bootstrap server.  The 'message' field below MAY
                  contain any additional information that the
                  manufacturer thinks might be useful.";
             }
-            enum parsing-warning {
+            enum "parsing-warning" {
               description
                 "Indicates that the device had a non-fatal error when
                  parsing the response from the bootstrap server.  The
                  'message' field below SHOULD indicate the specific
                  warning that occurred.";
             }
-            enum parsing-error {
+            enum "parsing-error" {
               description
                 "Indicates that the device encountered a fatal error
                  when parsing the response from the bootstrap server.
-                 For instance, this could be due to malformed encoding,
-                 the device expecting signed data when only unsigned
-                 data is provided, because the ownership voucher didn't
-                 include the device's unique identifier, or because the
-                 signature didn't match.  The 'message' field below
-                 SHOULD indicate the specific error.  This update type
-                 also indicates that the device has abandoned trying to
-                 bootstrap off this bootstrap server.";
+                 For instance, this could be due to malformed 
+                 encoding, the device expecting signed data when
+                 only unsigned data is provided, because the
+                 ownership voucher didn't include the device's
+                 unique identifier, or because the signature didn't
+                 match.  The 'message' field below SHOULD indicate
+                 the specific error.  This update type also indicates
+                 that the device has abandoned trying to bootstrap
+                 off this bootstrap server.";
             }
-            enum boot-image-warning {
+            enum "boot-image-warning" {
               description
                 "Indicates that the device encountered a non-fatal
                  error condition when trying to install a boot-image.
@@ -186,7 +193,7 @@ module ietf-zerotouch-bootstrap-server {
                  below SHOULD indicate any warning messages that were
                  generated.";
             }
-            enum boot-image-error {
+            enum "boot-image-error" {
               description
                 "Indicates that the device encountered an error when 
                  trying to install a boot-image, which could be for
@@ -197,7 +204,7 @@ module ietf-zerotouch-bootstrap-server {
                  that the device has abandoned trying to bootstrap
                  off this bootstrap server.";
             }
-            enum pre-script-warning {
+            enum "pre-script-warning" {
               description
                 "Indicates that the device obtained a greater than
                  zero exit status code from the script when it was
@@ -206,25 +213,25 @@ module ietf-zerotouch-bootstrap-server {
                  capture any stdout/stderr messages the script may
                  have produced.";
             }
-            enum pre-script-error {
+            enum "pre-script-error" {
               description
-                "Indicates that the device obtained a less than zero
-                 exit status code from the script when it was executed.
-                 The 'message' field below SHOULD indicate both the
-                 resulting exit status code, as well as capture any
-                 stdout/stderr messages the script may have produced.
-                 This update type also indicates that the device has 
-                 abandoned trying to bootstrap off this bootstrap
-                 server.";
+                "Indicates that the device obtained a less than
+                 zero exit status code from the script when it was
+                 executed.  The 'message' field below SHOULD indicate
+                 both the resulting exit status code, as well as
+                 capture any stdout/stderr messages the script may
+                 have produced.  This update type also indicates
+                 that the device has abandoned trying to bootstrap
+                 off this bootstrap server.";
             }
-            enum config-warning {
+            enum "config-warning" {
               description
                 "Indicates that the device obtained warning messages
                  when it committed the initial configuration.  The
                  'message' field below SHOULD indicate any warning
                  messages that were generated.";
             }
-            enum config-error {
+            enum "config-error" {
               description
                 "Indicates that the device obtained error messages
                  when it committed the initial configuration.  The
@@ -233,7 +240,7 @@ module ietf-zerotouch-bootstrap-server {
                  also indicates that the device has abandoned trying
                  to bootstrap off this bootstrap server.";
             }
-            enum post-script-warning {
+            enum "post-script-warning" {
               description
                 "Indicates that the device obtained a greater than
                  zero exit status code from the script when it was
@@ -242,18 +249,18 @@ module ietf-zerotouch-bootstrap-server {
                  capture any stdout/stderr messages the script may
                  have produced.";
             }
-            enum post-script-error {
+            enum "post-script-error" {
               description
-                "Indicates that the device obtained a less than zero
-                 exit status code from the script when it was executed.
-                 The 'message' field below SHOULD indicate both the
-                 resulting exit status code, as well as capture any
-                 stdout/stderr messages the script may have produced.
-                 This update type also indicates that the device has 
-                 abandoned trying to bootstrap off this bootstrap
-                 server.";
+                "Indicates that the device obtained a less than
+                 zero exit status code from the script when it was
+                 executed.  The 'message' field below SHOULD indicate
+                 both the resulting exit status code, as well as
+                 capture any stdout/stderr messages the script may
+                 have produced.  This update type also indicates
+                 that the device has abandoned trying to bootstrap
+                 off this bootstrap server.";
             }
-            enum bootstrap-complete {
+            enum "bootstrap-complete" {
               description
                 "Indicates that the device successfully processed the 
                  all the bootstrapping data and that it is ready to be
@@ -263,14 +270,15 @@ module ietf-zerotouch-bootstrap-server {
                  the device is not expected to access the bootstrap
                  server again.";
             }
-            enum informational {
+            enum "informational" {
               description
-                "Indicates any additional information not captured by
-                 any of the other update type. For instance, a
-                 message indicating that the device is about to reboot
-                 after having installed a boot-image could be provided.
-                 The 'message' field below SHOULD contain information
-                 that the manufacturer thinks might be useful.";
+                "Indicates any additional information not captured
+                 by any of the other update type. For instance, a
+                 message indicating that the device is about to 
+                 reboot after having installed a boot-image could
+                 be provided.  The 'message' field below SHOULD
+                 contain information that the manufacturer thinks
+                 might be useful.";
             }
           }
           mandatory true;
@@ -296,8 +304,14 @@ module ietf-zerotouch-bootstrap-server {
               "An SSH host-key";
             leaf format {
               type enumeration {
-                enum ssh-dss { description "ssh-dss"; }
-                enum ssh-rsa { description "ssh-rsa"; }
+                enum "ssh-dss" {
+                  description
+                    "ssh-dss";
+                }
+                enum "ssh-rsa" {
+                  description
+                    "ssh-rsa";
+                }
               }
               mandatory true;
               description
@@ -328,12 +342,30 @@ module ietf-zerotouch-bootstrap-server {
                device with.";
             leaf-list protocol {
               type enumeration {
-                enum netconf-ssh     { description "netconf-ssh"; }
-                enum netconf-tls     { description "netconf-tls"; }
-                enum restconf-tls    { description "restconf-tls"; }
-                enum netconf-ch-ssh  { description "netconf-ch-ssh"; }
-                enum netconf-ch-tls  { description "netconf-ch-tls"; }
-                enum restconf-ch-tls { description "restconf-ch-tls"; }
+                enum "netconf-ssh" {
+                  description
+                    "netconf-ssh";
+                }
+                enum "netconf-tls" {
+                  description
+                    "netconf-tls";
+                }
+                enum "restconf-tls" {
+                  description
+                    "restconf-tls";
+                }
+                enum "netconf-ch-ssh" {
+                  description
+                    "netconf-ch-ssh";
+                }
+                enum "netconf-ch-tls" {
+                  description
+                    "netconf-ch-tls";
+                }
+                enum "restconf-ch-tls" {
+                  description
+                    "restconf-ch-tls";
+                }
               }
               min-elements 1;
               description
@@ -343,13 +375,15 @@ module ietf-zerotouch-bootstrap-server {
               type pkcs7;
               mandatory true;
               description
-                "An X.509 v3 certificate structure, as specified by
-                 Section 4 in RFC5280, encoded using ASN.1 distinguished
-                 encoding rules (DER), as specified in ITU-T X.690.";
+                "An X.509 v3 certificate structure, as specified
+                 by Section 4 in RFC 5280, encoded using ASN.1
+                 distinguished encoding rules (DER), as specified
+                 in ITU-T X.690.";
               reference
                 "RFC 5280:
-                   Internet X.509 Public Key Infrastructure Certificate
-                   and Certificate Revocation List (CRL) Profile.
+                   Internet X.509 Public Key Infrastructure
+                   Certificate and Certificate Revocation List (CRL)
+                   Profile.
                  ITU-T X.690:
                     Information technology – ASN.1 encoding rules:
                     Specification of Basic Encoding Rules (BER), 
@@ -359,8 +393,9 @@ module ietf-zerotouch-bootstrap-server {
           }
         }
       }
-    } // end action
+    }
+    // end action
+  }
 
-  } // end device
-
+  // end device
 }

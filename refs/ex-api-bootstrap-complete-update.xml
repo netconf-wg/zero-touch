@@ -1,7 +1,7 @@
 <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <action xmlns="urn:ietf:params:xml:ns:yang:1">
-    <device
-    xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+    <device xmlns=
+      "urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
       <unique-id>123456789</unique-id>
       <update-progress>
         <update-type>bootstrap-complete</update-type>
