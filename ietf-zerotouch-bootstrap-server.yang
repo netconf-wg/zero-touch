@@ -17,9 +17,9 @@ module ietf-zerotouch-bootstrap-server {
      RESTCONF based Management.
 
      The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
-     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY', and 
-     'OPTIONAL' in the module text are to be interpreted as described
-     in RFC 2119.
+     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
+     and 'OPTIONAL' in the module text are to be interpreted as
+     described in RFC 2119.
 
      Copyright (c) 2017 IETF Trust and the persons identified as 
      authors of the code. All rights reserved.

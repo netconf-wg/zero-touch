@@ -1116,7 +1116,9 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.xml)
 
           <t>Note: the module defined herein uses data types defined
           in <xref target="RFC5280"/>, <xref target="RFC6234"/>, and
-          <xref target="RFC6991"/>.</t>
+          <xref target="RFC6991"/>, and an extension statement from
+          <xref target="RFC8040"/>, and an encoding defined in
+          <xref target="ITU.X690.1994"/>.</t>
 
           <figure>
             <artwork><![CDATA[
@@ -1308,11 +1310,65 @@ Server: example-server
 
           <t>Note: the module defined herein uses data types
           defined in <xref target="RFC2315"/>, <xref target="RFC5280"/>, 
-          and <xref target="I-D.ietf-anima-voucher"/>.</t>
+          <xref target="RFC6960"/>, and <xref target="I-D.ietf-anima-voucher"/>,
+          and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
           <figure>
             <artwork><![CDATA[
 <CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
 INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
+<CODE ENDS>
+]]></artwork>
+          </figure>
+        </section> <!-- YANG Module -->
+
+      </section>
+
+
+
+
+      <section title="The Zero Touch Device Data Model" anchor="device-model">
+
+        <t>This section defines a data model that devices can implement
+        to enable the configuration of zerotouch bootstrapping and
+        discovery of what parameters are used by its bootstrapping logic.</t>
+
+        <section title="Data Model Overview">
+          <t>The following tree diagram provides an overview for the zerotouch
+          device data model  The syntax used for this tree diagram is described in 
+          <xref target="tree-diagram"/>.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-device-tree.txt)
+]]></artwork>
+          </figure>
+          <t>In the above diagram, notice that there is only one configurable node
+          'enabled'.  The expectation is that this node would be set to 'true' in
+          device's factory default configuration and that it would wither be set
+          to 'false' or deleted when the zerotouch bootstrapping is longer needed.
+          Specifically, the onboarding information downloaded by the device from
+          the bootstrap server SHOULD do this.</t>
+        </section>
+
+        <section title="Example Usage" anchor="device-example">
+          <t>Following is an instance example for this data model.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml,68)
+]]></artwork>
+          </figure>
+        </section>  <!-- Example Usage -->
+
+        <section title="YANG Module" anchor="device-yang-module">
+          <t>The device model is normatively defined by the YANG module
+          defined in this section.</t>
+
+          <t>Note: the module defined herein uses data types
+          defined in <xref target="RFC2315"/> and <xref target="RFC6991"/>,
+          and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
+          <figure>
+            <artwork><![CDATA[
+<CODE BEGINS> file "ietf-zerotouch-device@YYYY-MM-DD.yang"
+INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
 <CODE ENDS>
 ]]></artwork>
           </figure>
@@ -1704,7 +1760,7 @@ TBD for OPTION_V6_ZEROTOUCH_REDIRECT
           </t>
         </section>
         <section title="The IETF XML Registry">
-          <t>This document registers two URIs in the IETF XML
+          <t>This document registers three URIs in the IETF XML
           registry <xref target="RFC3688"/>.  Following the format in
           <xref target="RFC3688"/>, the following registrations are
           requested:</t>
@@ -1718,12 +1774,16 @@ XML: N/A, the requested URI is an XML namespace.
 URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
 Registrant Contact: The NETCONF WG of the IETF.
 XML: N/A, the requested URI is an XML namespace.
+
+URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-device
+Registrant Contact: The NETCONF WG of the IETF.
+XML: N/A, the requested URI is an XML namespace.
 ]]></artwork>
             </figure>
           </t>
         </section>
         <section title="The YANG Module Names Registry">
-          <t>This document registers two YANG modules in the
+          <t>This document registers three YANG modules in the
           YANG Module Names registry <xref target="RFC6020"/>.
           Following the format defined in <xref target="RFC6020"/>, the
           the following registrations are requested:</t>
@@ -1739,6 +1799,11 @@ name:      ietf-zerotouch-bootstrap-server
 namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-\
            server  (note: '\' used for formatting reasons only)
 prefix:    ztbs
+reference: RFC XXXX
+
+name:      ietf-zerotouch-device
+namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-device
+prefix:    ztd
 reference: RFC XXXX
 ]]></artwork>
           </figure>
@@ -2455,7 +2520,13 @@ device   |        |             |            |        |         |
             <t>
               <list style="symbols">
                 <t>Added Security Considerations for each YANG module.</t>
+                <t>Added "ietf-zerotouch-device" module</t>
                 <t>Lots of small updates.</t>
+                <t>TO DO:</t>
+                <t>Now device always sends its DevID cert.</t>
+                <t>Moved data tree to 'get-bootstrapping-data' RPC.</t>
+                <t>Added 'signed-data-needed' parameter to 'get-bootstrapping-data' RPC</t>
+                <t>Moved 'update-progress' action to 'report-progress' RPC</t>
               </list>
             </t>
           </section>
