@@ -50,6 +50,18 @@ module ietf-zerotouch-device {
        Management";
   }
 
+  // features
+
+  feature bootstrap-servers {
+    description
+      "The device supports bootstrapping off bootstrap servers.";
+  }
+
+  feature signed-data {
+    description
+      "The device supports bootstrapping off signed data.";
+  }
+
   // typedefs
 
   typedef pkcs7 {
@@ -83,6 +95,7 @@ module ietf-zerotouch-device {
          needs to be returned.";
     }
     leaf devid-certificate {
+      if-feature bootstrap-servers;
       type pkcs7;
       config false;
       description
@@ -107,6 +120,7 @@ module ietf-zerotouch-device {
            networks - Secure Device Identity.";
     }
     container bootstrap-servers {
+      if-feature bootstrap-servers;
       config false;
       description
         "Default list of bootstrap servers this device is
@@ -133,6 +147,7 @@ module ietf-zerotouch-device {
       }
     }
     leaf bootstrap-server-ta-certificates {
+      if-feature bootstrap-servers;
       type leafref {
         path "/ks:keystore/ks:pinned-certificates/ks:name";
       }
@@ -143,6 +158,7 @@ module ietf-zerotouch-device {
          servers with.";
     }
     leaf voucher-ta-certificates {
+      if-feature signed-data;
       type leafref {
         path "/ks:keystore/ks:pinned-certificates/ks:name";
       }
