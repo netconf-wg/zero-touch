@@ -10,17 +10,17 @@ module ietf-zerotouch-device {
   }
   import ietf-keystore {
     prefix ks;
-    reference
-      "RFC YYYY: Keystore Model";
+    reference 'RFC YYYY: YANG Data Model for a "Keystore" Mechanism';
   }
 
   organization
     "IETF NETCONF (Network Configuration) Working Group";
+
   contact
     "WG Web:   <http://tools.ietf.org/wg/netconf/>
      WG List:  <mailto:netconf@ietf.org>
-     Author:   Kent Watsen
-               <mailto:kwatsen@juniper.net>";
+     Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
+
   description
     "This module defines a data model to enable zerotouch 
      bootstrapping and discover what parameters are used.

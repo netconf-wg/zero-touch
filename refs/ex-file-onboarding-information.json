@@ -1,0 +1,104 @@
+{
+  "ietf-zerotouch-information:onboarding-information" : {
+
+    "boot-image" : {
+      "os-name" : "VendorOS",
+      "os-version" : "17.2R1.6",
+      "uri" : [ "http://some/path/to/raw/file" ],
+      "sha256" : "ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33"
+    },
+
+    "configuration-handling" : "merge",
+
+    "configuration" : {
+      "ietf-system:system" : {
+        "authentication" : {
+          "user" : {
+            "name" : "admin",
+            "authorized-key" : {
+              "name" : "admin's rsa ssh host-key",
+              "algorithm" : "ssh-rsa",
+              "key-data" : "base64encodedvalue=="
+            }
+          }
+        }
+      },
+      "ietf-keystore:keystore" : {
+        "pinned-certificates" : {
+          "name" : "deployment-specific-ca-certs",
+          "description" : "Certs used to auth client connections.",
+          "pinned-certificate" : {
+            "name" : "ca.example.com",
+            "data" : "base64encodedvalue=="
+          }
+        },
+        "pinned-certificates" : {
+          "name" : "explicitly-trusted-client-certs",
+          "description" : "Certs for explicitly-trusted clients.",
+          "pinned-certificate" : {
+            "name" : "Fred Flintstone",
+            "data" : "base64encodedvalue=="
+          }
+        }
+      },
+      "ietf-netconf-server:netconf-server" : {
+        "call-home" : {
+          "netconf-client" : {
+            "name" : "config-mgr",
+            "endpoints" : {
+              "endpoint" : {
+                "name" : "east-data-center", 
+                "ssh" : {
+                  "address" : "east.config-mgr.example.com",
+                  "host-keys" : {
+                    "host-key" : {
+                      "name" : "certificate",
+                      "certificate" : "builtin-idevid-cert"
+                    }
+                  },
+                  "client-cert-auth" : {
+                    "trusted-ca-certs" :
+                                    "deployment-specific-ca-certs",
+                    "trusted-client-certs" :
+                                  "explicitly-trusted-client-certs"
+                  }
+                }
+              },
+              "endpoint" : {
+                "name" : "west-data-center", 
+                "ssh" : {
+                  "address" : "west.config-mgr.example.com",
+                  "host-keys" : {
+                    "host-key" : {
+                      "name" : "certificate",
+                      "certificate" : "builtin-idevid-cert"
+                    }
+                  },
+                  "client-cert-auth" : {
+                    "trusted-ca-certs" :
+                                    "deployment-specific-ca-certs",
+                    "trusted-client-certs" :
+                                  "explicitly-trusted-client-certs"
+                  }
+                }
+              }
+            },
+            "connection-type" : {
+              "periodic" : {
+                "idle-timeout" : 300,
+                "reconnect-timeout" : 60
+              }
+            },
+            "reconnect-strategy" : {
+              "start-with" : "last-connected",
+              "max-attempts" : 3
+            }
+          }
+        }
+      },
+      "ietf-device:zerotouch" : {
+        "enabled" : false
+      }
+    }
+  }
+}

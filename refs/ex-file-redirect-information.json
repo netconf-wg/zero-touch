@@ -1,0 +1,21 @@
+{
+  "ietf-zerotouch-information:redirect-information" : {
+    "bootstrap-server" : [
+      {
+        "address" : "phs1.example.com",
+        "port" : 8443,
+        "trust-anchor" : "base64encodedvalue=="
+      },
+      {
+        "address" : "phs2.example.com",
+        "port" : 8443,
+        "trust-anchor" : "base64encodedvalue=="
+      },
+      {
+        "address" : "phs3.example.com",
+        "port" : 8443,
+        "trust-anchor" : "base64encodedvalue=="
+      }
+    ]
+  }
+}

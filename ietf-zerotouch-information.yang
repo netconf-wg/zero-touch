@@ -21,10 +21,12 @@ module ietf-zerotouch-information {
 
   organization
     "IETF NETCONF (Network Configuration) Working Group";
+
   contact
     "WG Web:   http://tools.ietf.org/wg/netconf
      WG List:  <mailto:netconf@ietf.org>
      Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
+
   description
     "This module defines the data model for the Zero Touch Information
      artifact defined by RFC XXXX: Zero Touch Provisioning for NETCONF
@@ -54,6 +56,7 @@ module ietf-zerotouch-information {
       "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
        Management";
   }
+
   rc:yang-data "zerotouch-information" {
     choice information-type {
       mandatory true;
@@ -70,6 +73,7 @@ module ietf-zerotouch-information {
            based Management";
         list bootstrap-server {
           key "address";
+          min-elements 1;
           description
             "A bootstrap server entry.";
           leaf address {
@@ -93,11 +97,11 @@ module ietf-zerotouch-information {
               "An X.509 v3 certificate structure as specified by RFC
                5280, Section 4, encoded using ASN.1 distinguished
                encoding rules (DER), as specified in ITU-T X.690.  A
-               certificate that device can use as the trust anchor 
+               certificate that the device can use as the trust anchor
                to authenticate the bootstrap server the device is
-               being redirected to.  When not specified, the device
-               can establish a provisional connection to the bootstrap
-               server.";
+               being redirected to.  If not specified, the device may
+               establish a provisional connection to the bootstrap
+               server, as described in RFC XXXX.";
             reference
               "RFC 5280:
                  Internet X.509 Public Key Infrastructure Certificate
@@ -106,15 +110,18 @@ module ietf-zerotouch-information {
                   Information technology – ASN.1 encoding rules:
                   Specification of Basic Encoding Rules (BER), 
                   Canonical Encoding Rules (CER) and Distinguished
-                  Encoding Rules (DER).";
+                  Encoding Rules (DER).
+               RFC XXXX:
+                  Zero Touch Provisioning for NETCONF or RESTCONF
+                  based Management.";
           }
         }
       }
       container onboarding-information {
         description
-          "Bootstrap information is described in Section 2.2 in
-           RFC XXXX.  Its purpose is to provide the device 
-           everything it needs to bootstrap itself.";
+          "Onboarding information is described in Section 2.2 in
+           RFC XXXX.  Its purpose is to provide the device everything
+           it needs to bootstrap itself.";
         reference
           "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF
            based Management";
@@ -122,29 +129,29 @@ module ietf-zerotouch-information {
           description
             "Specifies criteria for the boot image the device MUST 
              be running.";
-          leaf name {
+          leaf os-name {
             type string;
             mandatory true;
             description
-              "The name of a software image that the device MUST
-               be running in order to process the remaining nodes.";
+              "The name of the operating system software the device
+               MUST be running in order to not require a software
+               image upgrade (ex. VendorOS).";
           }
-          choice hash-algorithm {
+          leaf os-version {
+            type string;
             mandatory true;
             description
-              "Identifies the hash algorithm used.";
-            leaf sha256 {
-              type yang:hex-string;
-              description
-                "The hex-encoded SHA-256 hash over the boot
-                 image file.  This is used by the device to
-                 verify a downloaded boot image file.";
-              reference "RFC 6234: US Secure Hash Algorithms.";
-            }
+              "The version of the operating system software the device
+               MUST be running in order to not require a software
+               image upgrade (ex. 17.3R2.1).";
           }
           leaf-list uri {
             type inet:uri;
-            min-elements 1;
+            must '../hash-algorithm' {
+              description
+                "A hash is needed in order to validate the downloaded
+                 image.";
+            }
             ordered-by user;
             description
               "An ordered list of URIs to where the boot-image file
@@ -154,6 +161,23 @@ module ietf-zerotouch-information {
                establish a provisional connection to the server, by
                blindly accepting the server's credentials (e.g., its
                TLS certificate)";
+          }
+          choice hash-algorithm {
+            must '../uri' {
+              description
+                "A uri is needed in order to downloaded an image to
+                 validate.";
+            }
+            description
+              "Identifies the hash algorithm used.";
+            leaf sha256 {
+              type yang:hex-string;
+              description
+                "The hex-encoded SHA-256 hash over the boot image
+                 file.  This is used by the device to verify a 
+                 downloaded boot image file.";
+              reference "RFC 6234: US Secure Hash Algorithms.";
+            }
           }
         }
         leaf configuration-handling {
@@ -168,11 +192,10 @@ module ietf-zerotouch-information {
                  passed configuration.";
             }
           }
+          must '../configuration';
           description
             "This enumeration indicates how the server should process
-             the provided configuration.  When not specified, the 
-             device MAY determine how to process the configuration
-             using other means (e.g., vendor-specific metadata).";
+             the provided configuration.";
         }
         leaf pre-configuration-script {
           type script;

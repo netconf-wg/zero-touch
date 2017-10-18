@@ -1,9 +1,10 @@
 <onboarding-information
   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
   <boot-image>
-    <name>boot-image-v3.2R1.6.img</name>
-    <sha256>base64encodedvalue==</sha256>
-    <uri>file:///some/path/to/raw/file </uri>
+    <os-name>VendorOS</os-name>
+    <os-version>17.2R1.6</os-version>
+    <uri>http://some/path/to/raw/file</uri>
+    <sha256>ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33</sha256>
   </boot-image>
   <configuration-handling>merge</configuration-handling>
   <configuration>
