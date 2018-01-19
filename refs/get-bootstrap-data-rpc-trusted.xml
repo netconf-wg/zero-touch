@@ -1,8 +1,7 @@
 <input 
   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
-  <os-name>VendorOS</os-name>
+  <hw-model>model-x</hw-model>
+  <os-name>vendor-os</os-name>
   <os-version>17.3R2.1</os-version>
-  <remote-id>32</remote-id>
-  <circuit-id>2</circuit-id>
   <nonce>base64encodedvalue==</nonce>
 </input>

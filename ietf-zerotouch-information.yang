@@ -18,7 +18,6 @@ module ietf-zerotouch-information {
        the yang-data extension defined in RFC 8040.";
     reference "RFC 8040: RESTCONF Protocol";
   }
-
   organization
     "IETF NETCONF (Network Configuration) Working Group";
 
@@ -57,6 +56,39 @@ module ietf-zerotouch-information {
        Management";
   }
 
+  // identities
+
+  identity hash-algorithm {
+    description 
+      "A base identity for hash algorith verification";
+  }
+
+  identity sha-256 {
+    base "hash-algorithm";
+    description "The SHA-256 algorithm.";
+    reference "RFC 6234: US Secure Hash Algorithms.";
+  }
+
+  // typedefs
+
+  typedef pkcs7 {
+    type binary;
+    description
+      "A PKCS #7 SignedData structure, as specified by Section 9.1
+       in RFC 2315, encoded using ASN.1 distinguished encoding rules
+       (DER), as specified in ITU-T X.690.";
+    reference
+      "RFC 2315:
+         PKCS #7: Cryptographic Message Syntax Version 1.5.
+       ITU-T X.690:
+         Information technology – ASN.1 encoding rules:
+         Specification of Basic Encoding Rules (BER), 
+         Canonical Encoding Rules (CER) and Distinguished
+         Encoding Rules (DER).";
+  }
+
+  // yang-data
+
   rc:yang-data "zerotouch-information" {
     choice information-type {
       mandatory true;
@@ -92,28 +124,28 @@ module ietf-zerotouch-information {
                (443) is used.";
           }
           leaf trust-anchor {
-            type binary;
+            type pkcs7;
             description
-              "An X.509 v3 certificate structure as specified by RFC
-               5280, Section 4, encoded using ASN.1 distinguished
-               encoding rules (DER), as specified in ITU-T X.690.  A
-               certificate that the device can use as the trust anchor
-               to authenticate the bootstrap server the device is
-               being redirected to.  If not specified, the device may
-               establish a provisional connection to the bootstrap
-               server, as described in RFC XXXX.";
+              "A PKCS#7 structure that MUST contain the chain of X.509
+               certificates needed to authenticate the TLS certificate
+               presented by this bootstrap server.  In all cases, the
+               chain MUST include a root (self-signed) certificate. In
+               the case where the root certificate is itself the issuer
+               of the bootstrap server's TLS certificate, only one
+               X.509 certificate is present.  Additionally, if needed
+               by the device, the PKCS#7 structure MAY also contain
+               suitably fresh CRL and/or OCSP Responses with which to
+               verify the revocation status of the certificates.
+      
+               X.509 certificates and CRLs are described in RFC 5280.
+               OCSP Responses are described in RFC 6960.";
             reference
               "RFC 5280:
                  Internet X.509 Public Key Infrastructure Certificate
                  and Certificate Revocation List (CRL) Profile.
-               ITU-T X.690:
-                  Information technology – ASN.1 encoding rules:
-                  Specification of Basic Encoding Rules (BER), 
-                  Canonical Encoding Rules (CER) and Distinguished
-                  Encoding Rules (DER).
-               RFC XXXX:
-                  Zero Touch Provisioning for NETCONF or RESTCONF
-                  based Management.";
+               RFC 6960:
+                 X.509 Internet Public Key Infrastructure Online
+                 Certificate Status Protocol - OCSP.";
           }
         }
       }
@@ -145,38 +177,41 @@ module ietf-zerotouch-information {
                MUST be running in order to not require a software
                image upgrade (ex. 17.3R2.1).";
           }
-          leaf-list uri {
+          leaf-list download-uri {
             type inet:uri;
-            must '../hash-algorithm' {
+            must '../image-verification' {
               description
-                "A hash is needed in order to validate the downloaded
-                 image.";
+                "Image verification information must be provided if
+                 the device is going to download an image.";
             }
             ordered-by user;
             description
-              "An ordered list of URIs to where the boot-image file
-               MAY be obtained.  Deployments MUST know in which URI
-               schemes (http, ftp, etc.) a device supports.  If a
-               secure scheme (e.g., https) is provided, a device MAY
-               establish a provisional connection to the server, by
-               blindly accepting the server's credentials (e.g., its
-               TLS certificate)";
+              "An ordered list of URIs to where the necessary
+               boot-image file MAY be obtained.  Deployments must
+               know through out-of-band means which URI schemes
+               (http, ftp, etc.) the bootstrapping device supports.
+               If a secure scheme (e.g., https) is provided, a
+               device MAY establish an untrusted connection to the
+               remote server to obtain the boot-image.";
           }
-          choice hash-algorithm {
-            must '../uri' {
-              description
-                "A uri is needed in order to downloaded an image to
-                 validate.";
-            }
+          list image-verification {
+            key hash-algorithm;
             description
-              "Identifies the hash algorithm used.";
-            leaf sha256 {
+              "A list of hash values that a device can use to verify
+               boot image files with.";
+            leaf hash-algorithm {
+              type identityref {
+                base "hash-algorithm";
+              }
+              mandatory true;
+              description
+                "Identifies the hash algorithm used.";
+            }
+            leaf hash-value {
               type yang:hex-string;
               description
-                "The hex-encoded SHA-256 hash over the boot image
-                 file.  This is used by the device to verify a 
-                 downloaded boot image file.";
-              reference "RFC 6234: US Secure Hash Algorithms.";
+                "The hex-encoded value of the specified hash algorithm
+                 over the contents of the boot image file.";
             }
           }
         }
@@ -234,8 +269,9 @@ module ietf-zerotouch-information {
        product line, and/or model of the device.
         
        If a script is erroneously provided to a device that does not
-       support the execution of scripts, the device SHOULD send a
-       'script-warning' progress report, but otherwise continue
+       support the execution of scripts, the device SHOULD send either
+       a 'pre-script-warning' or 'post-script-warning' progress report,
+       based on which kind of script was presented, but otherwise continue
        processing the bootstrapping data as if the script had not
        been present.
 
@@ -248,13 +284,15 @@ module ietf-zerotouch-information {
        should assume that the script had a soft error, which the
        script believes does not affect manageability.  If the device
        obtained the bootstrap information from a bootstrap server,
-       it SHOULD send a 'script-warning' progress report.
+       it SHOULD send a 'pre-script-warning' or 'post-script-warning'
+       progress report.
 
        If the exit status code is less than zero, the device should
        assume the script had a hard error, which the script believes
        will affect manageability.  In this case, the device SHOULD
-       send a 'script-error' progress report followed by a reset that
-       will wipe out anything the script may have done and restart
-       the entire bootstrapping process again.";
+       send a 'pre-script-error' or 'post-script-error' progress
+       report followed by a reset that will wipe out anything the
+       script may have done and restart the entire bootstrapping
+       process again.";
   }
 }

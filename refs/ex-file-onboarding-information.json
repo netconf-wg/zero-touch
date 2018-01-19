@@ -4,8 +4,13 @@
     "boot-image" : {
       "os-name" : "VendorOS",
       "os-version" : "17.2R1.6",
-      "uri" : [ "http://some/path/to/raw/file" ],
-      "sha256" : "ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33"
+      "download-uri" : [ "http://some/path/to/raw/file" ],
+      "image-verification" : [
+        {
+          "hash-algorithm" : "ietf-zerotouch-information:sha-256",
+          "hash-value" : "ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33"
+        }
+      ]
     },
 
     "configuration-handling" : "merge",
@@ -96,7 +101,7 @@
           }
         }
       },
-      "ietf-device:zerotouch" : {
+      "ietf-zerotouch-device:zerotouch" : {
         "enabled" : false
       }
     }

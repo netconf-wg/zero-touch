@@ -3,8 +3,11 @@
   <boot-image>
     <os-name>VendorOS</os-name>
     <os-version>17.2R1.6</os-version>
-    <uri>http://some/path/to/raw/file</uri>
-    <sha256>ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33</sha256>
+    <download-uri>http://some/path/to/raw/file</download-uri>
+    <image-verification>
+    <hash-algorithm>sha-256</hash-algorithm>
+    <hash-value>ba:ec:cf:a5:67:82:b4:10:77:c6:67:a6:22:ab:7d:50:04:a7:8b:8f:0e:db:02:8b:f4:75:55:fb:c1:13:b2:33</hash-value>
+    </image-verification>
   </boot-image>
   <configuration-handling>merge</configuration-handling>
   <configuration>
@@ -45,12 +48,8 @@
               </host-key>
             </host-keys>
             <client-cert-auth>
-              <trusted-ca-certs>
-                deployment-specific-ca-certs
-              </trusted-ca-certs>
-              <trusted-client-certs>
-                explicitly-trusted-client-certs
-              </trusted-client-certs>
+              <trusted-ca-certs>deployment-specific-ca-certs</trusted-ca-certs>
+              <trusted-client-certs>explicitly-trusted-client-certs</trusted-client-certs>
             </client-cert-auth>
           </ssh>
           <connection-type>

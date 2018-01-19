@@ -1,7 +1,7 @@
 <zerotouch
   xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-device">
   <enabled>true</enabled>
-  <devid-certificate>base64encodedvalue==</devid-certificate>
+  <idevid-certificate>base64encodedvalue==</idevid-certificate>
   <bootstrap-servers>
     <bootstrap-server>
       <address>phs1.example.com</address>
@@ -16,6 +16,6 @@
       <port>8443</port>
     </bootstrap-server> 
   </bootstrap-servers>
-  <bootstrap-server-ta-certificates>manufacturers-root-ca-certs</bootstrap-server-ta-certificates>
-  <voucher-ta-certificates>manufacturers-root-ca-certs</voucher-ta-certificates>
+  <bootstrap-server-pinned-certificates>manufacturers-root-ca-certs</bootstrap-server-pinned-certificates>
+  <voucher-pinned-certificates>manufacturers-root-ca-certs</voucher-pinned-certificates>
 </zerotouch>

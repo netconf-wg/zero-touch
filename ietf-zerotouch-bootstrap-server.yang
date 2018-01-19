@@ -72,12 +72,25 @@ module ietf-zerotouch-bootstrap-server {
         type empty;
         description
           "This optional input parameter enables a device to 
-           communicate to the bootstrap server that it is unable
-           to authenticate the bootstrap server's TLS certificate.
-           In such circumstances, the device likely did not send
-           any of the other input parameters.  The bootstrap server
-           needs to return either unsigned redirect information or
-           signed data.";
+           communicate to the bootstrap server that it is unable to
+           authenticate the bootstrap server's TLS certificate.  In
+           such circumstances, the device likely does not send any 
+           of the other input parameters.  Upon receiving this input
+           parameter, the bootstrap server should return unsigned
+           redirect information or signed data of any type.";
+      }
+      leaf hw-model {
+        type string;
+        description
+          "This optional input parameter enables a device to
+           communicate to the bootstrap server its vendor specific
+           hardware model number.  This parameter may be needed 
+           when the device's IDevID certificate does not include
+           the 'hardwareModelName' value in its subjectAltName
+           field, as is allowed by 802.1AR-2009.";
+        reference
+          "IEEE 802.1AR-2009: IEEE Standard for Local and
+             metropolitan area networks - Secure Device Identity";
       }
       leaf os-name {
         type string;
@@ -86,48 +99,18 @@ module ietf-zerotouch-bootstrap-server {
            communicate to the bootstrap server the name of its
            operating system.  This parameter may be useful if
            the device, as identified by its IDevID certificate,
-           to run more than one type of operating system (e.g.,
+           can run more than one type of operating system (e.g.,
            on a white-box system.";
       }
       leaf os-version {
         type string;
         description
           "This optional input parameter enables a device to
-           communicate to the bootstrap server the version of
-           its operating system.  This parameter may be useful
-           to a server that wants to return a response optimized
-           for the device, negating, for instance, the need for
-           a potentially expensive boot-image update.";
-      }
-      leaf remote-id {
-        type string;
-        must "../circuit-id";
-        description
-          "This optional input parameter enables a device to
-           communicate to the bootstrap server the 'remote-id'
-           value it learned from a DHCP server via Option 82,
-           as described in Section 2.0 or RFC 3046.
-
-           This information, along with the circuit-id, enables
-           the bootstrap server to return a deployment-specific
-           response independent of the device's IDevID identity.";
-        reference
-          "RFC 3046: DHCP Relay Agent Information Option";
-      }
-      leaf circuit-id {
-        type string;
-        must "../remote-id";
-        description
-          "This optional input parameter enables a device to
-           communicate to the bootstrap server the 'circuit-id'
-           value it learned from a DHCP server via Option 82,
-           as described in Section 2.0 or RFC 3046.
-
-           This information, along with the remote-id, enables
-           the bootstrap server to return a deployment-specific
-           response independent of the device's IDevID identity.";
-        reference
-          "RFC 3046: DHCP Relay Agent Information Option";
+           communicate to the bootstrap server the version of its
+           operating system.  This parameter may be used by a
+           bootstrap server to return an operating system specific
+           response to the device, thus negating the need for a
+           potentially expensive boot-image update.";
       }
       leaf nonce {
         type string;
@@ -173,15 +156,15 @@ module ietf-zerotouch-bootstrap-server {
           }
           description
             "This PKCS#7 structure MUST contain the owner certificate
-             and all intermediate certificates leading up to, and 
-             optionally including, the trust anchor certificate
-             specified in the ownership voucher.  Additionally, if
-             needed by the device, this structure MAY also contain
-             suitably fresh CRL and/or OCSP Responses with which to
-             verify the revocation status of the certificates.
-    
-             X.509 certificates and CRLs are described in RFC 5280.
-             OCSP Responses are described in RFC 6960.";
+             and all intermediate certificates leading up to (and 
+             optionally including) the trust anchor certificate
+             specified by the 'pinned-domain-cert' field in the
+             ownership voucher.  This structure MAY also include
+             suitably fresh CRL and/or OCSP Responses that the
+             device can use to verify the revocation status of the
+             certificates.  This leaf is optional because it is
+             only needed when the 'zerotouch-information' PKCS7
+             structure is signed.";
           reference
             "RFC 2315:
                PKCS #7: Cryptographic Message Syntax Version 1.5.
@@ -210,7 +193,9 @@ module ietf-zerotouch-bootstrap-server {
              who its owner is.  The voucher encodes the device's
              serial number, so that the device can ensure the
              voucher applies to it.  The voucher is signed by the
-             device's manufacturer.";
+             device's manufacturer.  This leaf is optional because
+             it is only needed when the 'zerotouch-information'
+             PKCS7 structure is signed.";
           reference
             "I-D.ietf-anima-voucher:
                Voucher and Voucher Revocation Profiles for 
@@ -379,11 +364,11 @@ module ietf-zerotouch-bootstrap-server {
             type enumeration {
               enum "ssh-dss" {
                 description
-                  "ssh-dss";
+                  "The SSH host key is a ssh-dss based key.";
               }
               enum "ssh-rsa" {
                 description
-                  "ssh-rsa";
+                  "The SSH host key is a ssh-rsa based key.";
               }
             }
             mandatory true;

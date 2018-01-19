@@ -92,9 +92,9 @@ module ietf-zerotouch-device {
         "The 'enabled' leaf controls if zerotouch bootstrapping is
          enabled or disabled.  The default is 'false' so that, when
          not enabled, which is most of the time, no configuration
-         needs to be returned.";
+         is needed.";
     }
-    leaf devid-certificate {
+    leaf idevid-certificate {
       if-feature bootstrap-servers;
       type pkcs7;
       config false;
@@ -123,8 +123,8 @@ module ietf-zerotouch-device {
       if-feature bootstrap-servers;
       config false;
       description
-        "Default list of bootstrap servers this device is
-         configured to reach out to when bootstrapping.";
+        "List of bootstrap servers this device will attempt
+         to reach out to when bootstrapping.";
       list bootstrap-server {
         key "address";
         description
@@ -146,7 +146,7 @@ module ietf-zerotouch-device {
         }
       }
     }
-    leaf bootstrap-server-ta-certificates {
+    leaf bootstrap-server-pinned-certificates {
       if-feature bootstrap-servers;
       type leafref {
         path "/ks:keystore/ks:pinned-certificates/ks:name";
@@ -157,7 +157,7 @@ module ietf-zerotouch-device {
          certificates that the device uses to validate bootstrap
          servers with.";
     }
-    leaf voucher-ta-certificates {
+    leaf voucher-pinned-certificates {
       if-feature signed-data;
       type leafref {
         path "/ks:keystore/ks:pinned-certificates/ks:name";

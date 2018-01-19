@@ -339,16 +339,9 @@
           <xref target="info-yang-module"/>.  This container has the tree
           diagram shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
-          
-          <!-- FIXME: this tree-diagram should be dynamically generated -->
           <t><figure>
             <artwork><![CDATA[
-  +--:(redirect-information)
-     +--ro redirect-information
-        +--ro bootstrap-server* [address]
-           +--ro address         inet:host
-           +--ro port?           inet:port-number
-           +--ro trust-anchor?   binary
+INSERT_TEXT_FROM_FILE(refs/redirect-information-tree.txt)
 ]]></artwork>
           </figure></t>
 
@@ -390,21 +383,9 @@
           shown below.  Please see <xref target="tree-diagram"/> for tree
           diagram notation.</t>
 
-         <!-- FIXME: this tree-diagram should be dynamically generated -->
          <t><figure>
             <artwork><![CDATA[
-  +--:(onboarding-information)
-     +--ro onboarding-information
-        +--ro boot-image
-        |  +--ro name       string
-        |  +--ro (hash-algorithm)
-        |  |  +--:(sha256)
-        |  |     +--ro sha256?    string
-        |  +--ro uri*       inet:uri
-        +--ro configuration-handling       enumeration
-        +--ro pre-configuration-script?    script
-        +--ro configuration?
-        +--ro post-configuration-script?   script
+INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 ]]></artwork>
           </figure></t>
 
@@ -755,7 +736,9 @@ with revocations                         revocations     revocations
 
           <t>Devices supporting the bootstrapping strategy described in this
           document MUST have the preconfigured state and bootstrapping logic
-          described in the following sections.</t>
+          described in the following sections.  The "ietf-zerotouch-device"
+          YANG module in <xref target="device-model"/> defines a data model
+          to access this information.</t>
 
           <section title="Initial State" anchor="initial-state">
             <figure>
@@ -921,7 +904,12 @@ with revocations                         revocations     revocations
           able to authenticate the bootstrap server using X.509 certificate path
           validation (<xref target="RFC6125"/>, Section 6) to one of the device's
           preconfigured trust anchors, or to a trust anchor that it learned
-          from a previous step, then the device MUST set trust-state to TRUE.</t>
+          from a previous step, then the device MUST set trust-state to TRUE.
+          When establishing a connection to a bootstrap server, regardless the
+          device's ability to verify the bootstrap server's certificate, the
+          device MUST authenticate itself to the bootstrap server using its 
+          IDevID certificate (i.e., TLS-level client certificate based
+          authentication).</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
           if the bootstrapping data returned is signed and the device is able
@@ -962,7 +950,7 @@ with revocations                         revocations     revocations
           trust anchors (see <xref target="initial-state"/>), which 
           may entail using additional intermediate certificates attached 
           to the ownership voucher.  If the device has an accurate clock,
-          it MUST ensure that the ownership voucher was created in the past
+          it MUST verify that the ownership voucher was created in the past
           (i.e., 'created-on' &lt; now).  If the 'expires-on' leaf is present, the
           device MUST verify that the ownership voucher has not yet expired
           (i.e., now &lt; 'expires-on'), which requires an accurate clock.  The
@@ -1112,8 +1100,8 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
           disables the zerotouch bootstrapping service.  This is acheived through use
           of YANG modules "ietf-system" from <xref target="RFC7317"/>, "ietf-keystore"
           from <xref target="I-D.ietf-netconf-keystore"/>, "ietf-netconf-server" from
-          <xref target="I-D.ietf-netconf-netconf-client-server"/> and "ietf-zerotouch-device"
-          from this document.</t>
+          <xref target="I-D.ietf-netconf-netconf-client-server"/> and
+          "ietf-zerotouch-device" from this document.</t>
           <figure>
             <artwork><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
@@ -2432,7 +2420,41 @@ device   |        |             |            |        |         |
               </list>
             </t>
           </section>
-        </section>
+          <section title="18 to 19">
+            <t>
+              <list style="symbols">
+                <t>Fixed 'must' expressions, by converting 'choice' to a 'list' of
+                'image-verification', each of which now points to a base identity
+                called "hash-algorithm".  There's just one algorithm currently
+                defined (sha-256).  Wish there was a standard crypto module that
+                could identify such identities.</t>
+              </list>
+            </t>
+          </section>
+          <section title="19 to 20">
+            <t>
+              <list style="symbols">
+                <t>Fixed tree-diagrams in Section 2 to always reflect
+                current YANG (now they are now dynamically generated).</t>
+                <t>The "redirect-information" container's "trust-anchor"
+                is now a pkcs7 that can contain a chain of certificates,
+                rather than a single certificate.</t>
+                <t>The "onboarding-information" container's support
+                for image verification reworked to be extensible.</t>
+                <t>Added a reference to the "Device Details" section to
+                the new ietf-zerotouch-device module.</t>
+                <t>Clarified that the device must always pass it's IDevID
+                certificate, even for untrusted bootstrap servers.</t>
+                <t>Fixed the description statement for the "script" typedef
+                to refer to the [pre/post]-script-[warning/error] enums,
+                rather than the legacy script-[warning/error] enums.</t>
+                <t>For the get-bootstrapping-data RPC's input, removed
+                the "remote-id" and "circuit-id" fields, and added a
+                "hw-model" field.</t>
+              </list>
+            </t>
+          </section>
+      </section>
     </back>
 </rfc>
 
