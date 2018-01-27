@@ -203,12 +203,12 @@ module ietf-zerotouch-information {
               type identityref {
                 base "hash-algorithm";
               }
-              mandatory true;
               description
                 "Identifies the hash algorithm used.";
             }
             leaf hash-value {
               type yang:hex-string;
+              mandatory true;
               description
                 "The hex-encoded value of the specified hash algorithm
                  over the contents of the boot image file.";
