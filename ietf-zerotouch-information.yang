@@ -238,8 +238,9 @@ module ietf-zerotouch-information {
             "A script that, when present, is executed before the
              configuration has been processed.";
         }
-        anydata configuration {
+        leaf configuration {
           must '../configuration-handling';
+          type binary;
           description
             "Any configuration data model known to the device.  It may
              contain manufacturer-specific and/or standards-based data
