@@ -19,7 +19,7 @@ while ( grep INSERT_TEXT_FROM_FILE .tmp.new.txt >> /dev/null ); do
       col=`echo $file | sed 's/.*,//'`
       file=`echo $file | sed 's/,.*//'`
       file2=$file.2
-      echo "[ note: '\' line wrapping for formatting only]" > $file2
+      echo "[note: '\' line wrapping for formatting only]" > $file2
       echo "" >> $file2
       gsed "s/\(.\{$col\}\)/\1\\\\\n/" < $file >> $file2
       cat .tmp.pre.txt $file2 .tmp.post.txt > .tmp.new.txt

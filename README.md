@@ -1,12 +1,12 @@
-# draft-ietf-netconf-zero-touch
+# draft-ietf-netconf-zerotouch
 
 This repository is for the development of a IETF draft for the [NETCONF working group](http://datatracker.ietf.org/wg/netconf/charter/).
 
 ## Links
 
-* IETF Page: https://tools.ietf.org/html/draft-ietf-netconf-zero-touch
+* IETF Page: https://tools.ietf.org/html/draft-ietf-netconf-zerotouch
 * Mailing List: https://www.ietf.org/mailman/listinfo/netconf
-* Issue Tracking: https://github.com/netconf-wg/zero-touch/issues
+* Issue Tracking: https://github.com/netconf-wg/zerotouch/issues
 
 
 
