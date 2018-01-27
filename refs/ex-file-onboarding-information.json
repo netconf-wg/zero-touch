@@ -1,6 +1,5 @@
 {
   "ietf-zerotouch-information:onboarding-information" : {
-
     "boot-image" : {
       "os-name" : "VendorOS",
       "os-version" : "17.2R1.6",
@@ -12,9 +11,8 @@
         }
       ]
     },
-
     "configuration-handling" : "merge",
-
+    "pre-configuration-script" : "base64encodedvalue==",
     "configuration" : {
       "ietf-system:system" : {
         "authentication" : {
@@ -104,6 +102,7 @@
       "ietf-zerotouch-device:zerotouch" : {
         "enabled" : false
       }
-    }
+    },
+    "post-configuration-script" : "base64encodedvalue=="
   }
 }
