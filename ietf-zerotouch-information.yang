@@ -187,7 +187,7 @@ module ietf-zerotouch-information {
             ordered-by user;
             description
               "An ordered list of URIs to where the necessary
-               boot-image file MAY be obtained.  Deployments must
+               boot-image file may be obtained.  Deployments must
                know through out-of-band means which URI schemes
                (http, ftp, etc.) the bootstrapping device supports.
                If a secure scheme (e.g., https) is provided, a
