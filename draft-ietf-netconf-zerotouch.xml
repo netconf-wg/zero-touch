@@ -2448,18 +2448,12 @@ device   |        |             |            |        |         |
                 <t>For the get-bootstrapping-data RPC's input, removed
                 the "remote-id" and "circuit-id" fields, and added a
                 "hw-model" field.</t>
+                <t>Improved DHCP error handling text.</t>
+                <t>Added MUST requirement for DHCPv6 client and server
+                implementing <xref target="RFC3396"/> to handle URI lists
+                longer than 255 octets.</t>
               </list>
             </t>
-          </section>
-          <section title="20 to 21">
-            <t>
-              <list style="symbols">
-              <t>Added MUST requirement for DHCPv6 client and server
-                implementing <xref target="RFC3396"/> to handle URI lists
-                longer than 255 octets.
-              </t>
-            </list>
-          </t>
         </section>
       </section>
     </back>
