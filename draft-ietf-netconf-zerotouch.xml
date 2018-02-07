@@ -188,6 +188,10 @@
               information is formally defined by the "onboarding-information" YANG-data
               structure in <xref target="info-yang-module"/>.</t>
 
+              <t hangText="Onboarding Server:">The term "onboarding server" is used
+              herein to refer to a bootstrap server that only returns onboarding
+              information.</t>
+
               <t hangText="Owner:">The term "owner" is used throughout this document
               to refer to the person or organization that purchased or otherwise owns
               a device.</t>
@@ -887,9 +891,11 @@ with revocations                         revocations     revocations
           from a previous step, then the device MUST set trust-state to TRUE.
           When establishing a connection to a bootstrap server, regardless the
           device's ability to verify the bootstrap server's certificate, the
-          device MUST authenticate itself to the bootstrap server using its 
+          device MUST identify itself to the bootstrap server using its 
           IDevID certificate (i.e., TLS-level client certificate based
-          authentication).</t>
+          authentication). It is neccesary for the device to identify itself
+          to enable the bootstrap server to return signed data, which must
+          include an ownership voucher for the specific device.</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
           if the bootstrapping data returned is signed and the device is able
@@ -1505,7 +1511,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
           untrusted, it may be under the control of an adversary, and
           therefore devices should be cautious about the data they send
           in such cases.</t>
-          <t>Already this document requires devices send their IDevID
+          <t>This document requires devices send their IDevID
           certificate to untrusted bootstrap servers, which means that
           the device's serial number and hardware manufacturer may
           be disclosed to an adversary.  Serial numbers are ubiquitous
@@ -1519,7 +1525,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
           potentially identifying values that may be disclosed to an
           untrusted server, including 'os-name', 'os-version', 'remote-id',
           'circuit-id', and progress reports.  In order to address this
-          issue, it is RECOMMENDED that implementations first promote
+          issue, it is RECOMMENDED that implementations promote
           the untrusted connection to a trusted connection, as described in
           <xref target="untrust2trust"/>.</t>
        </section>
