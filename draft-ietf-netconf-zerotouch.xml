@@ -399,21 +399,25 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           information and onboarding information types discussed in <xref
           target="types-of-information"/>.</t>
 
-          <t>The zero touch information artifact is a PKCS#7 SignedData structure, as
-          specified by Section 9.1 of <xref target="RFC2315"/>, encoded
-          using ASN.1 distinguished encoding rules (DER), as specified
-          in ITU-T X.690 <xref target="ITU.X690.1994"/>. The PKCS#7 structure MUST
-          contain JSON-encoded content conforming to the YANG module specified in
-          <xref target="info-yang-module"/>.</t>
+          <t>The zero touch information artifact is a CMS structure, as described
+          in <xref target="RFC5652"/>, encoded using ASN.1 distinguished encoding
+          rules (DER), as specified in ITU-T X.690 <xref target="ITU.X690.1994"/>.
+          The CMS structure MUST contain content conforming to the
+          YANG module specified in <xref target="info-yang-module"/>.</t>
 
-          <t>In order for the zero touch information artifact to be trusted when
-          conveyed over an untrusted transport, the PKCS#7 structure MUST also
-          contain a "signerInfo" structure, as described in Section 9.1 of
-          <xref target="RFC2315"/>, containing a signature generated over the
-          content using the private key associated with the owner certificate
-          (<xref target="owner-certificate"/>).  In order to simplify the
-          verification process, the PKCS#7 structure SHOULD also contain the
-          signing X.509 certificate (i.e. the owner certificate).</t>
+          <t>The zero touch information CMS structure may encode signed or 
+          unsigned bootstrapping data.</t>
+
+          <t>When the data is unsigned, as it might be when communicated over
+          trusted channels, the CMS structure's top-most content type MUST be
+          one of the OIDs described in <xref target="cms_cts"/> or the OID
+          id_data (1.2.840.113549.1.7.1), in which case the JSON encoding
+          MUST be assumed unless communicated otherwise via external
+          signals. </t>
+
+          <t>When the data is signed, as it might be when communicated over
+          untrusted channels, the CMS structure's top-most content type MUST
+          be OID id-signedData (1.2.840.113549.1.7.2).</t>
         </section>
 
         <section title="Owner Certificate" anchor="owner-certificate">
@@ -433,19 +437,19 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           verifies the signature using the public key in the owner certificate
           over the content contained within the zero touch information artifact.</t>
 
-          <t>The owner certificate artifact is formally an unsigned PKCS #7
-          SignedData structure, as specified by Section 9.1 in <xref target="RFC2315"/>,
-          encoded using ASN.1 distinguished encoding rules (DER), as
-          specified in ITU-T X.690 <xref target="ITU.X690.1994"/>.</t>
+          <t>The owner certificate artifact is formally a CMS structure, as
+          specified by <xref target="RFC5652"/>, encoded using ASN.1
+          distinguished encoding rules (DER), as specified in ITU-T X.690
+          <xref target="ITU.X690.1994"/>.</t>
 
-          <t>The owner certificate PKCS#7 structure MUST contain the owner
+          <t>The owner certificate CMS structure MUST contain the owner
           certificate itself, as well as all intermediate certificates leading
           up to the 'pinned-domain-cert' certificate specified in the ownership
           voucher.  The owner certificate artifact MAY optionally include the
           'pinned-domain-cert' as well.</t>
 
           <t>Additionally, in order to support devices deployed on private networks,
-          the owner certificate PKCS#7 structure MAY also contain suitably fresh
+          the owner certificate CMS structure MAY also contain suitably fresh
           CRLs <xref target="RFC5280"/> and/or OCSP Responses <xref target="RFC6960"/>.
           Having these revocation objects stapled to the owner certificate precludes
           the need for the device to have to download them dynamically using the CRL
@@ -548,13 +552,13 @@ with revocations                         revocations     revocations
             <list style="hanging" hangIndent="6">
               <t hangText="   Zero Touch Information:">Mapped to a file containing
               the binary artifact described in <xref target="zerotouch-information"/>
-              (e.g., zerotouch-information.pk7).</t>
+              (e.g., zerotouch-information.cms).</t>
               <t hangText="   Owner Certificate:">Mapped to a file containing the
               binary artifact described in <xref target="owner-certificate"/>
-              (e.g., owner-certificate.pk7).</t>
+              (e.g., owner-certificate.cms).</t>
               <t hangText="   Ownership Voucher:">Mapped to a file containing the
               binary artifact described in <xref target="ownership-voucher"/>
-              (e.g., ownership-voucher.pk7).</t>
+              (e.g., ownership-voucher.cms or ownership-voucher.vcj).</t>
             </list>
           </t>
           <t>The format of the removable storage device's filesystem and the naming of the
@@ -1067,8 +1071,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-information-tree.txt)
         <section title="Example Usage" anchor="zt-info-data-model-examples">
 
           <t>The following example illustrates how redirect information
-          (<xref target="redirect-information"/>) can be encoded using JSON,
-          as is needed by the zero touch information artifact.</t>
+          (<xref target="redirect-information"/>) can be encoded using JSON.</t>
           <figure>
             <artwork><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
@@ -1076,8 +1079,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
           </figure>
 
           <t>The following example illustrates how onboarding information
-          (<xref target="onboarding-information"/>) can be encoded using JSON,
-          as is needed by the zero touch information artifact.</t>
+          (<xref target="onboarding-information"/>) can be encoded using JSON.</t>
 
           <t>Note: the sample configuration used in the below example configures an
           administrator account with an SSH public key, configures keystore with an
@@ -1232,7 +1234,7 @@ Server: example-server
           by the YANG module defined in this section.</t>
 
           <t>Note: the module defined herein uses data types
-          defined in <xref target="RFC2315"/>, <xref target="RFC5280"/>,
+          defined in <xref target="RFC5652"/>, <xref target="RFC5280"/>,
           <xref target="RFC6960"/>, and <xref target="I-D.ietf-anima-voucher"/>,
           and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
           <figure>
@@ -1283,7 +1285,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml,68)
           defined in this section.</t>
 
           <t>Note: the module defined herein uses data types
-          defined in <xref target="RFC2315"/> and <xref target="RFC6991"/>,
+          defined in <xref target="RFC5652"/> and <xref target="RFC6991"/>,
           and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
           <figure>
             <artwork><![CDATA[
@@ -1556,10 +1558,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
         </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
-          defines a data structure that is always wrapped by a PKCS#7 structure.
+          defines a data structure that is always wrapped by a CMS structure.
           When accessed by a secure mechanism (e.g., protected by TLS), then the
-          PKCS#7 structure may be unsigned.  However, when accessed by an insecure
-          mechanism (e.g., removable storage device), then the PKCS#7 structure
+          CMS structure may be unsigned.  However, when accessed by an insecure
+          mechanism (e.g., removable storage device), then the CMS structure
           must be signed, in order for the device to trust it.</t>
           <t>Implementations should be aware that signed bootstrapping data
           only protects the data from modification, the contents are still
@@ -1569,12 +1571,12 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
           <t>The ietf-zerotouch-information module defines a top-level 'choice'
           statement that declares the contents are either "redirect-information"
           or "onboarding-information".  Each of these two cases are now considered.</t>
-          <t>When the contents of the PKCS#7 structure are redirect-information,
+          <t>When the contents of the CMS structure are redirect-information,
           an observer can learn about the bootstrap servers the device is being
           directed, their IP addresses or hostnames, ports, and trust anchor
           certificates.  Knowledge of this information could provide an observer
           some insight into a network's inner structure.</t>
-          <t>When the contents of the PKCS#7 structure are onboarding-information,
+          <t>When the contents of the CMS structure are onboarding-information,
           as observer could learn considerable information about how the device
           is to be provisioned.  This information includes the specific operating
           system version, the initial configuration, and the specific scripts that
@@ -1639,26 +1641,6 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
       </section>  <!-- end Security Considerations -->
 
       <section title="IANA Considerations" anchor="iana-considerations">
-        <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry">
-          <t>IANA is kindly requested to allocate a new option code from the
-          "BOOTP Manufacturer Extensions and DHCP Options" registry
-          maintained at http://www.iana.org/assignments/bootp-dhcp-parameters:
-            <figure>
-              <artwork>
-TBD for OPTION_V4_ZEROTOUCH_REDIRECT
-              </artwork>
-            </figure>
-          </t>
-          <t>And a new option code from the "Dynamic Host Configuration Protocol
-          for IPv6 (DHCPv6)" registry maintained at
-          http://www.iana.org/assignments/dhcpv6-parameters:
-            <figure>
-              <artwork>
-TBD for OPTION_V6_ZEROTOUCH_REDIRECT
-              </artwork>
-            </figure>
-          </t>
-        </section>
         <section title="The IETF XML Registry">
           <t>This document registers three URIs in the IETF XML
           registry <xref target="RFC3688"/>.  Following the format in
@@ -1709,6 +1691,42 @@ reference: RFC XXXX
           </figure>
         </t>
         </section>
+        <section title="The SMI Security for S/MIME CMS Content Type Registry" anchor="cms_cts">
+          <t>IANA is kindly requested to two entries in the "SMI Security for
+          S/MIME CMS Content Type" registry (1.2.840.113549.1.9.16.1), with
+          values as follows:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+
+             Decimal  Description                             References
+             -------  --------------------------------------  ----------
+             TBD1      id-ct-zerotouchInformationXML          [ThisRFC]
+             TBD2      id-ct-zerotouchInformationJSON         [ThisRFC]
+]]></artwork>
+          </figure>
+        </t>
+        </section>
+        <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry">
+          <t>IANA is kindly requested to allocate a new option code from the
+          "BOOTP Manufacturer Extensions and DHCP Options" registry
+          maintained at http://www.iana.org/assignments/bootp-dhcp-parameters:
+            <figure>
+              <artwork>
+TBD for OPTION_V4_ZEROTOUCH_REDIRECT
+              </artwork>
+            </figure>
+          </t>
+          <t>And a new option code from the "Dynamic Host Configuration Protocol
+          for IPv6 (DHCPv6)" registry maintained at
+          http://www.iana.org/assignments/dhcpv6-parameters:
+            <figure>
+              <artwork>
+TBD for OPTION_V6_ZEROTOUCH_REDIRECT
+              </artwork>
+            </figure>
+          </t>
+        </section>
       </section>
 
       <section title="Acknowledgements">
@@ -1743,7 +1761,7 @@ reference: RFC XXXX
         <references title="Normative References">
           <?rfc include="reference.RFC.1035.xml"?>
           <?rfc include="reference.RFC.2119.xml"?>
-          <?rfc include="reference.RFC.2315.xml"?>
+          <?rfc include="reference.RFC.5652.xml"?>
           <?rfc include="reference.RFC.3315.xml"?>
           <?rfc include="reference.RFC.3396.xml"?>
           <?rfc include="reference.RFC.5280.xml"?>
@@ -2291,7 +2309,7 @@ device   |        |             |            |        |         |
               open/standard file systems when possible.  (issue #14)</t>
               <t>Replaced notifications "script-[warning/error]" with
               "[pre/post]-script-[warning/error]". (goes with issue #15)</t>
-              <t>switched owner-certificate to be encoded using the pkcs#7
+              <t>switched owner-certificate to be encoded using the CMS
               format. (issue #16)</t>
               <t>Replaced md5/sha1 with sha256 inside a choice statement, for
               future extensibility. (issue #17)</t>
@@ -2332,13 +2350,13 @@ device   |        |             |            |        |         |
             <t>
             <list style="symbols">
               <t>defined a standalone artifact to encode the old information-type
-              into a PKCS#7 structure.</t>
+              into a CMS structure.</t>
               <t>standalone information artifact hardcodes JSON encoding (to
               match the voucher draft).</t>
-              <t>combined the information and signature PKCS#7 structures into a
-              single PKCS#7 structure.</t>
+              <t>combined the information and signature CMS structures into a
+              single CMS structure.</t>
               <t>moved the certificate-revocations into the owner-certificate's
-              PKCS#7 structure.</t>
+              CMS structure.</t>
               <t>eliminated support for voucher-revocations, to reflect the
               voucher-draft's switch from revocations to renewals.</t>
             </list>
@@ -2381,7 +2399,7 @@ device   |        |             |            |        |         |
                 <t>added a pointer to the Workflow Overview section (recently moved to
                 the Appendix) to the Intro.</t>
                 <t>added a note that, in order to simplify the verification process,
-                the "Zerotouch Information" PKCS#7 structure MUST also contain the
+                the "Zerotouch Information" CMS structure MUST also contain the
                 signing X.509 certificate.</t>
                 <t>noted that the owner certificate's must either have no Key Usage or
                 the Key Usage must set the "digitalSignature" bit.</t>
@@ -2440,7 +2458,7 @@ device   |        |             |            |        |         |
                 <t>Fixed tree-diagrams in Section 2 to always reflect
                 current YANG (now they are now dynamically generated).</t>
                 <t>The "redirect-information" container's "trust-anchor"
-                is now a pkcs7 that can contain a chain of certificates,
+                is now a cms that can contain a chain of certificates,
                 rather than a single certificate.</t>
                 <t>The "onboarding-information" container's support
                 for image verification reworked to be extensible.</t>

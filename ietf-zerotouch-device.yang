@@ -64,15 +64,15 @@ module ietf-zerotouch-device {
 
   // typedefs
 
-  typedef pkcs7 {
+  typedef cms {
     type binary;
     description
-      "A PKCS #7 SignedData structure, as specified by Section 9.1
-       in RFC 2315, encoded using ASN.1 distinguished encoding rules
-       (DER), as specified in ITU-T X.690.";
+      "A CMS structure, as specified in RFC 5652, encoded using
+       ASN.1 distinguished encoding rules (DER), as specified in
+       ITU-T X.690.";
     reference
-      "RFC 2315:
-         PKCS #7: Cryptographic Message Syntax Version 1.5.
+      "RFC 5652:
+         Cryptographic Message Syntax (CMS)
        ITU-T X.690:
          Information technology – ASN.1 encoding rules:
          Specification of Basic Encoding Rules (BER), 
@@ -96,20 +96,20 @@ module ietf-zerotouch-device {
     }
     leaf idevid-certificate {
       if-feature bootstrap-servers;
-      type pkcs7;
+      type cms;
       config false;
       description
-        "An unsigned PKCS #7 SignedData structure, as specified by
-         Section 9.1 in RFC 2315, encoded using ASN.1 distinguished
-         encoding rules (DER), as specified in ITU-T X.690.
+        "An CMS SignedData structure, as specified by Section 5 of
+         RFC 5652, encoded using ASN.1 distinguished encoding rules
+         (DER), as specified in ITU-T X.690.
 
          This structure contains the IDevID certificate and all
          intermediate certificates leading up to the manufacturer's
          well-known trust anchor certificate.  IDevID certificates
          are described in IEEE 802.1AR-2009.";
       reference
-        "RFC 2315:
-           PKCS #7: Cryptographic Message Syntax Version 1.5.
+        "RFC 5652:
+           Cryptographic Message Syntax (CMS)
          ITU-T X.690:
            Information technology – ASN.1 encoding rules:
            Specification of Basic Encoding Rules (BER), 
