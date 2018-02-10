@@ -412,7 +412,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           trusted channels, the CMS structure's top-most content type MUST be
           one of the OIDs described in <xref target="cms_cts"/> or the OID
           id_data (1.2.840.113549.1.7.1), in which case the JSON encoding
-          MUST be assumed unless communicated otherwise via external
+          MUST be assumed, unless communicated otherwise via external
           signals. </t>
 
           <t>When the data is signed, as it might be when communicated over
@@ -2309,7 +2309,7 @@ device   |        |             |            |        |         |
               open/standard file systems when possible.  (issue #14)</t>
               <t>Replaced notifications "script-[warning/error]" with
               "[pre/post]-script-[warning/error]". (goes with issue #15)</t>
-              <t>switched owner-certificate to be encoded using the CMS
+              <t>switched owner-certificate to be encoded using the PKCS #7
               format. (issue #16)</t>
               <t>Replaced md5/sha1 with sha256 inside a choice statement, for
               future extensibility. (issue #17)</t>
@@ -2350,13 +2350,13 @@ device   |        |             |            |        |         |
             <t>
             <list style="symbols">
               <t>defined a standalone artifact to encode the old information-type
-              into a CMS structure.</t>
+              into a PKCS #7 structure.</t>
               <t>standalone information artifact hardcodes JSON encoding (to
               match the voucher draft).</t>
-              <t>combined the information and signature CMS structures into a
-              single CMS structure.</t>
+              <t>combined the information and signature PKCS #7 structures into a
+              single PKCS #7 structure.</t>
               <t>moved the certificate-revocations into the owner-certificate's
-              CMS structure.</t>
+              PKCS #7 structure.</t>
               <t>eliminated support for voucher-revocations, to reflect the
               voucher-draft's switch from revocations to renewals.</t>
             </list>
@@ -2399,7 +2399,7 @@ device   |        |             |            |        |         |
                 <t>added a pointer to the Workflow Overview section (recently moved to
                 the Appendix) to the Intro.</t>
                 <t>added a note that, in order to simplify the verification process,
-                the "Zerotouch Information" CMS structure MUST also contain the
+                the "Zerotouch Information" PKCS #7 structure MUST also contain the
                 signing X.509 certificate.</t>
                 <t>noted that the owner certificate's must either have no Key Usage or
                 the Key Usage must set the "digitalSignature" bit.</t>
@@ -2476,6 +2476,8 @@ device   |        |             |            |        |         |
                 <t>Added MUST requirement for DHCPv6 client and server
                 implementing <xref target="RFC3396"/> to handle URI lists
                 longer than 255 octets.</t>
+                <t>Moved everything from PKCS#7 to CMS (this shows up
+                as a big change).</t>
               </list>
             </t>
         </section>
