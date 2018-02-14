@@ -246,7 +246,7 @@
 
         <section title="Tree Diagrams">
           <t>Tree diagrams used in this document follow the notation
-          defined in ^I-D.ietf-netmod-yang-tree-diagrams^.</t>
+          defined in <xref target="I-D.ietf-netmod-yang-tree-diagrams"/>.</t>
         </section>
       </section>  <!-- end Introduction -->
 
@@ -667,7 +667,7 @@ with revocations                         revocations     revocations
           <t>Using a bootstrap server as a source of bootstrapping data is a compelling
           option as it MAY use transport-level security, in lieu of signed data, which
           may be easier to deploy in some situations.  Additionally, the bootstrap server
-          is able to receive progress updates from devices, which may be critical to
+          is able to receive progress reports from devices, which may be critical to
           some deployments (e.g., the passing of the device's SSH host keys).</t>
 
           <t>A bootstrap server may be a trusted or an untrusted source of bootstrapping
@@ -1002,7 +1002,7 @@ with revocations                         revocations     revocations
 
           <t>When processing onboarding information, the device MUST first process the boot image
           information, then execute the pre-configuration script (if any), then commit the initial
-          configuration, and then execute the post-configuration script (if any), in that order.
+          configuration (if any), and then execute the post-configuration script (if any), in that order.
           If the device encounters an error at any step, it MUST NOT proceed to the next step.
           When the onboarding information was obtained from a trusted bootstrap server, the
           device SHOULD send progress reports throughout the bootstrapping process using the
@@ -1020,7 +1020,7 @@ with revocations                         revocations     revocations
 
           <t>Next, for devices that support executing scripts, if a pre-configuration
           script has been specified, the device MUST execute the script and check its
-          exit status code to determine if had any warnings or errors.  In the case of
+          exit status code to determine if it had any warnings or errors.  In the case of
           errors, the device MUST reset itself in such a way that wipes out any bad
           state the script may have left behind.</t>
 
@@ -1069,6 +1069,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-information-tree.txt)
           <t>The following example illustrates how redirect information
           (<xref target="redirect-information"/>) can be encoded using JSON,
           as is needed by the zero touch information artifact.</t>
+
           <figure>
             <artwork><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
@@ -1078,15 +1079,6 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
           <t>The following example illustrates how onboarding information
           (<xref target="onboarding-information"/>) can be encoded using JSON,
           as is needed by the zero touch information artifact.</t>
-
-          <t>Note: the sample configuration used in the below example configures an
-          administrator account with an SSH public key, configures keystore with an
-          authentication certificate, configures NETCONF Call Home and, lastly,
-          disables the zerotouch bootstrapping service.  This is acheived through use
-          of YANG modules "ietf-system" from <xref target="RFC7317"/>, "ietf-keystore"
-          from <xref target="I-D.ietf-netconf-keystore"/>, "ietf-netconf-server" from
-          <xref target="I-D.ietf-netconf-netconf-client-server"/> and
-          "ietf-zerotouch-device" from this document.</t>
           <figure>
             <artwork><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
@@ -1197,7 +1189,7 @@ INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-reply-trusted.xml)
 ]]></artwork>
           </figure>
           <t>The following example illustrates a device using the API to post
-          a progress update to a bootstrap server.  Illustrated below is
+          a progress report to a bootstrap server.  Illustrated below is
           the 'bootstrap-complete' message, but the device may send other
           progress reports to the server while bootstrapping.  In this
           example, the device is sending both its SSH host keys and a TLS
@@ -1780,10 +1772,8 @@ reference: RFC XXXX
           <?rfc include="reference.RFC.6536.xml"?>
           <?rfc include="reference.RFC.6960.xml"?>
           <?rfc include="reference.RFC.6698.xml"?>
-          <?rfc include="reference.RFC.7317.xml"?>
           <?rfc include="reference.RFC.8071.xml"?>
           <?rfc include="reference.I-D.ietf-netmod-yang-tree-diagrams"?>
-          <?rfc include="reference.I-D.ietf-netconf-netconf-client-server"?>
           <?rfc include="reference.I-D.ietf-netconf-keystore"?>
         </references>
 
@@ -2060,13 +2050,14 @@ device   |        |             |            |        |         |
                     key, etc.), and should configure the device either to listen for
                     NETCONF or RESTCONF connections or to initiate call home connections
                     <xref target="RFC8071"/>, and should disable the zerotouch
-                    bootstrapping service.</t>
-                    <t>If the bootstrap server supports forwarding device progress updates
+                    bootstrapping service (e.g., the 'enabled' leaf in data model
+                    presented in <xref target="device-model"/>).</t>
+                    <t>If the bootstrap server supports forwarding device progress reports
                     to external systems (e.g., via a webhook), a "bootstrap-complete"
                     progress report (<xref target="yang-module"/>) informs the external
                     system to know when it can, for instance, initiate a connection to
                     the device.  To support this scenario further, the 'bootstrap-complete'
-                    progress update may also relay the device's SSH host keys and/or TLS
+                    progress report may also relay the device's SSH host keys and/or TLS
                     certificates, with which the external system can use to authenticate
                     subsequent connections to the device.  IDevID certificates do not
                     need to be sent as they do not need to be pinned by an NMS in order
