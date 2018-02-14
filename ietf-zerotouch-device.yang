@@ -103,10 +103,10 @@ module ietf-zerotouch-device {
          RFC 5652, encoded using ASN.1 distinguished encoding rules
          (DER), as specified in ITU-T X.690.
 
-         This structure contains the IDevID certificate and all
-         intermediate certificates leading up to the manufacturer's
-         well-known trust anchor certificate.  IDevID certificates
-         are described in IEEE 802.1AR-2009.";
+         This structure contains the IEEE 802.1AR-2009 IDevID
+         certificate itself, and all intermediate certificates leading
+         up to, and optionally including, the manufacturer's well-known
+         trust anchor certificate for IDevID certificates.";
       reference
         "RFC 5652:
            Cryptographic Message Syntax (CMS)

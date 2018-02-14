@@ -408,16 +408,22 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The zero touch information CMS structure may encode signed or 
           unsigned bootstrapping data.</t>
 
-          <t>When the data is unsigned, as it might be when communicated over
+          <t>When the bootstrapping data is unsigned, as it might be when communicated over
           trusted channels, the CMS structure's top-most content type MUST be
           one of the OIDs described in <xref target="cms_cts"/> or the OID
-          id_data (1.2.840.113549.1.7.1), in which case the JSON encoding
-          MUST be assumed, unless communicated otherwise via external
-          signals. </t>
+          id_data (1.2.840.113549.1.7.1), in which case the encoding (JSON,
+          XML, etc.) SHOULD be communicated externally. In either
+          case, the associated content is an octet string containing 
+          zerotouch-information data in the expected encoding.</t>
 
-          <t>When the data is signed, as it might be when communicated over
-          untrusted channels, the CMS structure's top-most content type MUST
-          be OID id-signedData (1.2.840.113549.1.7.2).</t>
+          <t>When the bootstrapping data is signed, as it might be when communicated 
+          over untrusted channels, the CMS structure's top-most content type MUST
+          be the OID id-signedData (1.2.840.113549.1.7.2), and its inner
+          eContentType MUST be one of the OIDs described in <xref target="cms_cts"/>
+          or the OID id_data (1.2.840.113549.1.7.1), in which case the encoding (JSON,
+          XML, etc.) SHOULD be communicated externally.  In either case, the
+          associated content or eContent is an octet string containing 
+          zerotouch-information data in the expected encoding.</t>
         </section>
 
         <section title="Owner Certificate" anchor="owner-certificate">

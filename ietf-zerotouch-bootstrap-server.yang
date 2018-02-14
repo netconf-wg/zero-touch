@@ -162,7 +162,7 @@ module ietf-zerotouch-bootstrap-server {
              suitably fresh CRL and/or OCSP Responses that the
              device can use to verify the revocation status of the
              certificates.  This leaf is optional because it is
-             only needed when the 'zerotouch-information' PKCS7
+             only needed when the 'zerotouch-information' CMS
              structure is signed.";
           reference
             "RFC 5652:
@@ -194,7 +194,7 @@ module ietf-zerotouch-bootstrap-server {
              voucher applies to it.  The voucher is signed by the
              device's manufacturer.  This leaf is optional because
              it is only needed when the 'zerotouch-information'
-             PKCS7 structure is signed.";
+             CMS structure is signed.";
           reference
             "I-D.ietf-anima-voucher:
                Voucher and Voucher Revocation Profiles for 
