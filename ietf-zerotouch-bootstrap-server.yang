@@ -44,15 +44,15 @@ module ietf-zerotouch-bootstrap-server {
 
   // typedefs
 
-  typedef pkcs7 {
+  typedef cms {
     type binary;
     description
-      "A PKCS #7 SignedData structure, as specified by Section 9.1
-       in RFC 2315, encoded using ASN.1 distinguished encoding rules
-       (DER), as specified in ITU-T X.690.";
+      "A CMS structure, as specified in RFC 5652, encoded using
+       ASN.1 distinguished encoding rules (DER), as specified in
+       ITU-T X.690.";
     reference
-      "RFC 2315:
-         PKCS #7: Cryptographic Message Syntax Version 1.5.
+      "RFC 5652:
+         Cryptographic Message Syntax (CMS)
        ITU-T X.690:
          Information technology – ASN.1 encoding rules:
          Specification of Basic Encoding Rules (BER), 
@@ -131,31 +131,30 @@ module ietf-zerotouch-bootstrap-server {
         description
           "Top-level node for the bootstrapping data.";
         leaf zerotouch-information {
-          type pkcs7;
+          type cms;
           mandatory true;
           description
             "A 'zerotouch-information' artifact, as described in 
-             Section 4.1 of RFC XXXX.  In order to be processed by a
-             device, when conveyed over an untrusted transport, the
-             PKCS#7 SignedData structure MUST contain a 'signerInfo'
-             structure, described in Section 9.1 of RFC 2315, 
-             containing a signature generated using the private key
-             associated with the 'owner-certificate'.";
+             Section 4.1 of RFC XXXX.  The CMS structure may either
+             contain just a contentInfo structure, with effectively
+             unsigned data, or a SignedData (per Section 5.1 of
+             RFC 5652) structure that signs the content using the
+             private key associated with the 'owner-certificate'.";
           reference
             "RFC XXXX: Zero Touch Provisioning for NETCONF or
                 RESTCONF based Management.
-             RFC 2315:
-                PKCS #7: Cryptographic Message Syntax Version 1.5";
+             RFC 5652:
+                Cryptographic Message Syntax (CMS)";
         }
         leaf owner-certificate {
-          type pkcs7;
+          type cms;
           must '../ownership-voucher' {
             description
               "An ownership voucher must be present whenever an owner
                certificate is presented.";
           }
           description
-            "This PKCS#7 structure MUST contain the owner certificate
+            "This CMS structure MUST contain the owner certificate
              and all intermediate certificates leading up to (and 
              optionally including) the trust anchor certificate
              specified by the 'pinned-domain-cert' field in the
@@ -163,11 +162,11 @@ module ietf-zerotouch-bootstrap-server {
              suitably fresh CRL and/or OCSP Responses that the
              device can use to verify the revocation status of the
              certificates.  This leaf is optional because it is
-             only needed when the 'zerotouch-information' PKCS7
+             only needed when the 'zerotouch-information' CMS
              structure is signed.";
           reference
-            "RFC 2315:
-               PKCS #7: Cryptographic Message Syntax Version 1.5.
+            "RFC 5652:
+               Cryptographic Message Syntax (CMS)
              RFC 5280:
                Internet X.509 Public Key Infrastructure Certificate
                and Certificate Revocation List (CRL) Profile.
@@ -181,7 +180,7 @@ module ietf-zerotouch-bootstrap-server {
                Encoding Rules (DER).";
         }
         leaf ownership-voucher {
-          type pkcs7;
+          type cms;
           must '../owner-certificate' {
             description
               "An owner certificate must be present whenever an
@@ -195,7 +194,7 @@ module ietf-zerotouch-bootstrap-server {
              voucher applies to it.  The voucher is signed by the
              device's manufacturer.  This leaf is optional because
              it is only needed when the 'zerotouch-information'
-             PKCS7 structure is signed.";
+             CMS structure is signed.";
           reference
             "I-D.ietf-anima-voucher:
                Voucher and Voucher Revocation Profiles for 
@@ -401,7 +400,7 @@ module ietf-zerotouch-bootstrap-server {
           description
             "A trust anchor.";
           leaf certificate {
-            type pkcs7;
+            type cms;
             mandatory true;
             description
               "An X.509 v3 certificate structure, as specified

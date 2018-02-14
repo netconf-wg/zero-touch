@@ -71,15 +71,15 @@ module ietf-zerotouch-information {
 
   // typedefs
 
-  typedef pkcs7 {
+  typedef cms {
     type binary;
     description
-      "A PKCS #7 SignedData structure, as specified by Section 9.1
-       in RFC 2315, encoded using ASN.1 distinguished encoding rules
-       (DER), as specified in ITU-T X.690.";
+      "A CMS structure, as specified in RFC 5652, encoded using
+       ASN.1 distinguished encoding rules (DER), as specified in
+       ITU-T X.690.";
     reference
-      "RFC 2315:
-         PKCS #7: Cryptographic Message Syntax Version 1.5.
+      "RFC 5652:
+         Cryptographic Message Syntax (CMS)
        ITU-T X.690:
          Information technology – ASN.1 encoding rules:
          Specification of Basic Encoding Rules (BER), 
@@ -124,17 +124,17 @@ module ietf-zerotouch-information {
                (443) is used.";
           }
           leaf trust-anchor {
-            type pkcs7;
+            type cms;
             description
-              "A PKCS#7 structure that MUST contain the chain of X.509
+              "A CMS structure that MUST contain the chain of X.509
                certificates needed to authenticate the TLS certificate
                presented by this bootstrap server.  In all cases, the
                chain MUST include a root (self-signed) certificate. In
                the case where the root certificate is itself the issuer
                of the bootstrap server's TLS certificate, only one
-               X.509 certificate is present.  Additionally, if needed
-               by the device, the PKCS#7 structure MAY also contain
-               suitably fresh CRL and/or OCSP Responses with which to
+               X.509 certificate is present.  If needed by the device,
+               this CMS structure MAY also contain suitably fresh CRL
+               and/or OCSP Responses with which the device can use to
                verify the revocation status of the certificates.
       
                X.509 certificates and CRLs are described in RFC 5280.
