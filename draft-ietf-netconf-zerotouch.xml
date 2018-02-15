@@ -199,8 +199,10 @@
               <t hangText="Owner Certificate:">The term "owner certificate" is used in
               this document to represent an X.509 certificate that binds an owner identity
               to a public key, which a device can use to validate a signature over the
-              zero touch information artifacts.  The owner certificate is one of
-              the three bootstrapping artifacts described in <xref target="artifacts"/>.</t>
+              zero touch information artifacts.  The owner certificate is often times
+              communicated with its chain of intermedite certificates.  The owner
+              certificate is one of the three bootstrapping artifacts described in
+              <xref target="artifacts"/>.</t>
 
               <t hangText="Ownership Voucher:">The term "ownership voucher" is used in
               this document to represent the voucher artifact defined in <xref
@@ -446,7 +448,11 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The owner certificate artifact is formally a CMS structure, as
           specified by <xref target="RFC5652"/>, encoded using ASN.1
           distinguished encoding rules (DER), as specified in ITU-T X.690
-          <xref target="ITU.X690.1994"/>.</t>
+          <xref target="ITU.X690.1994"/>.  This CMS structure's top-most
+          content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
+          The inner SignedData structure is the degenerate form, whereby
+          there are no signers, that is commonly used to desemenate 
+          certificates, CRLs, and OCSP Responses.</t>
 
           <t>The owner certificate CMS structure MUST contain the owner
           certificate itself, as well as all intermediate certificates leading
@@ -2479,7 +2485,7 @@ device   |        |             |            |        |         |
                 implementing <xref target="RFC3396"/> to handle URI lists
                 longer than 255 octets.</t>
                 <t>Changed the "configuration" value in onboarding-information
-                to be type 'binary' instead of 'anydata'.
+                to be type 'binary' instead of 'anydata'.</t>
                 <t>Moved everything from PKCS#7 to CMS (this shows up
                 as a big change).</t>
                 <t>Added the early code point allocation assignments for the
