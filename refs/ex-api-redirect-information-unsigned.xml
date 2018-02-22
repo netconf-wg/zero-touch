@@ -1,5 +1,0 @@
-<device
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
-  <unique-id>123456789</unique-id>
-  <zerotouch-information>base64encodedvalue==</zerotouch-information>
-</device>

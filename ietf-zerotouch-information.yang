@@ -11,13 +11,11 @@ module ietf-zerotouch-information {
     prefix inet;
     reference "RFC 6991: Common YANG Data Types";
   }
-  import ietf-restconf {
-    prefix rc;
-    description
-      "This import statement is only present to access
-       the yang-data extension defined in RFC 8040.";
-    reference "RFC 8040: RESTCONF Protocol";
+  import ietf-yang-data-ext {
+    prefix yd;
+    reference "I-D.ietf-netmod-yang-data-ext: YANG Data Extensions";
   }
+
   organization
     "IETF NETCONF (Network Configuration) Working Group";
 
@@ -89,7 +87,7 @@ module ietf-zerotouch-information {
 
   // yang-data
 
-  rc:yang-data "zerotouch-information" {
+  yd:yang-data "zerotouch-information" {
     choice information-type {
       mandatory true;
       description
@@ -129,13 +127,14 @@ module ietf-zerotouch-information {
               "A CMS structure that MUST contain the chain of X.509
                certificates needed to authenticate the TLS certificate
                presented by this bootstrap server.  In all cases, the
-               chain MUST include a root (self-signed) certificate. In
-               the case where the root certificate is itself the issuer
-               of the bootstrap server's TLS certificate, only one
-               X.509 certificate is present.  If needed by the device,
-               this CMS structure MAY also contain suitably fresh CRL
-               and/or OCSP Responses with which the device can use to
-               verify the revocation status of the certificates.
+               chain MUST include a root (self-signed) certificate.
+               In the case where the root certificate is itself the
+               issuer of the bootstrap server's TLS certificate, only
+               one X.509 certificate is present.  If needed by the
+               device, this CMS structure MAY also contain suitably
+               fresh CRL and/or OCSP Responses with which the device
+               can use to verify the revocation status of the
+               certificates.
       
                X.509 certificates and CRLs are described in RFC 5280.
                OCSP Responses are described in RFC 6960.";
@@ -239,8 +238,8 @@ module ietf-zerotouch-information {
              configuration has been processed.";
         }
         leaf configuration {
-          must '../configuration-handling';
           type binary;
+          must '../configuration-handling';
           description
             "Any configuration known to the device.  The use of the
              'binary' type enables e.g., XML-content to be embedded
@@ -270,12 +269,12 @@ module ietf-zerotouch-information {
        contents of the script are considered specific to the vendor,
        product line, and/or model of the device.
         
-       If a script is erroneously provided to a device that does not
-       support the execution of scripts, the device SHOULD send either
-       a 'pre-script-warning' or 'post-script-warning' progress report,
-       based on which kind of script was presented, but otherwise continue
-       processing the bootstrapping data as if the script had not
-       been present.
+       If a script is erroneously provided to a device that does
+       not support the execution of scripts, the device SHOULD send
+       either a 'pre-script-warning' or 'post-script-warning' 
+       progress report, based on which kind of script was presented,
+       but otherwise continue processing the bootstrapping data as
+       if the script had not been present.
 
        The script returns exit status code '0' on success and non-zero
        on error, with accompanying stderr/stdout for logging purposes.

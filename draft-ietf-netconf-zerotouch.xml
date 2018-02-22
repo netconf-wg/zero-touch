@@ -898,14 +898,19 @@ with revocations                         revocations     revocations
           able to authenticate the bootstrap server using X.509 certificate path
           validation (<xref target="RFC6125"/>, Section 6) to one of the device's
           preconfigured trust anchors, or to a trust anchor that it learned
-          from a previous step, then the device MUST set trust-state to TRUE.
-          When establishing a connection to a bootstrap server, regardless the
+          from a previous step, then the device MUST set trust-state to TRUE.</t>
+
+          <t>When establishing a connection to a bootstrap server, regardless the
           device's ability to verify the bootstrap server's certificate, the
           device MUST identify itself to the bootstrap server using its 
           IDevID certificate (i.e., TLS-level client certificate based
           authentication). It is neccesary for the device to identify itself
           to enable the bootstrap server to return signed data, which must
-          include an ownership voucher for the specific device.</t>
+          include an ownership voucher for the specific device.  When sending
+          its IDevID certificate, the device MUST also send all the intermediate
+          certificates leading up to, and optionally including, the manufacturer's
+          well-known trust anchor certificate for IDevID certificates.  The
+          well-known trust anchor may not be a self-signed certificate.</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
           if the bootstrapping data returned is signed and the device is able
@@ -1061,8 +1066,9 @@ with revocations                         revocations     revocations
         <t>This section defines a YANG 1.1 <xref target="RFC7950"/> module that is used to
         define the data model for the zero touch information artifact described in
         <xref target="zerotouch-information"/>.  This data model uses the 'yang-data'
-        extension statement defined in RFC 8040.  Examples illustrating this data model
-        are provided in <xref target="zt-info-data-model-examples"/>.</t>
+        extension statement defined in <xref target="I-D.ietf-netmod-yang-data-ext"/>.
+        Examples illustrating this data model are provided in
+        <xref target="zt-info-data-model-examples"/>.</t>
 
         <section title="Data Model Overview">
           <t>The following tree diagram provides an overview of the data model for the
@@ -1100,8 +1106,8 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
           <t>Note: the module defined herein uses data types defined
           in <xref target="RFC5280"/>, <xref target="RFC6234"/>, and
           <xref target="RFC6991"/>, and an extension statement from
-          <xref target="RFC8040"/>, and an encoding defined in
-          <xref target="ITU.X690.1994"/>.</t>
+          <xref target="I-D.ietf-netmod-yang-data-ext"/>, and an
+          encoding defined in <xref target="ITU.X690.1994"/>.</t>
 
           <figure>
             <artwork><![CDATA[
@@ -1153,7 +1159,7 @@ strapping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-untrusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-untrusted.xml)
 
 RESPONSE
 --------
@@ -1163,7 +1169,7 @@ Date: Sat, 31 Oct 2015 17:02:40 GMT
 Server: example-server
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-reply-untrusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-untrusted.xml)
 ]]></artwork>
           </figure>
 
@@ -1182,7 +1188,7 @@ strapping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-trusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-trusted.xml)
 
 RESPONSE
 --------
@@ -1192,7 +1198,7 @@ Date: Sat, 31 Oct 2015 17:02:40 GMT
 Server: example-server
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-reply-trusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-trusted.xml)
 ]]></artwork>
           </figure>
           <t>The following example illustrates a device using the API to post
@@ -1214,7 +1220,7 @@ progress HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-complete-update.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-report-progress-rpc.xml)
 
 RESPONSE
 --------
@@ -1779,6 +1785,7 @@ Reference: [RFCXXXX]
           <?rfc include="reference.RFC.8040.xml"?>
           <?rfc include="reference.RFC.8174.xml"?>
           <?rfc include="reference.I-D.ietf-anima-voucher"?>
+          <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
 
           <?rfc include="_reference.ITU.X690.1994.xml"?>
 
@@ -2479,7 +2486,7 @@ device   |        |             |            |        |         |
                 implementing <xref target="RFC3396"/> to handle URI lists
                 longer than 255 octets.</t>
                 <t>Changed the "configuration" value in onboarding-information
-                to be type 'binary' instead of 'anydata'.
+                to be type 'binary' instead of 'anydata'.</t>
                 <t>Moved everything from PKCS#7 to CMS (this shows up
                 as a big change).</t>
                 <t>Added the early code point allocation assignments for the

@@ -1,5 +1,0 @@
-<input
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
-  <untrusted-connection/>
-</input>
-

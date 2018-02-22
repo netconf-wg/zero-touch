@@ -106,7 +106,8 @@ module ietf-zerotouch-device {
          This structure contains the IEEE 802.1AR-2009 IDevID
          certificate itself, and all intermediate certificates leading
          up to, and optionally including, the manufacturer's well-known
-         trust anchor certificate for IDevID certificates.";
+         trust anchor certificate for IDevID certificates.  The well-
+         known trust anchor may not be a self-signed certificate.";
       reference
         "RFC 5652:
            Cryptographic Message Syntax (CMS)

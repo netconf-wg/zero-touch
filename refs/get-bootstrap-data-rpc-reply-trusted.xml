@@ -1,5 +1,0 @@
-<output 
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
-  <zerotouch-information>base64encodedvalue==</zerotouch-information>
-</output>
-

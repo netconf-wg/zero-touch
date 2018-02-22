@@ -127,79 +127,75 @@ module ietf-zerotouch-bootstrap-server {
       }
     }
     output {
-      container bootstrapping-data {
+      leaf zerotouch-information {
+        type cms;
+        mandatory true;
         description
-          "Top-level node for the bootstrapping data.";
-        leaf zerotouch-information {
-          type cms;
-          mandatory true;
+          "A 'zerotouch-information' artifact, as described in 
+           Section 4.1 of RFC XXXX.  The CMS structure may either
+           contain just a contentInfo structure, with effectively
+           unsigned data, or a SignedData (per Section 5.1 of
+           RFC 5652) structure that signs the content using the
+           private key associated with the 'owner-certificate'.";
+        reference
+          "RFC XXXX: Zero Touch Provisioning for NETCONF or
+              RESTCONF based Management.
+           RFC 5652:
+              Cryptographic Message Syntax (CMS)";
+      }
+      leaf owner-certificate {
+        type cms;
+        must '../ownership-voucher' {
           description
-            "A 'zerotouch-information' artifact, as described in 
-             Section 4.1 of RFC XXXX.  The CMS structure may either
-             contain just a contentInfo structure, with effectively
-             unsigned data, or a SignedData (per Section 5.1 of
-             RFC 5652) structure that signs the content using the
-             private key associated with the 'owner-certificate'.";
-          reference
-            "RFC XXXX: Zero Touch Provisioning for NETCONF or
-                RESTCONF based Management.
-             RFC 5652:
-                Cryptographic Message Syntax (CMS)";
+            "An ownership voucher must be present whenever an owner
+             certificate is presented.";
         }
-        leaf owner-certificate {
-          type cms;
-          must '../ownership-voucher' {
-            description
-              "An ownership voucher must be present whenever an owner
-               certificate is presented.";
-          }
+        description
+          "This CMS structure MUST contain the owner certificate
+           and all intermediate certificates leading up to (and 
+           optionally including) the trust anchor certificate
+           specified by the 'pinned-domain-cert' field in the
+           ownership voucher.  This structure MAY also include
+           suitably fresh CRL and/or OCSP Responses that the
+           device can use to verify the revocation status of the
+           certificates.  This leaf is optional because it is
+           only needed when the 'zerotouch-information' CMS
+           structure is signed.";
+        reference
+          "RFC 5652:
+             Cryptographic Message Syntax (CMS)
+           RFC 5280:
+             Internet X.509 Public Key Infrastructure Certificate
+             and Certificate Revocation List (CRL) Profile.
+           RFC 6960:
+             X.509 Internet Public Key Infrastructure Online
+             Certificate Status Protocol - OCSP.
+           ITU-T X.690:
+             Information technology – ASN.1 encoding rules:
+             Specification of Basic Encoding Rules (BER), 
+             Canonical Encoding Rules (CER) and Distinguished
+             Encoding Rules (DER).";
+      }
+      leaf ownership-voucher {
+        type cms;
+        must '../owner-certificate' {
           description
-            "This CMS structure MUST contain the owner certificate
-             and all intermediate certificates leading up to (and 
-             optionally including) the trust anchor certificate
-             specified by the 'pinned-domain-cert' field in the
-             ownership voucher.  This structure MAY also include
-             suitably fresh CRL and/or OCSP Responses that the
-             device can use to verify the revocation status of the
-             certificates.  This leaf is optional because it is
-             only needed when the 'zerotouch-information' CMS
-             structure is signed.";
-          reference
-            "RFC 5652:
-               Cryptographic Message Syntax (CMS)
-             RFC 5280:
-               Internet X.509 Public Key Infrastructure Certificate
-               and Certificate Revocation List (CRL) Profile.
-             RFC 6960:
-               X.509 Internet Public Key Infrastructure Online
-               Certificate Status Protocol - OCSP.
-             ITU-T X.690:
-               Information technology – ASN.1 encoding rules:
-               Specification of Basic Encoding Rules (BER), 
-               Canonical Encoding Rules (CER) and Distinguished
-               Encoding Rules (DER).";
+            "An owner certificate must be present whenever an
+             ownership voucher is presented.";
         }
-        leaf ownership-voucher {
-          type cms;
-          must '../owner-certificate' {
-            description
-              "An owner certificate must be present whenever an
-               ownership voucher is presented.";
-          }
-          description
-            "A 'voucher' artifact, as described in Section 5 of 
-             I-D.ietf-anima-voucher.  The voucher informs the device
-             who its owner is.  The voucher encodes the device's
-             serial number, so that the device can ensure the
-             voucher applies to it.  The voucher is signed by the
-             device's manufacturer.  This leaf is optional because
-             it is only needed when the 'zerotouch-information'
-             CMS structure is signed.";
-          reference
-            "I-D.ietf-anima-voucher:
-               Voucher and Voucher Revocation Profiles for 
-               Bootstrapping Protocols";
-        }
+        description
+          "A 'voucher' artifact, as described in Section 5 of 
+           I-D.ietf-anima-voucher.  The voucher informs the device
+           who its owner is.  The voucher encodes the device's
+           serial number, so that the device can ensure the
+           voucher applies to it.  The voucher is signed by the
+           device's manufacturer.  This leaf is optional because
+           it is only needed when the 'zerotouch-information'
+           CMS structure is signed.";
+        reference
+          "I-D.ietf-anima-voucher:
+             Voucher and Voucher Revocation Profiles for 
+             Bootstrapping Protocols";
       }
     }
   }
