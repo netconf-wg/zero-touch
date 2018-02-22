@@ -1,0 +1,5 @@
+<output xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+  <zerotouch-information>base64encodedvalue==</zerotouch-information>
+  <owner-certificate>base64encodedvalue==</owner-certificate>
+  <ownership-voucher>base64encodedvalue==</ownership-voucher>
+</output>

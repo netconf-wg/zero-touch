@@ -1,57 +1,219 @@
-echo "Testing ietf-zerotouch-bootstrap-server.yang (with pyang)..."
-pyang --ietf --strict --max-line-length=70 ../ietf-zerotouch-bootstrap-server\@*.yang
-pyang --canonical ../ietf-zerotouch-bootstrap-server\@*.yang
-echo "Testing ietf-zerotouch-bootstrap-server.yang (with yanglint)..."
-yanglint ../ietf-zerotouch-bootstrap-server\@*.yang
+#/bin/bash
 
-echo "Testing ietf-zerotouch-information.yang (with pyang)..."
-pyang --ietf --strict --max-line-length=70 ../ietf-zerotouch-information\@*.yang
-pyang --canonical ../ietf-zerotouch-information\@*.yang
-echo "Testing ietf-zerotouch-information.yang (with yanglint)..."
-yanglint ../ietf-zerotouch-information\@*.yang
+echo
+echo "Testing YANG modules first..."
+echo
 
-echo "Testing ietf-zerotouch-device.yang (with pyang)..."
-pyang -p ../ --ietf --strict --max-line-length=70 ../ietf-zerotouch-device\@*.yang
-pyang -p ../ --canonical ../ietf-zerotouch-device\@*.yang
-echo "Testing ietf-zerotouch-device.yang (with yanglint)..."
-yanglint -p ../ ../ietf-zerotouch-device\@*.yang
-
-echo "get-bootstrap-data-rpc-trusted.xml..."
-yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang get-bootstrap-data-rpc-trusted.xml
-
-echo "get-bootstrap-data-rpc-reply-trusted.xml..."
-yanglint -s -t rpc-reply ../ietf-zerotouch-bootstrap-server\@*.yang get-bootstrap-data-rpc-reply-trusted.xml get-bootstrap-data-rpc-trusted.xml
-
-echo "get-bootstrap-data-rpc-untrusted.xml..."
-yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang get-bootstrap-data-rpc-untrusted.xml
-
-echo "get-bootstrap-data-rpc-reply-untrusted.xml..."
-yanglint -s -t rpc-reply ../ietf-zerotouch-bootstrap-server\@*.yang get-bootstrap-data-rpc-reply-untrusted.xml get-bootstrap-data-rpc-untrusted.xml
+echo "validating ietf-zerotouch-bootstrap-server.yang..."
+printf "  ^ with pyang..."
+response=`pyang --ietf --strict --canonical --max-line-length=70 ../ietf-zerotouch-bootstrap-server\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
+printf "  ^ with yanglint..."
+response=`yanglint ../ietf-zerotouch-bootstrap-server\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n\n"
 
 
-#echo "Testing ex-api-redirect-information-unsigned.xml..."
-#yanglint -s -t auto ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-redirect-information-unsigned.xml
-#
-#echo "Testing ex-api-redirect-information-signed.xml..."
-#yanglint -s -t auto ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-redirect-information-signed.xml
+echo "validating ietf-zerotouch-information.yang..."
+printf "  ^ with pyang..."
+response=`pyang --ietf --strict --canonical --max-line-length=70 ../ietf-zerotouch-information\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
+printf "  ^ with yanglint..."
+response=`yanglint ../ietf-zerotouch-information\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n\n"
 
-echo "Testing ex-api-bootstrap-complete-update.xml..."
-yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-bootstrap-complete-update.xml
+
+echo "validating ietf-zerotouch-device.yang..."
+printf "  ^ with pyang..."
+response=`pyang --ietf --strict --canonical --max-line-length=70 ../ietf-zerotouch-device\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
+printf "  ^ with yanglint..."
+response=`yanglint ../ietf-zerotouch-device\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n\n"
 
 
 
-echo "Testing ex-file-redirect-information.xml..."
-yanglint -s ../ietf-zerotouch-information\@*.yang ex-file-redirect-information.xml
+echo
+echo "Tranisitioning to testing ietf-zerotouch-bootstrap-server.yang examples"
+echo
 
-echo "Testing ex-file-redirect-information.json..."
-yanglint -s ../ietf-zerotouch-information\@*.yang ex-file-redirect-information.json
+printf "validating ex-api-get-bootstrap-data-rpc-trusted.xml..."
+sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-trusted.xml > ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
+response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
 
-echo "Testing ex-file-onboarding-information.xml..."
-yanglint -s ../ietf-zerotouch-information\@*.yang ex-file-onboarding-information.xml
+printf "validating ex-api-get-bootstrap-data-rpc-reply-trusted.xml..."
+cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | sed 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' >> ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
+response=`yanglint -s -t rpcreply ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
 
-echo "Testing ex-file-onboarding-information.json..."
-yanglint -s ../ietf-zerotouch-information\@*.yang ex-file-onboarding-information.json
+printf "validating ex-api-get-bootstrap-data-rpc-untrusted.xml..."
+sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-untrusted.xml > ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
+response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
 
-echo "Testing ex-api-device-model.xml..."
-yanglint -m -p ../ -s ../ietf-zerotouch-device\@*.yang ex-api-device-model.xml ../../keystore/refs/ex-keystore.xml
+printf "validating ex-api-get-bootstrap-data-rpc-reply-untrusted.xml..."
+cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | grep -v "output" | sed 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' >> ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
+response=`yanglint -s -t rpcreply ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
+rm ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
+rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
+rm ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
+
+
+printf "validating ex-api-report-progress-rpc.xml..."
+sed 's/input/report-progress/' ex-api-report-progress-rpc.xml > ex-api-report-progress-rpc-4nc.xml
+response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-report-progress-rpc-4nc.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+rm ex-api-report-progress-rpc-4nc.xml
+printf "okay.\n"
+
+
+
+echo
+echo "Tranisitioning to testing ietf-zerotouch-information.yang examples"
+echo
+
+# first, we need to create a version of the YANG module without the "yang-data"
+# extension (e.g., make it look like it defines protocol-accessible nodes)
+name=`ls -1 ../ietf-zerotouch-information\@*.yang | sed 's/\.\.\///'`
+linenum=`grep -n "typedef script {" ../$name | sed 's/:.*//'`
+delline=`expr $linenum - 2`  # hope it doesn't move!
+awk "NR%$delline" ../$name > $name.2
+sed -e '/yd:yang-data/d' $name.2 > $name
+rm $name.2 
+
+
+printf "validating ex-file-redirect-information.xml..."
+response=`yanglint -s $name ex-file-redirect-information.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  rm $name 
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+printf "validating ex-file-redirect-information.json..."
+response=`yanglint -s $name ex-file-redirect-information.json 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  rm $name 
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+printf "validating ex-file-onboarding-information.xml..."
+response=`yanglint -s $name ex-file-onboarding-information.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  rm $name 
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+printf "validating ex-file-onboarding-information.json..."
+response=`yanglint -s $name ex-file-onboarding-information.json 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  rm $name 
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+# now remove it
+rm $name 
+
+
+
+
+echo
+echo "Tranisitioning to testing ietf-zerotouch-device.yang examples"
+echo
+
+printf "validating ex-api-device-model.xml..."
+response=`yanglint -m -p ../ -s ../ietf-zerotouch-device\@*.yang ex-api-device-model.xml ../../keystore/refs/ex-keystore.xml 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
+
+echo
+echo
 
