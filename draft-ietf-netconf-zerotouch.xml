@@ -780,7 +780,7 @@ with revocations                         revocations     revocations
               certificate, devices MAY identify and authenticate themselves to the
               bootstrap server using an HTTP authentication scheme, as allowed by
               Section 2.5 in <xref target="RFC8040"/>, however this document does
-              not define any mechanisms enabling operator input enabling, for
+              not define any mechanisms for operator input enabling, for
               example, the entering of a password.</t>
 
               <t>Devices that support loading bootstrapping data from well-known
