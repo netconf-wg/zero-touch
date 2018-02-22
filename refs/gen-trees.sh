@@ -6,4 +6,4 @@ cat ietf-zerotouch-information-tree.txt | sed -n '/:(onboarding-information)/,$p
 
 pyang -f tree ../ietf-zerotouch-bootstrap-server\@*.yang > ietf-zerotouch-bootstrap-server-tree.txt 
 
-pyang -p ../ -f tree --tree-line-length=70 ../ietf-zerotouch-device\@*.yang > ietf-zerotouch-device-tree.txt 
+pyang -p ../ -f tree --tree-line-length=70 ../example-zerotouch-device\@*.yang > example-zerotouch-device-tree.txt 

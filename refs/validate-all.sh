@@ -46,9 +46,9 @@ fi
 printf "okay.\n\n"
 
 
-echo "validating ietf-zerotouch-device.yang..."
+echo "validating example-zerotouch-device.yang..."
 printf "  ^ with pyang..."
-response=`pyang --ietf --strict --canonical --max-line-length=70 ../ietf-zerotouch-device\@*.yang 2>&1`
+response=`pyang --lint --strict --canonical --max-line-length=70 ../example-zerotouch-device\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -57,7 +57,7 @@ if [ $? -ne 0 ]; then
 fi
 printf "okay.\n"
 printf "  ^ with yanglint..."
-response=`yanglint ../ietf-zerotouch-device\@*.yang 2>&1`
+response=`yanglint ../example-zerotouch-device\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -201,11 +201,11 @@ rm $name
 
 
 echo
-echo "Tranisitioning to testing ietf-zerotouch-device.yang examples"
+echo "Tranisitioning to testing example-zerotouch-device.yang examples"
 echo
 
 printf "validating ex-api-device-model.xml..."
-response=`yanglint -m -p ../ -s ../ietf-zerotouch-device\@*.yang ex-api-device-model.xml ../../keystore/refs/ex-keystore.xml 2>&1`
+response=`yanglint -m -p ../ -s ../example-zerotouch-device\@*.yang ex-api-device-model.xml ../../keystore/refs/ex-keystore.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"

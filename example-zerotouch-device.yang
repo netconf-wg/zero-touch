@@ -1,7 +1,6 @@
-module ietf-zerotouch-device {
+module example-zerotouch-device {
   yang-version 1.1;
-  namespace
-    "urn:ietf:params:xml:ns:yang:ietf-zerotouch-device";
+  namespace "https://example.com/zerotouch-device";
   prefix ztd;
 
   import ietf-inet-types {
@@ -24,11 +23,6 @@ module ietf-zerotouch-device {
   description
     "This module defines a data model to enable zerotouch 
      bootstrapping and discover what parameters are used.
-
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
-     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
-     and 'OPTIONAL' in the module text are to be interpreted as
-     described in RFC 2119.
 
      Copyright (c) 2017 IETF Trust and the persons identified as 
      authors of the code. All rights reserved.

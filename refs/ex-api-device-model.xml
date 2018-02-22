@@ -1,5 +1,5 @@
 <zerotouch
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-device">
+  xmlns="https://example.com/zerotouch-device">
   <enabled>true</enabled>
   <idevid-certificate>base64encodedvalue==</idevid-certificate>
   <bootstrap-servers>
