@@ -84,10 +84,10 @@ module ietf-zerotouch-bootstrap-server {
         description
           "This optional input parameter enables a device to
            communicate to the bootstrap server its vendor specific
-           hardware model number.  This parameter may be needed 
-           when the device's IDevID certificate does not include
-           the 'hardwareModelName' value in its subjectAltName
-           field, as is allowed by 802.1AR-2009.";
+           hardware model number.  This parameter may be needed,
+           for instance, when a device's IDevID certificate does
+           not include the 'hardwareModelName' value in its
+           subjectAltName field, as is allowed by 802.1AR-2009.";
         reference
           "IEEE 802.1AR-2009: IEEE Standard for Local and
              metropolitan area networks - Secure Device Identity";
@@ -98,8 +98,8 @@ module ietf-zerotouch-bootstrap-server {
           "This optional input parameter enables a device to
            communicate to the bootstrap server the name of its
            operating system.  This parameter may be useful if
-           the device, as identified by its IDevID certificate,
-           can run more than one type of operating system (e.g.,
+           the device, as identified by its serial number, can
+           run more than one type of operating system (e.g.,
            on a white-box system.";
       }
       leaf os-version {
@@ -204,7 +204,8 @@ module ietf-zerotouch-bootstrap-server {
     description
       "This RPC enables a device, as identified by its RESTCONF
        username, to report its bootstrapping progress to the
-       bootstrap server.";
+       bootstrap server.  This RPC is primarily expected to be
+       used when the device has obtained onboarding-information.";
     input {
       leaf progress-type {
         type enumeration {
@@ -388,7 +389,9 @@ module ietf-zerotouch-bootstrap-server {
           "A list of trust anchor certificates an NMS may use to
            authenticate subsequent certificate-based connections
            to this device (e.g., restconf-tls, netconf-tls, or
-           even netconf-ssh with X.509 support from RFC 6187).";
+           even netconf-ssh with X.509 support from RFC 6187).
+           In practice, trust anchors for IDevID certificates do
+           not need to be conveyed using this mechanism.";
         reference
           "RFC 6187: 
              X.509v3 Certificates for Secure Shell Authentication.";
