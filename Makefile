@@ -40,6 +40,7 @@ clean:
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
 	-rm -f ietf-*\@20*.yang
+	-rm -f example-*\@20*.yang
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
@@ -52,7 +53,7 @@ $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" $< > $@
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-zerotouch-information.yang > ietf-zerotouch-information\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-zerotouch-bootstrap-server.yang > ietf-zerotouch-bootstrap-server\@$(shell date +%Y-%m-%d).yang
-	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-zerotouch-device.yang > ietf-zerotouch-device\@$(shell date +%Y-%m-%d).yang
+	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" example-zerotouch-device.yang > example-zerotouch-device\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ../keystore/ietf-keystore.yang > ietf-keystore\@$(shell date +%Y-%m-%d).yang
 	cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp

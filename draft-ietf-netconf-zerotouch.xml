@@ -167,12 +167,6 @@
               to refer to the network element that needs to be bootstrapped.  See
               <xref target="device-details"/> for more information about devices.</t>
 
-              <t hangText="Initial Secure Device Identifier (IDevID):">The term "IDevID"
-              is defined in <xref target="Std-802.1AR-2009"/> as the globally unique
-              secure device identifier (DevID) installed on the device by the manufacturer.
-              This identifier is used in this document to enable a bootstrap server to
-              securely identify and authenticate the device.</t>
-
               <t hangText="Manufacturer:">The term "manufacturer" is used herein to
               refer to the manufacturer of a device or a delegate of the manufacturer.</t>
 
@@ -223,14 +217,14 @@
               deployment-specific bootstrap servers.</t>
 
               <t hangText="Signed Data:">The term "signed data" is used throughout to mean
-              either redirect information or onboarding information that has been signed,
-              specifically by a private key possessed by a device's owner.</t>
+              zerotouch information that has been signed, specifically by a private key
+              possessed by a device's owner.</t>
 
               <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
-              either redirect information or onboarding information that has not been signed.</t>
+              zerotouch information that has not been signed.</t>
 
               <t hangText="Zero Touch Information:">The term "zero touch information" is used
-              generally herein to refer either redirect information or onboarding information.
+              herein to refer either redirect information or onboarding information.
               Zero touch information is one of the three bootstrapping artifacts described in
               <xref target="artifacts"/>.</t>
 
@@ -496,12 +490,12 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
                   or when the information can be processed in a provisional manner (i.e.
                   unsigned redirect information).</t>
                 <t hangText="   Signed Information, without revocations:">The grouping
-                  is useful when signed information is needed, because it's obtained
+                  is useful when signed information is needed, because it is obtained
                   from an untrusted source, and it cannot be processed provisionally,
                   and yet either revocations are not needed or they can be obtained
                   dynamically.</t>
                 <t hangText="   Signed Information, with revocations:">The grouping
-                  is useful when signed information is needed, because it's obtained
+                  is useful when signed information is needed, because it is obtained
                   from an untrusted source, and it cannot be processed provisionally,
                   and revocations are needed and cannot be obtained dynamically.</t>
             </list>
@@ -540,7 +534,7 @@ with revocations                         revocations     revocations
           <t>A directly attached removable storage device (e.g., a USB flash drive)
           MAY be used as a source of zero touch bootstrapping data.</t>
 
-          <t>Use of a removable storage device is compelling, as it doesn't require
+          <t>Use of a removable storage device is compelling, as it does not require
           any external infrastructure to work.  It is notable that the raw boot
           image file can also be located on the removable storage device, enabling
           a removable storage device to be a fully self-standing bootstrapping
@@ -736,7 +730,7 @@ with revocations                         revocations     revocations
 
           <t>Devices supporting the bootstrapping strategy described in this
           document MUST have the preconfigured state and bootstrapping logic
-          described in the following sections.  The "ietf-zerotouch-device"
+          described in the following sections.  The "example-zerotouch-device"
           YANG module in <xref target="device-model"/> defines a data model
           to access this information.</t>
 
@@ -755,10 +749,10 @@ with revocations                         revocations     revocations
 | +---------------------------------------------------------+ |
 | |                   <read-only storage>                   | |
 | |                                                         | |
-| | 2. IDevID cert & associated intermediate certificate(s) | |
+| | 2. client cert & associated intermediate certificate(s) | |
 | | 3. list of trusted well-known bootstrap servers         | |
 | | 4. list of trust anchor certs for bootstrap servers     | |
-| | 5. trust anchor cert for verifying ownership vouchers   | |
+| | 5. list of trust anchor certs for ownership vouchers    | |
 | +---------------------------------------------------------+ |
 |                                                             |
 |                  +----------------------+                   |
@@ -777,38 +771,46 @@ with revocations                         revocations     revocations
               the zerotouch bootstrapping.  This variable MUST be enabled by default in
               order for zerotouch bootstrapping to run when the device first powers on.
               Because it is a goal that the configuration installed by the bootstrapping
-              process is able to disable zerotouch bootstrapping, and because said
+              process disables zerotouch bootstrapping, and because the
               configuration may be merged into the existing configuration, using a
               configuration node that relies on presence is NOT RECOMMENDED, as it
               cannot be removed by the merging process.</t>
 
               <t>Devices that support loading bootstrapping data from bootstrap
               servers (see <xref target="bootstrap-server"/>), whether preconfigured
-              or learned through the bootstrapping process, MUST possess an initial
-              device identifier (IDevID), as defined in <xref target="Std-802.1AR-2009"/>.
-              The IDevID is an X.509 certificate encoding, amongst other things, the
-              device's serial number and hardware manufacturer.  The device MUST also
-              possess any intermediate certificates between the IDevID certificate and
-              the manufacturer's IDevID trust anchor certificate provided to prospective
-              owners separately (e.g., <xref target="onboarding-and-ordering"/>).</t>
+              or learned through the bootstrapping process, SHOULD possess a client
+              certificate (e.g. IDevID, as defined in <xref target="Std-802.1AR-2009"/>),
+              and any intermediate certificates leading to the certificate's well-known
+              trust-anchor, that the bootstrap servers can use to identify and
+              authenticate the device.  Note, to support devices not having a client
+              certificate, devices MAY identify and authenticate themselves to the
+              bootstrap server using an HTTP authentication scheme, as allowed by
+              Section 2.5 in <xref target="RFC8040"/>, however this document does
+              not define any mechanisms for operator input enabling, for
+              example, the entering of a password.</t>
 
               <t>Devices that support loading bootstrapping data from well-known
               bootstrap servers MUST possess a list of the well-known bootstrap servers.
               Consistent with redirect information (<xref target="redirect-information"/>,
-              each bootstrap server MAY be identified by its hostname or IP address, and
+              each bootstrap server can be identified by its hostname or IP address, and
               an optional port.</t>
 
               <t>Devices that support loading bootstrapping data from well-known
               bootstrap servers MUST also possess a list of trust anchor certificates
               that can be used to secure the TLS connection to the well-known bootstrap
-              servers.</t>
+              servers.  For each trust anchor certificate, if it is not itself a self-signed
+              root certificate, the device SHOULD also possess the chain of intermediate
+              certificates leading up to and including the self-signed root certificate.</t>
 
               <t>Devices that support loading signed data (see <xref target="terminology"/>)
-              MUST possess the manufacturer's trust anchor certificate for validating
-              ownership vouchers.</t>
+              MUST possess the trust anchor certificates for validating ownership vouchers.
+              For each trust anchor certificate, if it is not itself a self-signed
+              root certificate, the device SHOULD also possess the chain of intermediate
+              certificates leading up to and including the self-signed root certificate.</t>
 
-              <t>Devices MUST possess a private key that corresponds to the public key
-              encoded in the device's IDevID certificate.  This private key SHOULD be
+              <t>Devices that support using a client certificate to authenticate to a
+              bootstrap servers MUST possess the private key that corresponds to the
+              public key encoded in the client certificate.  This private key SHOULD be
               securely stored, ideally in a cryptographic processor (e.g., a TPM).</t>
             </list>
           </t>
@@ -904,14 +906,29 @@ with revocations                         revocations     revocations
           able to authenticate the bootstrap server using X.509 certificate path
           validation (<xref target="RFC6125"/>, Section 6) to one of the device's
           preconfigured trust anchors, or to a trust anchor that it learned
-          from a previous step, then the device MUST set trust-state to TRUE.
-          When establishing a connection to a bootstrap server, regardless the
-          device's ability to verify the bootstrap server's certificate, the
-          device MUST identify itself to the bootstrap server using its 
-          IDevID certificate (i.e., TLS-level client certificate based
-          authentication). It is neccesary for the device to identify itself
-          to enable the bootstrap server to return signed data, which must
-          include an ownership voucher for the specific device.</t>
+          from a previous step, then the device MUST set trust-state to TRUE.</t>
+
+          <t>When establishing a connection to a trusted bootstrap server
+          (i.e. trust-state is TRUE), the device MAY, per Section 2.5 in
+          <xref target="RFC8040"/>), identify and authenticate itself to the
+          bootstrap server using a TLS-level client certificate and/or an HTTP
+          authentication scheme.  If both mechanisms are used, they MUST
+          both identify the same device using its serial number.</t>
+
+          <t>When establishing a connection to an untrusted bootstrap server
+          (i.e. trust-state is FALSE), it is still necessary for the device
+          to identify itself in order to receive device-specific signed data,
+          as the ownership voucher encodes the device's serial number.  The
+          device MAY, again, identify and authenticate itself to the bootstrap
+          server using a TLS-level client certificate and/or an HTTP
+          authentication scheme.  However, because the bootstrap server is
+          untrusted, the device MUST NOT use an HTTP authentication scheme
+          that relies on a shared secret, such as a password.</t>
+
+          <t>When sending a client certificate, the device MUST also send all
+          the intermediate certificates leading up to, and optionally including,
+          the client certificate's well-known trust anchor certificate.  The
+          well-known trust anchor certifcate may not be a root certificate.</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
           if the bootstrapping data returned is signed and the device is able
@@ -1019,10 +1036,14 @@ with revocations                         revocations     revocations
           <t>When processing onboarding information, the device MUST first process the boot image
           information, then execute the pre-configuration script (if any), then commit the initial
           configuration (if any), and then execute the post-configuration script (if any), in that order.
-          If the device encounters an error at any step, it MUST NOT proceed to the next step.
-          When the onboarding information was obtained from a trusted bootstrap server, the
+          If the device encounters an error at any step, it MUST NOT proceed to the next step.</t>
+
+          <t>When the onboarding information was obtained from a trusted bootstrap server, the
           device SHOULD send progress reports throughout the bootstrapping process using the
-          bootstrap server's 'report-progress' RPC.</t>
+          bootstrap server's 'report-progress' RPC.  When the onboarding information was obtained
+          from an untrusted bootstrap server, the device should not send any progress reports to
+          the bootstrap server, even after having validating any signed data it may receive 
+          from the bootstrap server.</t>
 
           <t>First the device MUST determine if the image it is running satisfies the specified
           boot image  criteria (e.g., name and/or fingerprint match).  If it does not, the device
@@ -1067,8 +1088,9 @@ with revocations                         revocations     revocations
         <t>This section defines a YANG 1.1 <xref target="RFC7950"/> module that is used to
         define the data model for the zero touch information artifact described in
         <xref target="zerotouch-information"/>.  This data model uses the 'yang-data'
-        extension statement defined in RFC 8040.  Examples illustrating this data model
-        are provided in <xref target="zt-info-data-model-examples"/>.</t>
+        extension statement defined in <xref target="I-D.ietf-netmod-yang-data-ext"/>.
+        Examples illustrating this data model are provided in
+        <xref target="zt-info-data-model-examples"/>.</t>
 
         <section title="Data Model Overview">
           <t>The following tree diagram provides an overview of the data model for the
@@ -1106,8 +1128,8 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
           <t>Note: the module defined herein uses data types defined
           in <xref target="RFC5280"/>, <xref target="RFC6234"/>, and
           <xref target="RFC6991"/>, and an extension statement from
-          <xref target="RFC8040"/>, and an encoding defined in
-          <xref target="ITU.X690.1994"/>.</t>
+          <xref target="I-D.ietf-netmod-yang-data-ext"/>, and an
+          encoding defined in <xref target="ITU.X690.1994"/>.</t>
 
           <figure>
             <artwork><![CDATA[
@@ -1159,7 +1181,7 @@ strapping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-untrusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-untrusted.xml)
 
 RESPONSE
 --------
@@ -1169,7 +1191,7 @@ Date: Sat, 31 Oct 2015 17:02:40 GMT
 Server: example-server
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-reply-untrusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-untrusted.xml)
 ]]></artwork>
           </figure>
 
@@ -1188,7 +1210,7 @@ strapping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-trusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-trusted.xml)
 
 RESPONSE
 --------
@@ -1198,7 +1220,7 @@ Date: Sat, 31 Oct 2015 17:02:40 GMT
 Server: example-server
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/get-bootstrap-data-rpc-reply-trusted.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-trusted.xml)
 ]]></artwork>
           </figure>
           <t>The following example illustrates a device using the API to post
@@ -1220,7 +1242,7 @@ progress HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
-INSERT_TEXT_FROM_FILE(refs/ex-api-bootstrap-complete-update.xml)
+INSERT_TEXT_FROM_FILE(refs/ex-api-report-progress-rpc.xml)
 
 RESPONSE
 --------
@@ -1256,16 +1278,16 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
       <section title="The Zero Touch Device Data Model" anchor="device-model">
 
-        <t>This section defines a data model that devices can implement
-        to enable the configuration of zerotouch bootstrapping and
-        discovery of what parameters are used by its bootstrapping logic.</t>
+        <t>This section defines a non-normative data model that 
+        enables the configuration of zerotouch bootstrapping and
+        discovery of what parameters are used by a device's bootstrapping logic.</t>
 
         <section title="Data Model Overview">
           <t>The following tree diagram provides an overview for the zerotouch
           device data model.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-device-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/example-zerotouch-device-tree.txt)
 ]]></artwork>
           </figure>
           <t>In the above diagram, notice that there is only one configurable node
@@ -1288,12 +1310,13 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml,68)
           defined in this section.</t>
 
           <t>Note: the module defined herein uses data types
-          defined in <xref target="RFC5652"/> and <xref target="RFC6991"/>,
-          and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
+          defined in <xref target="RFC5652"/>, <xref target="RFC6991"/>,
+          and <xref target="I-D.ietf-netconf-keystore"/>, and uses an
+          encoding defined in <xref target="ITU.X690.1994"/>.</t>
           <figure>
             <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-device@YYYY-MM-DD.yang"
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
+<CODE BEGINS> file "example-zerotouch-device@YYYY-MM-DD.yang"
+INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
 <CODE ENDS>
 ]]></artwork>
           </figure>
@@ -1518,37 +1541,31 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
           devices, when connected to an untrusted bootstrap server,
           assert that data downloaded from the server is signed.</t>
         </section>
-        <section title="Entropy loss over time">
-          <t>Section 7.2.7.2 of the IEEE Std 802.1AR-2009 standard says
-          that IDevID certificate should never expire (i.e. having the
-          notAfter value 99991231235959Z).  Given the long-lived
-          nature of these certificates, it is paramount to use a
-          strong key length (e.g., 512-bit ECC).</t>
-        </section>
         <section title="Disclosing Information to Untrusted Servers">
           <t>This document enables devices to establish provisional
           connections to bootstrap servers, in order for the bootstrap
           server to provide either unsigned redirect information or
-          signed data to the device.  However, since the server is
+          signed data of any type to the device.  However, since the server is
           untrusted, it may be under the control of an adversary, and
           therefore devices should be cautious about the data they send
           in such cases.</t>
-          <t>This document requires devices send their IDevID
-          certificate to untrusted bootstrap servers, which means that
-          the device's serial number and hardware manufacturer may
-          be disclosed to an adversary.  Serial numbers are ubiquitous
-          and prominently contained in invoices and on labels affixed
-          to devices and their packaging.  That said, serial numbers
-          many times encode revealing information, such as the device's
-          model number, manufacture date, and/or manufacturing sequence
-          number.  Knowledge of this information may provide an adversary
-          with details needed to launch an attack.</t>
-          <t>In addition to the IDevID certificate, there are other
-          potentially identifying values that may be disclosed to an
-          untrusted server, including 'os-name', 'os-version', 'remote-id',
-          'circuit-id', and progress reports.  In order to address this
-          issue, it is RECOMMENDED that implementations promote
-          the untrusted connection to a trusted connection, as described in
+          <t>This document requires devices identify and authenticate
+          themselves to untrusted bootstrap servers.  Depending on the
+          authentication mechanisms used, this means that, at a minumum,
+          the device's serial number may be disclosed to an adversary.
+          Serial numbers are ubiquitous and prominently contained in
+          invoices and on labels affixed to devices and their packaging.
+          That said, serial numbers many times encode revealing information,
+          such as the device's model number, manufacture date, and/or
+          manufacturing sequence number.  Knowledge of this information
+          may provide an adversary with details needed to launch an
+          attack.</t>
+          <t>In addition to the information relayed during the authenication,
+          other potentially identifying values that may be disclosed to an
+          untrusted server, including 'os-name', 'os-version', 'hw-model',
+          and progress reports.  In order to address this issue, it is
+          RECOMMENDED that bootstrap server implementations promote the
+          untrusted connection to a trusted connection, as described in
           <xref target="untrust2trust"/>.</t>
        </section>
         <section title="Sequencing Sources of Bootstrapping Data">
@@ -1589,7 +1606,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
         </section>
         <section title="The &quot;ietf-zerotouch-bootstrap-server&quot; YANG Module">
           <t>The ietf-zerotouch-bootstrap-server module defined in this document
-          is specifies an API for a RESTCONF <xref target="RFC8040"/>.  The lowest
+          specifies an API for a RESTCONF <xref target="RFC8040"/>.  The lowest
           RESTCONF layer is HTTPS, and the mandatory-to-implement secure transport
           is TLS <xref target="RFC5246"/>.</t>
           <t>The NETCONF Access Control Model (NACM) <xref target="RFC6536"/>
@@ -1604,40 +1621,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
             <list style="hanging" hangIndent="4">
               <t hangText="get-bootstrapping-data:">This RPC is used by devices
               to obtain their bootstrapping data.  By design, each device, as
-              identified by its IDevID certificate, can only obtain its own data.
-              NACM is not needed to further constrain access to this RPC.</t>
-              <t hangText="report-bootstrapping-progress:">This RPC is used by devices
-              to report their bootstrapping progress.  By design, each device, as
-              identified by its IDevID certificate, can only report data for itself.
-              NACM is not needed to further constrain access to this RPC.</t>
-            </list>
-          </t>
-        </section>
-        <section title="The &quot;ietf-zerotouch-device&quot; YANG Module">
-          <t>The ietf-zerotouch-device module defined in this document is
-          designed to be accessed via network management protocols such as
-          NETCONF <xref target="RFC6241"/> or RESTCONF <xref target="RFC8040"/>.
-          The lowest NETCONF layer is the secure transport layer, and
-          the mandatory-to-implement secure transport is Secure Shell
-          (SSH) <xref target="RFC6242"/>. The lowest RESTCONF layer is
-          HTTPS, and the mandatory-to-implement secure transport is
-          TLS <xref target="RFC5246"/>.</t>
-          <t>The NETCONF access control model <xref target="RFC6536"/>
-          provides the means to restrict access for particular NETCONF
-          or RESTCONF users to a preconfigured subset of all available
-          NETCONF or RESTCONF protocol operations and content.</t>
-          <t>There is a data node defined in this YANG module
-          that is writable/creatable/deletable (i.e., config true,
-          which is the default). This data node may be considered
-          sensitive or vulnerable in some network environments. Write
-          operations (e.g., edit-config) to this data node without
-          proper protection can have a negative effect on network
-          operations. This is the data node and its sensitivity/vulnerability:
-            <list style="hanging" hangIndent="4">
-              <t hangText="/enabled:">This data node is used to enable/disable
-              the zerotouch bootstrapping mechanism on a device.  NACM rules
-              or equivalent should be used to restrict write-access to this
-              node to authenticated clients.</t>
+              identified by its authentication credentials (e.g. client 
+              certificate), can only obtain its own data.  NACM is not needed
+              to further constrain access to this RPC.</t>
+              <t hangText="report-progress:">This RPC is used by devices
+              to report their bootstrapping progress.  By design, each device,
+              as identified by its authentication credentials (e.g. client 
+              certificate), can only report data for itself.  NACM is not
+              needed to further constrain access to this RPC.</t>
             </list>
           </t>
         </section>
@@ -1645,7 +1636,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-device@YYYY-MM-DD.yang)
 
       <section title="IANA Considerations" anchor="iana-considerations">
         <section title="The IETF XML Registry">
-          <t>This document registers three URIs in the IETF XML
+          <t>This document registers two URIs in the IETF XML
           registry <xref target="RFC3688"/>.  Following the format in
           <xref target="RFC3688"/>, the following registrations are
           requested:</t>
@@ -1659,16 +1650,12 @@ XML: N/A, the requested URI is an XML namespace.
 URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
 Registrant Contact: The NETCONF WG of the IETF.
 XML: N/A, the requested URI is an XML namespace.
-
-URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-device
-Registrant Contact: The NETCONF WG of the IETF.
-XML: N/A, the requested URI is an XML namespace.
 ]]></artwork>
             </figure>
           </t>
         </section>
         <section title="The YANG Module Names Registry">
-          <t>This document registers three YANG modules in the
+          <t>This document registers two YANG modules in the
           YANG Module Names registry <xref target="RFC6020"/>.
           Following the format defined in <xref target="RFC6020"/>, the
           the following registrations are requested:</t>
@@ -1684,11 +1671,6 @@ name:      ietf-zerotouch-bootstrap-server
 namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-\
            server  (note: '\' used for formatting reasons only)
 prefix:    ztbs
-reference: RFC XXXX
-
-name:      ietf-zerotouch-device
-namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-device
-prefix:    ztd
 reference: RFC XXXX
 ]]></artwork>
           </figure>
@@ -1785,6 +1767,7 @@ Reference: [RFCXXXX]
           <?rfc include="reference.RFC.8040.xml"?>
           <?rfc include="reference.RFC.8174.xml"?>
           <?rfc include="reference.I-D.ietf-anima-voucher"?>
+          <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
 
           <?rfc include="_reference.ITU.X690.1994.xml"?>
 
@@ -2094,9 +2077,7 @@ device   |        |             |            |        |         |
                     the device.  To support this scenario further, the 'bootstrap-complete'
                     progress report may also relay the device's SSH host keys and/or TLS
                     certificates, with which the external system can use to authenticate
-                    subsequent connections to the device.  IDevID certificates do not
-                    need to be sent as they do not need to be pinned by an NMS in order
-                    for the NMS to trust the IDevID certificate.</t>
+                    subsequent connections to the device.</t>
                   </list>
                 If the device successfully completes the bootstrapping process,
                 it exits the bootstrapping logic without considering any additional
@@ -2471,7 +2452,7 @@ device   |        |             |            |        |         |
                 <t>The "onboarding-information" container's support
                 for image verification reworked to be extensible.</t>
                 <t>Added a reference to the "Device Details" section to
-                the new ietf-zerotouch-device module.</t>
+                the new example-zerotouch-device module.</t>
                 <t>Clarified that the device must always pass its IDevID
                 certificate, even for untrusted bootstrap servers.</t>
                 <t>Fixed the description statement for the "script" typedef
@@ -2493,6 +2474,11 @@ device   |        |             |            |        |         |
                 the RFC Editor note accordingly.</t>
                 <t>Added RFC Editor request to replace the assigned values for
                 the CMS content types.</t>
+                <t>Relaxed auth requirements from device needing to always
+                send IDevID cert to device needing to always send authentication
+                credentials, as this better matches what RFC 8040 Section 2.5 says.</t>
+                <t>Moved normative module "ietf-zerotouch-device" to non-normative
+                module "example-zerotouch-device".</t>
               </list>
             </t>
         </section>

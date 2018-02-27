@@ -84,10 +84,10 @@ module ietf-zerotouch-bootstrap-server {
         description
           "This optional input parameter enables a device to
            communicate to the bootstrap server its vendor specific
-           hardware model number.  This parameter may be needed 
-           when the device's IDevID certificate does not include
-           the 'hardwareModelName' value in its subjectAltName
-           field, as is allowed by 802.1AR-2009.";
+           hardware model number.  This parameter may be needed,
+           for instance, when a device's IDevID certificate does
+           not include the 'hardwareModelName' value in its
+           subjectAltName field, as is allowed by 802.1AR-2009.";
         reference
           "IEEE 802.1AR-2009: IEEE Standard for Local and
              metropolitan area networks - Secure Device Identity";
@@ -98,8 +98,8 @@ module ietf-zerotouch-bootstrap-server {
           "This optional input parameter enables a device to
            communicate to the bootstrap server the name of its
            operating system.  This parameter may be useful if
-           the device, as identified by its IDevID certificate,
-           can run more than one type of operating system (e.g.,
+           the device, as identified by its serial number, can
+           run more than one type of operating system (e.g.,
            on a white-box system.";
       }
       leaf os-version {
@@ -127,79 +127,75 @@ module ietf-zerotouch-bootstrap-server {
       }
     }
     output {
-      container bootstrapping-data {
+      leaf zerotouch-information {
+        type cms;
+        mandatory true;
         description
-          "Top-level node for the bootstrapping data.";
-        leaf zerotouch-information {
-          type cms;
-          mandatory true;
+          "A 'zerotouch-information' artifact, as described in 
+           Section 4.1 of RFC XXXX.  The CMS structure may either
+           contain just a contentInfo structure, with effectively
+           unsigned data, or a SignedData (per Section 5.1 of
+           RFC 5652) structure that signs the content using the
+           private key associated with the 'owner-certificate'.";
+        reference
+          "RFC XXXX: Zero Touch Provisioning for NETCONF or
+              RESTCONF based Management.
+           RFC 5652:
+              Cryptographic Message Syntax (CMS)";
+      }
+      leaf owner-certificate {
+        type cms;
+        must '../ownership-voucher' {
           description
-            "A 'zerotouch-information' artifact, as described in 
-             Section 4.1 of RFC XXXX.  The CMS structure may either
-             contain just a contentInfo structure, with effectively
-             unsigned data, or a SignedData (per Section 5.1 of
-             RFC 5652) structure that signs the content using the
-             private key associated with the 'owner-certificate'.";
-          reference
-            "RFC XXXX: Zero Touch Provisioning for NETCONF or
-                RESTCONF based Management.
-             RFC 5652:
-                Cryptographic Message Syntax (CMS)";
+            "An ownership voucher must be present whenever an owner
+             certificate is presented.";
         }
-        leaf owner-certificate {
-          type cms;
-          must '../ownership-voucher' {
-            description
-              "An ownership voucher must be present whenever an owner
-               certificate is presented.";
-          }
+        description
+          "This CMS structure MUST contain the owner certificate
+           and all intermediate certificates leading up to (and 
+           optionally including) the trust anchor certificate
+           specified by the 'pinned-domain-cert' field in the
+           ownership voucher.  This structure MAY also include
+           suitably fresh CRL and/or OCSP Responses that the
+           device can use to verify the revocation status of the
+           certificates.  This leaf is optional because it is
+           only needed when the 'zerotouch-information' CMS
+           structure is signed.";
+        reference
+          "RFC 5652:
+             Cryptographic Message Syntax (CMS)
+           RFC 5280:
+             Internet X.509 Public Key Infrastructure Certificate
+             and Certificate Revocation List (CRL) Profile.
+           RFC 6960:
+             X.509 Internet Public Key Infrastructure Online
+             Certificate Status Protocol - OCSP.
+           ITU-T X.690:
+             Information technology – ASN.1 encoding rules:
+             Specification of Basic Encoding Rules (BER), 
+             Canonical Encoding Rules (CER) and Distinguished
+             Encoding Rules (DER).";
+      }
+      leaf ownership-voucher {
+        type cms;
+        must '../owner-certificate' {
           description
-            "This CMS structure MUST contain the owner certificate
-             and all intermediate certificates leading up to (and 
-             optionally including) the trust anchor certificate
-             specified by the 'pinned-domain-cert' field in the
-             ownership voucher.  This structure MAY also include
-             suitably fresh CRL and/or OCSP Responses that the
-             device can use to verify the revocation status of the
-             certificates.  This leaf is optional because it is
-             only needed when the 'zerotouch-information' CMS
-             structure is signed.";
-          reference
-            "RFC 5652:
-               Cryptographic Message Syntax (CMS)
-             RFC 5280:
-               Internet X.509 Public Key Infrastructure Certificate
-               and Certificate Revocation List (CRL) Profile.
-             RFC 6960:
-               X.509 Internet Public Key Infrastructure Online
-               Certificate Status Protocol - OCSP.
-             ITU-T X.690:
-               Information technology – ASN.1 encoding rules:
-               Specification of Basic Encoding Rules (BER), 
-               Canonical Encoding Rules (CER) and Distinguished
-               Encoding Rules (DER).";
+            "An owner certificate must be present whenever an
+             ownership voucher is presented.";
         }
-        leaf ownership-voucher {
-          type cms;
-          must '../owner-certificate' {
-            description
-              "An owner certificate must be present whenever an
-               ownership voucher is presented.";
-          }
-          description
-            "A 'voucher' artifact, as described in Section 5 of 
-             I-D.ietf-anima-voucher.  The voucher informs the device
-             who its owner is.  The voucher encodes the device's
-             serial number, so that the device can ensure the
-             voucher applies to it.  The voucher is signed by the
-             device's manufacturer.  This leaf is optional because
-             it is only needed when the 'zerotouch-information'
-             CMS structure is signed.";
-          reference
-            "I-D.ietf-anima-voucher:
-               Voucher and Voucher Revocation Profiles for 
-               Bootstrapping Protocols";
-        }
+        description
+          "A 'voucher' artifact, as described in Section 5 of 
+           I-D.ietf-anima-voucher.  The voucher informs the device
+           who its owner is.  The voucher encodes the device's
+           serial number, so that the device can ensure the
+           voucher applies to it.  The voucher is signed by the
+           device's manufacturer.  This leaf is optional because
+           it is only needed when the 'zerotouch-information'
+           CMS structure is signed.";
+        reference
+          "I-D.ietf-anima-voucher:
+             Voucher and Voucher Revocation Profiles for 
+             Bootstrapping Protocols";
       }
     }
   }
@@ -208,7 +204,8 @@ module ietf-zerotouch-bootstrap-server {
     description
       "This RPC enables a device, as identified by its RESTCONF
        username, to report its bootstrapping progress to the
-       bootstrap server.";
+       bootstrap server.  This RPC is primarily expected to be
+       used when the device has obtained onboarding-information.";
     input {
       leaf progress-type {
         type enumeration {
@@ -392,7 +389,9 @@ module ietf-zerotouch-bootstrap-server {
           "A list of trust anchor certificates an NMS may use to
            authenticate subsequent certificate-based connections
            to this device (e.g., restconf-tls, netconf-tls, or
-           even netconf-ssh with X.509 support from RFC 6187).";
+           even netconf-ssh with X.509 support from RFC 6187).
+           In practice, trust anchors for IDevID certificates do
+           not need to be conveyed using this mechanism.";
         reference
           "RFC 6187: 
              X.509v3 Certificates for Secure Shell Authentication.";
