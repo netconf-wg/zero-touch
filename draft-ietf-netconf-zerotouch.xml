@@ -215,14 +215,14 @@
               deployment-specific bootstrap servers.</t>
 
               <t hangText="Signed Data:">The term "signed data" is used throughout to mean
-              either redirect information or onboarding information that has been signed,
-              specifically by a private key possessed by a device's owner.</t>
+              zerotouch information that has been signed, specifically by a private key
+              possessed by a device's owner.</t>
 
               <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
-              either redirect information or onboarding information that has not been signed.</t>
+              zerotouch information that has not been signed.</t>
 
               <t hangText="Zero Touch Information:">The term "zero touch information" is used
-              generally herein to refer either redirect information or onboarding information.
+              herein to refer either redirect information or onboarding information.
               Zero touch information is one of the three bootstrapping artifacts described in
               <xref target="artifacts"/>.</t>
 
@@ -746,7 +746,7 @@ with revocations                         revocations     revocations
 | | 2. client cert & associated intermediate certificate(s) | |
 | | 3. list of trusted well-known bootstrap servers         | |
 | | 4. list of trust anchor certs for bootstrap servers     | |
-| | 5. trust anchor cert for verifying ownership vouchers   | |
+| | 5. list of trust anchor certs for ownership vouchers    | |
 | +---------------------------------------------------------+ |
 |                                                             |
 |                  +----------------------+                   |
@@ -786,17 +786,21 @@ with revocations                         revocations     revocations
               <t>Devices that support loading bootstrapping data from well-known
               bootstrap servers MUST possess a list of the well-known bootstrap servers.
               Consistent with redirect information (<xref target="redirect-information"/>,
-              each bootstrap server MAY be identified by its hostname or IP address, and
+              each bootstrap server can be identified by its hostname or IP address, and
               an optional port.</t>
 
               <t>Devices that support loading bootstrapping data from well-known
               bootstrap servers MUST also possess a list of trust anchor certificates
               that can be used to secure the TLS connection to the well-known bootstrap
-              servers.</t>
+              servers.  For each trust anchor certificate, if it is not itself a self-signed
+              root certificate, the device SHOULD also possess the chain of intermediate
+              certificates leading up to and including the self-signed root certificate.</t>
 
               <t>Devices that support loading signed data (see <xref target="terminology"/>)
-              MUST possess the manufacturer's trust anchor certificate for validating
-              ownership vouchers.</t>
+              MUST possess the trust anchor certificates for validating ownership vouchers.
+              For each trust anchor certificate, if it is not itself a self-signed
+              root certificate, the device SHOULD also possess the chain of intermediate
+              certificates leading up to and including the self-signed root certificate.</t>
 
               <t>Devices that support using a client certificate to authenticate to a
               bootstrap servers MUST possess the private key that corresponds to the

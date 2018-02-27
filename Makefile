@@ -40,6 +40,7 @@ clean:
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
 	-rm -f ietf-*\@20*.yang
+	-rm -f example-*\@20*.yang
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
