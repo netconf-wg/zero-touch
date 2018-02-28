@@ -9,7 +9,12 @@ module example-zerotouch-device {
   }
   import ietf-keystore {
     prefix ks;
-    reference 'RFC YYYY: YANG Data Model for a "Keystore" Mechanism';
+    revision-date 2017-10-30;
+    description
+     "This revision is defined in draft-ietf-netconf-keystore-04.";
+    reference
+     "I-D.ietf-netconf-keystore:
+        YANG Data Model for a Keystore Mechanism";
   }
 
   organization
@@ -24,7 +29,7 @@ module example-zerotouch-device {
     "This module defines a data model to enable zerotouch 
      bootstrapping and discover what parameters are used.
 
-     Copyright (c) 2017 IETF Trust and the persons identified as 
+     Copyright (c) 2018 IETF Trust and the persons identified as 
      authors of the code. All rights reserved.
 
      Redistribution and use in source and binary forms, with or 
@@ -40,8 +45,7 @@ module example-zerotouch-device {
     description
       "Initial version";
     reference
-      "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
-       Management";
+      "RFC XXXX: Zero Touch Provisioning for for Networking Devices";
   }
 
   // features
@@ -97,7 +101,7 @@ module example-zerotouch-device {
          RFC 5652, encoded using ASN.1 distinguished encoding rules
          (DER), as specified in ITU-T X.690.  This is the degenerate
          form of SignedData, whereby there are no signers, that is
-         commonly used to desemenate certificates.</t>
+         commonly used to disseminate certificates.</t>
 
          This structure contains the IEEE 802.1AR-2009 IDevID
          certificate itself, and all intermediate certificates leading

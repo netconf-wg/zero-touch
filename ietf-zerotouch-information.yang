@@ -26,15 +26,15 @@ module ietf-zerotouch-information {
 
   description
     "This module defines the data model for the Zero Touch Information
-     artifact defined by RFC XXXX: Zero Touch Provisioning for NETCONF
-     or RESTCONF based Management.
+     artifact defined in RFC XXXX: Zero Touch Provisioning for
+     Networking Devices.
 
      The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
      'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
      and 'OPTIONAL' in the module text are to be interpreted as
      described in RFC 2119.
 
-     Copyright (c) 2017 IETF Trust and the persons identified as 
+     Copyright (c) 2018 IETF Trust and the persons identified as 
      authors of the code. All rights reserved.
 
      Redistribution and use in source and binary forms, with or 
@@ -50,8 +50,7 @@ module ietf-zerotouch-information {
     description
       "Initial version";
     reference
-      "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF based
-       Management";
+      "RFC XXXX: Zero Touch Provisioning for Networking Devices";
   }
 
   // identities
@@ -80,7 +79,7 @@ module ietf-zerotouch-information {
          Cryptographic Message Syntax (CMS)
        ITU-T X.690:
          Information technology – ASN.1 encoding rules:
-         Specification of Basic Encoding Rules (BER), 
+         Specification of Basic Encoding Rules (BER),
          Canonical Encoding Rules (CER) and Distinguished
          Encoding Rules (DER).";
   }
@@ -99,8 +98,7 @@ module ietf-zerotouch-information {
            RFC XXXX.  Its purpose is to redirect a device to 
            another bootstrap server.";
         reference
-          "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF
-           based Management";
+          "RFC XXXX: Zero Touch Provisioning for Networking Devices";
         list bootstrap-server {
           key "address";
           min-elements 1;
@@ -127,7 +125,7 @@ module ietf-zerotouch-information {
               "A CMS structure that MUST contain the chain of X.509
                certificates needed to authenticate the TLS certificate
                presented by this bootstrap server.  In all cases, the
-               chain MUST include a root (self-signed) certificate.
+               chain MUST include a self-signed root certificate.
                In the case where the root certificate is itself the
                issuer of the bootstrap server's TLS certificate, only
                one X.509 certificate is present.  If needed by the
@@ -154,15 +152,14 @@ module ietf-zerotouch-information {
            RFC XXXX.  Its purpose is to provide the device everything
            it needs to bootstrap itself.";
         reference
-          "RFC XXXX: Zero Touch Provisioning for NETCONF or RESTCONF
-           based Management";
+          "RFC XXXX: Zero Touch Provisioning for Networking Devices";
         container boot-image {
           description
             "Specifies criteria for the boot image the device MUST 
-             be running.";
+             be running, as well as information enabling the device
+             to install the required boot image.";
           leaf os-name {
             type string;
-            mandatory true;
             description
               "The name of the operating system software the device
                MUST be running in order to not require a software
@@ -170,7 +167,6 @@ module ietf-zerotouch-information {
           }
           leaf os-version {
             type string;
-            mandatory true;
             description
               "The version of the operating system software the device
                MUST be running in order to not require a software
@@ -194,6 +190,11 @@ module ietf-zerotouch-information {
                remote server to obtain the boot-image.";
           }
           list image-verification {
+            must '../download-uri' {
+              description
+                "Download URIs must be provided if an image is to
+                 be verified.";
+            }
             key hash-algorithm;
             description
               "A list of hash values that a device can use to verify
@@ -270,30 +271,31 @@ module ietf-zerotouch-information {
        product line, and/or model of the device.
         
        If a script is erroneously provided to a device that does
-       not support the execution of scripts, the device SHOULD send
-       either a 'pre-script-warning' or 'post-script-warning' 
-       progress report, based on which kind of script was presented,
-       but otherwise continue processing the bootstrapping data as
-       if the script had not been present.
+       not support the execution of scripts, and the device obtained
+       the onboarding information from a trusted bootstrap server,
+       the device SHOULD send either a 'pre-script-warning' or 
+       'post-script-warning' progress report, based on which kind of
+       script was presented, but otherwise continue processing the
+       bootstrapping data as if the script had not been present.
 
-       The script returns exit status code '0' on success and non-zero
-       on error, with accompanying stderr/stdout for logging purposes.
-       In the case of an error, the exit status code will specify what
-       the device should do as follows.  
+       The script returns exit status code zero on success and non-zero
+       otherwise, with accompanying stderr/stdout for logging purposes.
 
        If the exit status code is greater than zero, then the device
        should assume that the script had a soft error, which the
        script believes does not affect manageability.  If the device
-       obtained the bootstrap information from a bootstrap server,
-       it SHOULD send a 'pre-script-warning' or 'post-script-warning'
-       progress report.
+       obtained the bootstrap information from a trusted bootstrap
+       server, it SHOULD either send a 'pre-script-warning' or
+       'post-script-warning' progress report, based on which kind of
+       script was executed.
 
        If the exit status code is less than zero, the device should
        assume the script had a hard error, which the script believes
-       will affect manageability.  In this case, the device SHOULD
-       send a 'pre-script-error' or 'post-script-error' progress
-       report followed by a reset that will wipe out anything the
-       script may have done and restart the entire bootstrapping
-       process again.";
+       will affect manageability.  If the device obtained the
+       bootstrap information from a trusted bootstrap server, it 
+       SHOULD send a 'pre-script-error' or 'post-script-error'
+       progress report,  based on which kind of script was executed,
+       followed by a reset that will wipe out any bad state left by
+       the script, and restart the entire bootstrapping process.";
   }
 }
