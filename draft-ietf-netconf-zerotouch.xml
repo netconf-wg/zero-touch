@@ -18,7 +18,7 @@
      ipr="trust200902"
      docName="draft-ietf-netconf-zerotouch-latest">
     <front>
-        <title abbrev="Zero Touch">Zero Touch Provisioning for Networking Devices</title>
+        <title abbrev="Secure Zero Touch Provisioning (SZTP)">Zero Touch Provisioning for Networking Devices</title>
         <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
             <organization>Juniper Networks</organization>
             <address>
@@ -107,11 +107,11 @@
         a bootstrapping strategy enabling devices to securely obtain
         bootstrapping data with no installer action beyond physical
         placement and connecting network and power cables.  As such,
-        SZTP enables non-technical personel to bring up devices in
+        SZTP enables non-technical personnel to bring up devices in
         remote locations without the need for any operator input.</t>
 
         <t>The SZTP solution includes updating the boot image,
-        commiting an initial configuration, and executing arbitrary scripts to
+        committing an initial configuration, and executing arbitrary scripts to
         address auxiliary needs.  The updated device is subsequently able to
         establish secure connections with other systems.  For instance, a
         devices may establish NETCONF <xref target="RFC8040"/> and/or RESTCONF
@@ -353,8 +353,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           The CMS structure MUST contain content conforming to the
           YANG module specified in <xref target="info-yang-module"/>.</t>
 
-          <t>The zero touch information CMS structure may encode signed or 
-          unsigned bootstrapping data.</t>
+          <t>The zero touch information CMS structure may encode signed or
+          unsigned bootstrapping data.  When the bootstrapping data is signed,
+          it may also be encrypted but, from a terminology perspective, it
+          is still "signed data" <xref target="terminology"/>.</t>
 
           <t>When the zero touch information artifact is unsigned, as it might
           be when communicated over trusted channels, the CMS structure's 
@@ -375,7 +377,17 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           an octet string containing 'zerotouch-information' data in the
           expected encoding.</t>
 
-          <!-- FIXME: no support for when it's encrypted? -->
+          <t>When the zero touch information artifact is signed and encrypted,
+          as it might be when communicated over untrusted channels and 
+          privacy is important, the CMS's structure's top-most content type
+          MUST be the OID id-envelopedData (1.2.840.113549.1.7.3), and 
+          the encryptedContentInfo's content type MUST be the OID id-signedData
+          (1.2.840.113549.1.7.2), whose eContentType MUST be one of the OIDs
+          described in <xref target="cms_cts"/>, or the OID id_data
+          (1.2.840.113549.1.7.1), in which case the encoding (JSON, XML, etc.)
+          SHOULD be communicated externally.  In either case, the associated
+          content or eContent is an octet string containing 'zerotouch-information'
+          data in the expected encoding.</t>
 
         </section>
 
@@ -399,26 +411,35 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The owner certificate artifact is formally a CMS structure, as
           specified by <xref target="RFC5652"/>, encoded using ASN.1
           distinguished encoding rules (DER), as specified in ITU-T X.690
-          <xref target="ITU.X690.1994"/>.  This CMS structure's top-most
-          content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
-          The inner SignedData structure is the degenerate form, whereby
-          there are no signers, that is commonly used to disseminate 
-          certificates, CRLs, and OCSP Responses.</t>
+          <xref target="ITU.X690.1994"/>.</t>
 
           <t>The owner certificate CMS structure MUST contain the owner
           certificate itself, as well as all intermediate certificates leading
-          up to the 'pinned-domain-cert' certificate specified in the ownership
+          to the 'pinned-domain-cert' certificate specified in the ownership
           voucher.  The owner certificate artifact MAY optionally include the
           'pinned-domain-cert' as well.</t>
 
           <t>In order to support devices deployed on private networks,
           the owner certificate CMS structure MAY also contain suitably fresh,
-          as determined by local policy, CRLs <xref target="RFC5280"/> and/or
-          OCSP Responses <xref target="RFC6960"/>.  Having these revocation
-          objects stapled to the owner certificate may obviate the need
-          for the device to have to download them dynamically using the CRL
-          distribution point or an OCSP responder specified in the associated
-          certificates.</t>
+          as determined by local policy, revocation objects (e.g., CRLs).
+          Having these revocation objects stapled to the owner certificate may
+          obviate the need for the device to have to download them dynamically
+          using the CRL distribution point or an OCSP responder specified in
+          the associated certificates.</t>
+
+          <t>When unencrypted, the owner certificate artifact's CMS structure's
+          top-most content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
+          The inner SignedData structure is the degenerate form, whereby there
+          are no signers, that is commonly used to disseminate certificates and
+          revocation objects.</t>
+
+          <t>When encrypted, the owner certificate artifact's CMS structure's
+          top-most content type MUST be the OID id-envelopedData 
+          (1.2.840.113549.1.7.3), and the encryptedContentInfo's content type
+          MUST be the OID id-signedData (1.2.840.113549.1.7.2), whereby the
+          inner SignedData structure is the degenerate form that has no signers
+          commonly used to disseminate certificates and revocation objects.</t>
+
         </section>
 
         <section title="Ownership Voucher" anchor="ownership-voucher">
@@ -435,9 +456,52 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           even when the owner certificate is a self-signed certificate, and
           hence also the pinned-domain-cert.</t>
 
-          <t>The ownership voucher artifact, including its encoding, is formally
-          defined in <xref target="I-D.ietf-anima-voucher"/>.</t>
+          <t>When unencrypted, the ownership voucher artifact is as defined
+          in <xref target="I-D.ietf-anima-voucher"/>.  As described, it is
+          a CMS structure whose top-most content type MUST be the OID 
+          id-signedData (1.2.840.113549.1.7.2), whose eContentType MUST
+          be OID id-ct-animaJSONVoucher (1.2.840.113549.1.9.16.1), or the
+          OID id_data (1.2.840.113549.1.7.1), in which case the encoding
+          (JSON, XML, etc.) SHOULD be communicated externally.  In either
+          case, the associated content is an octet string containing
+          ietf-voucher data in the expected encoding.</t>
+
+          <t>When encrypted, the ownership voucher artifact's CMS structure's
+          top-most content type MUST be the OID id-envelopedData 
+          (1.2.840.113549.1.7.3), and the encryptedContentInfo's content type
+          MUST be the OID id-signedData (1.2.840.113549.1.7.2), whose eContentType
+          MUST be OID id-ct-animaJSONVoucher (1.2.840.113549.1.9.16.1), or the OID
+          id_data (1.2.840.113549.1.7.1), in which case the encoding (JSON,
+          XML, etc.) SHOULD be communicated externally.  In either case, the
+          associated content is an octet string containing ietf-voucher data
+          in the expected encoding.</t>
         </section>
+
+        <section title="Artifact Encryption" anchor="artifact-encryption">
+          <t>Each of the three artifacts MAY be individually encrypted.  Encryption
+          may be important in some environments where the content is considered
+          sensitive.</t>
+          <t>Each of the three artifacts are encrypted in the same way, by the
+          unencrypted form being encapsulated inside a CMS EnvelopedData type.</t>
+          <t>As a consequence, both the zerotouch-information and ownership
+          voucher artifacts are signed and then encrypted, never encrypted
+          and then signed.</t>
+          <t>This sequencing has the advantage of shrouding the signer's
+          certificate, and ensuring that the owner knows the content being
+          signed.  This sequencing further enables the owner to inspect an
+          unencrypted voucher obtained from a manufacturer and then encrypt
+          the voucher later themselves, perhaps while also stapling in 
+          current revocation objects, when ready to place the artifact
+          in an unsafe location.</t>
+          <t>When encrypted, the CMS MUST be encrypted using a secure device
+          identity certificate for the device.  This certificate MAY be the
+          same as the TLS-level client certificate the device uses when
+          connecting to bootstrap servers.  The owner must possess the
+          device's identity certificate at the time of encrypting the data.
+          How the owner comes to posses the device's identity certificate
+          for this purpose is outside the scope of this document.</t>
+        </section>
+
         <section title="Artifact Groupings" anchor="artifact-groupings">
           <t>The previous sections discussed the bootstrapping artifacts,
           but only certain groupings of these artifacts make sense to return in the
@@ -698,17 +762,18 @@ with revocations                         revocations     revocations
 | +---------------------------------------------------------+ |
 | |                   <read-only storage>                   | |
 | |                                                         | |
-| | 2. client cert & associated intermediate certificate(s) | |
+| | 2. TLS client cert & related intermediate certificates  | |
 | | 3. list of trusted well-known bootstrap servers         | |
 | | 4. list of trust anchor certs for bootstrap servers     | |
 | | 5. list of trust anchor certs for ownership vouchers    | |
 | +---------------------------------------------------------+ |
 |                                                             |
-|                  +----------------------+                   |
-|                  |   <secure storage>   |                   |
-|                  |                      |                   |
-|                  |  6. private key      |                   |
-|                  +----------------------+                   |
+|   +-----------------------------------------------------+   |
+|   |                 <secure storage>                    |   |
+|   |                                                     |   |
+|   |  6. private key for TLS client certificate          |   |
+|   |  7. private key for decrypting zerotouch artifacts  |   |
+|   +-----------------------------------------------------+   |
 |                                                             |
 +-------------------------------------------------------------+
 ]]></artwork>
@@ -725,17 +790,16 @@ with revocations                         revocations     revocations
               configuration node that relies on presence is NOT RECOMMENDED, as it
               cannot be removed by the merging process.</t>
 
-              <t>Devices that support loading bootstrapping data from bootstrap
-              servers (see <xref target="bootstrap-server"/>) SHOULD possess a client
-              certificate (e.g. IDevID, as defined in <xref target="Std-802.1AR-2009"/>),
-              and any intermediate certificates leading to the certificate's well-known
-              trust-anchor.  Note that the well-known trust anchor certificate may
+              <t>Devices that support loading bootstrapping data from bootstrap servers
+              (see <xref target="bootstrap-server"/>) SHOULD possess a TLS-level client
+              certificate and any intermediate certificates leading to the certificate's
+              well-known trust-anchor.  The well-known trust anchor certificate may
               be an intermediate certificate or a self-signed root certificate.  To
-              support devices not having a client certificate, devices MAY alternatively,
+              support devices not having a client certificate, devices MAY, alternatively
               or in addition to, identify and authenticate themselves to the bootstrap
               server using an HTTP authentication scheme, as allowed by Section 2.5 in
-              <xref target="RFC8040"/>; however, this document does not define any
-              mechanisms for operator input enabling, for example, the entering of
+              <xref target="RFC8040"/>; however, this document does not define a
+              mechanism for operator input enabling, for example, the entering of
               a password.</t>
 
               <t>Devices that support loading bootstrapping data from well-known
@@ -757,10 +821,19 @@ with revocations                         revocations     revocations
               root certificate, the device SHOULD also possess the chain of intermediate
               certificates leading up to and including the self-signed root certificate.</t>
 
-              <t>Devices that support using a client certificate to authenticate to a
-              bootstrap servers MUST possess the private key that corresponds to the
-              public key encoded in the client certificate.  This private key SHOULD be
-              securely stored, ideally in a cryptographic processor (e.g., a TPM).</t>
+              <t>Devices that support using a TLS-level client certificate to identify
+              and authenticate themselves to a bootstrap server MUST possess the
+              private key that corresponds to the public key encoded in the TLS-level
+              client certificate.  This private key SHOULD be securely stored, ideally
+              in a cryptographic processor (e.g., a TPM).</t>
+
+              <t>Devices that support decrypting zerotouch artifacts MUST posses the
+              private key that corresponds to the public key encoded in the secure
+              device identity certificate used when encrypting the artifacts.  This
+              private key SHOULD be securely stored, ideally in a cryptographic 
+              processor (e.g., a TPM).  This private key MAY be the same as the one
+              associated to the TLS-level client certificate used when connecting
+              to bootstrap servers.</t>
             </list>
           </t>
           <t>A YANG module representing this data is provided in
@@ -868,7 +941,7 @@ with revocations                         revocations     revocations
           (i.e. trust-state is FALSE), it is still necessary for the device
           to identify itself, in order to receive device-specific signed data,
           due to the ownership voucher encoding the device's serial number.  The
-          device MAY identify and authenticate itself to the bootstrap
+          device MUST identify and authenticate itself to the bootstrap
           server using a TLS-level client certificate and/or an HTTP
           authentication scheme.  However, because the bootstrap server is
           untrusted, the device MUST NOT use an authentication scheme
@@ -879,15 +952,19 @@ with revocations                         revocations     revocations
           the client certificate's well-known trust anchor certificate.</t>
 
           <t>For any source of bootstrapping data (e.g., <xref target="sources"/>),
-          if the bootstrapping data returned is signed and the device is able
-          to validate the signed data using the algorithm described in
+          if any artifact obtained is encrypted, the device MUST first decrypt it
+          using the private key associated with the device certificate used to
+          encrypt the artifact.</t>
+
+          <t>If the zero touch information artifact is signed, and the device
+          is able to validate the signed data using the algorithm described in
           <xref target="validating-signed-data"/>, then the device MUST set
           trust-state to TRUE; otherwise, if the device is unable to validate
-          the signed data, the device MUST set trust-state to FALSE.  Note, 
+          the signed data, the device MUST set trust-state to FALSE.  Note,
           this is worded to cover the special case when signed data is returned
           even from a trusted bootstrap server.</t>
 
-          <t>If the bootstrapping data is onboarding information, and
+          <t>If the zero touch information artifact contains onboarding information, and
           trust-state is FALSE, the device MUST exit the recursive algorithm (as
           this is not allowed, see the figure above), returning to the state machine
           described in <xref target="boot-sequence"/>.  Otherwise, the device MUST
@@ -898,11 +975,12 @@ with revocations                         revocations     revocations
           difference being in how it responds to the "Able to bootstrap from any
           source?" conditional described in the figure in the section.</t>
 
-          <t>If the bootstrapping data is redirect information, the device MUST process the redirect
-          information as described in <xref target="process-redirect-information"/>.
-          This is the recursion step, it will cause the device to reenter this algorithm,
-          but this time the data source will definitely be a bootstrap server, as
-          that is all redirect information is able to redirect a device to.</t>
+          <t>If the zero touch information artifact contains redirect information,
+          the device MUST process the redirect information as described in
+          <xref target="process-redirect-information"/>.  This is the recursion
+          step, it will cause the device to reenter this algorithm, but this time
+          the data source will definitely be a bootstrap server, as that is all
+          redirect information is able to redirect a device to.</t>
         </section>
 
         <section title="Validating Signed Data" anchor="validating-signed-data">
@@ -1422,7 +1500,7 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
 
       <section title="Security Considerations" anchor="sec-con">
 
-        <section title="Immutable storage for trust anchors">
+        <section title="Immutable Storage for Trust Anchors">
           <t>Devices MUST ensure that all their trust anchor
           certificates, including those for connecting to bootstrap
           servers and verifying ownership vouchers, are protected from
@@ -1433,6 +1511,21 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
           that devices MAY update these trust anchors when
           needed through a verifiable process, such as a
           software upgrade using signed software images.</t>
+        </section>
+        <section title="Secure Storage for Long-lived Private Keys">
+          <t>Manufacturer-generated device identifiers may have very long
+          lifetimes.  For instance, <xref target="Std-802.1AR-2009"/>
+          recommends using the "notAfter" value 99991231235959Z in IDevID
+          certificates.  Given the long-lived nature of these private keys,
+          it is paramount that they are stored so as to resist discovery,
+          such as in a secure cryptographic processor (e.g., a TPM).</t>
+        </section>
+        <section title="Use of IDevID Certificates">
+          <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2009"/>,
+          are RECOMMENDED, both for the TLS-level client certificate used
+          by devices when connecting to a bootstrap server, as well as for
+          the device identity certificate used by owners when encrypting
+          the zerotouch artifacts.</t>
         </section>
         <section title="Clock Sensitivity">
           <t>The solution in this document relies on TLS certificates,
@@ -2023,6 +2116,9 @@ device   |        |             |            |        |         |
               </list>
             </t>
           </section>
+        </section>
+        <section title="Using the 'nonce' get-bootstrapping-data input parameter">
+          <t>testing 1.2.3</t>
         </section>
         <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
           <t>The following diagram illustrates a sequence of

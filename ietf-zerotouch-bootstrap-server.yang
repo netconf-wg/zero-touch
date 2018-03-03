@@ -132,17 +132,11 @@ module ietf-zerotouch-bootstrap-server {
         type cms;
         mandatory true;
         description
-          "A 'zerotouch-information' artifact, as described in 
-           Section 4.1 of RFC XXXX.  The CMS structure may either
-           contain just a contentInfo structure, with effectively
-           unsigned data, or a SignedData structure (per Section
-           5.1 of RFC 5652) that signs the content using the
-           private key associated with the 'owner-certificate'.";
+          "A zero touch information artifact, as described in 
+           Section 3.1 of RFC XXXX.";
         reference
           "RFC XXXX:
-              Zero Touch Provisioning for Networking Devices
-           RFC 5652:
-              Cryptographic Message Syntax (CMS)";
+              Zero Touch Provisioning for Networking Devices";
       }
       leaf owner-certificate {
         type cms;
@@ -152,30 +146,12 @@ module ietf-zerotouch-bootstrap-server {
              certificate is presented.";
         }
         description
-          "This CMS structure MUST contain the owner certificate
-           and all intermediate certificates leading up to (and 
-           optionally including) the trust anchor certificate
-           specified by the 'pinned-domain-cert' node in the
-           ownership voucher.  This structure MAY also include
-           suitably fresh CRL and/or OCSP Responses that the
-           device can use to verify the revocation status of the
-           certificates.  This leaf is optional because it is
-           only needed when the 'zerotouch-information' CMS
-           structure is signed.";
+          "An owner certificate artifact, as described in Section 3.2
+           of RFC XXXX.  This leaf is optional because it is only
+           needed when the zero touch information artifact is signed.";
         reference
-          "RFC 5652:
-             Cryptographic Message Syntax (CMS)
-           RFC 5280:
-             Internet X.509 Public Key Infrastructure Certificate
-             and Certificate Revocation List (CRL) Profile.
-           RFC 6960:
-             X.509 Internet Public Key Infrastructure Online
-             Certificate Status Protocol - OCSP.
-           ITU-T X.690:
-             Information technology – ASN.1 encoding rules:
-             Specification of Basic Encoding Rules (BER), 
-             Canonical Encoding Rules (CER) and Distinguished
-             Encoding Rules (DER).";
+          "RFC XXXX:
+              Zero Touch Provisioning for Networking Devices";
       }
       leaf ownership-voucher {
         type cms;
@@ -185,18 +161,12 @@ module ietf-zerotouch-bootstrap-server {
              ownership voucher is presented.";
         }
         description
-          "A 'voucher' artifact, as described in Section 5 of 
-           I-D.ietf-anima-voucher.  The voucher informs the device
-           who its owner is.  The voucher encodes the device's
-           serial number, so that the device can ensure the
-           voucher applies to it.  The voucher is signed by the
-           device's manufacturer.  This leaf is optional because
-           it is only needed when the 'zerotouch-information'
-           CMS structure is signed.";
+          "An ownership voucher artifact, as described by Section 3.3
+           of RFC XXXX.  This leaf is optional because it is only
+           needed when the zero touch information artifact is signed.";
         reference
-          "I-D.ietf-anima-voucher:
-             Voucher and Voucher Revocation Profiles for 
-             Bootstrapping Protocols";
+          "RFC XXXX:
+              Zero Touch Provisioning for Networking Devices";
       }
     }
   }

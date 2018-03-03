@@ -28,6 +28,9 @@ module example-zerotouch-device {
   description
     "This module defines a data model to enable zerotouch 
      bootstrapping and discover what parameters are used.
+     This module assumes the use of an IDevID certificate,
+     as opposed to any other client certificate, or the
+     use of an HTTP-based client authentication scheme.
 
      Copyright (c) 2018 IETF Trust and the persons identified as 
      authors of the code. All rights reserved.
@@ -98,24 +101,19 @@ module example-zerotouch-device {
       config false;
       description
         "An CMS SignedData structure, as specified by Section 5 of
-         RFC 5652, encoded using ASN.1 distinguished encoding rules
-         (DER), as specified in ITU-T X.690.  This is the degenerate
-         form of SignedData, whereby there are no signers, that is
-         commonly used to disseminate certificates.</t>
+         RFC 5652.  This is the degenerate form of the SignedData
+         structure, whereby there are no signers, that is commonly
+         used to disseminate certificates.
 
-         This structure contains the IEEE 802.1AR-2009 IDevID
-         certificate itself, and all intermediate certificates leading
-         up to, and optionally including, the manufacturer's well-known
-         trust anchor certificate for IDevID certificates.  The well-
-         known trust anchor may not be a self-signed certificate.";
+         This CMS structure contains the IEEE 802.1AR-2009 IDevID
+         certificate itself, and all intermediate certificates
+         leading up to, and optionally including, the manufacturer's
+         well-known trust anchor certificate for IDevID certificates.
+         The well-known trust anchor does not have to be a self-signed
+         certificate.";
       reference
         "RFC 5652:
            Cryptographic Message Syntax (CMS)
-         ITU-T X.690:
-           Information technology – ASN.1 encoding rules:
-           Specification of Basic Encoding Rules (BER), 
-           Canonical Encoding Rules (CER) and Distinguished
-           Encoding Rules (DER).
          IEEE 802.1AR-2009:
            IEEE Standard for Local and metropolitan area
            networks - Secure Device Identity.";
