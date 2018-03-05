@@ -1606,10 +1606,10 @@ reference: RFC XXXX
             <figure>
                 <artwork><![CDATA[
 
-             Decimal  Description                             References
-             -------  --------------------------------------  ----------
-             TBD1      id-ct-zerotouchInformationXML          [RFCXXXX]
-             TBD2      id-ct-zerotouchInformationJSON         [RFCXXXX]
+Decimal  Description                             References
+-------  --------------------------------------  ----------
+TBD1      id-ct-zerotouchInformationXML          [RFCXXXX]
+TBD2      id-ct-zerotouchInformationJSON         [RFCXXXX]
 ]]></artwork>
           </figure>
         </t>
@@ -1904,41 +1904,41 @@ Reference: [RFCXXXX]
             <t>
               <figure>
                 <artwork><![CDATA[
-             +----------+ +------------+
-             |Deployment| |Manufacturer| +------+ +------+
-             | Specific | |   Hosted   | | Local| | Local| +---------+
-       +---+ |Bootstrap | | Bootstrap  | |  DNS | | DHCP | |Removable|
-       |NMS| |  Server  | |   Server   | |Server| |Server| | Storage |
-       +---+ +----------+ +------------+ +------+ +------+ +---------+
-         |        |             |            |        |         |
-1.       |        |             |            |        |         |
-activate |        |             |            |        |         |
-modeled  |        |             |            |        |         |
-device   |        |             |            |        |         |
--------->|        |             |            |        |         |
-         | 2. (optional)        |            |        |         |
-         |    configure         |            |        |         |
-         |    bootstrap         |            |        |         |
-         |    server            |            |        |         |
-         |------->|             |            |        |         |
-         |        |             |            |        |         |
-         | 3. (optional) configure           |        |         |
-         |    bootstrap server  |            |        |         |
-         |--------------------->|            |        |         |
-         |        |             |            |        |         |
-         |        |             |            |        |         |
-         | 4. (optional) configure DNS server|        |         |
-         |---------------------------------->|        |         |
-         |        |             |            |        |         |
-         |        |             |            |        |         |
-         | 5. (optional) configure DHCP server        |         |
-         |------------------------------------------->|         |
-         |        |             |            |        |         |
-         |        |             |            |        |         |
-         | 6. (optional) store bootstrapping artifacts on media |
-         |----------------------------------------------------->|
-         |        |             |            |        |         |
-         |        |             |            |        |         |
+            +----------+ +------------+
+            |Deployment| |Manufacturer| +------+ +------+
+            | Specific | |   Hosted   | | Local| | Local| +---------+
+      +---+ |Bootstrap | | Bootstrap  | |  DNS | | DHCP | |Removable|
+      |NMS| |  Server  | |   Server   | |Server| |Server| | Storage |
+      +---+ +----------+ +------------+ +------+ +------+ +---------+
+        |        |             |            |        |         |
+1.      |        |             |            |        |         |
+activate|        |             |            |        |         |
+modeled |        |             |            |        |         |
+device  |        |             |            |        |         |
+------->|        |             |            |        |         |
+        | 2. (optional)        |            |        |         |
+        |    configure         |            |        |         |
+        |    bootstrap         |            |        |         |
+        |    server            |            |        |         |
+        |------->|             |            |        |         |
+        |        |             |            |        |         |
+        | 3. (optional) configure           |        |         |
+        |    bootstrap server  |            |        |         |
+        |--------------------->|            |        |         |
+        |        |             |            |        |         |
+        |        |             |            |        |         |
+        | 4. (optional) configure DNS server|        |         |
+        |---------------------------------->|        |         |
+        |        |             |            |        |         |
+        |        |             |            |        |         |
+        | 5. (optional) configure DHCP server        |         |
+        |------------------------------------------->|         |
+        |        |             |            |        |         |
+        |        |             |            |        |         |
+        | 6. (optional) store bootstrapping artifacts on media |
+        |----------------------------------------------------->|
+        |        |             |            |        |         |
+        |        |             |            |        |         |
   ]]></artwork>
               </figure>
             </t>
@@ -2000,39 +2000,39 @@ device   |        |             |            |        |         |
             that occur when a device powers on.
               <figure>
                 <artwork><![CDATA[
-                                                   +----------+
-                                    +-----------+  |Deployment|
-                                    | Source of |  | Specific |
-+------+                            | Bootstrap |  |Bootstrap |  +---+
-|Device|                            |   Data    |  |  Server  |  |NMS|
-+------+                            +-----------+  +----------+  +---+
-   |                                      |              |         |
-   |                                      |              |         |
-   | 1. if zerotouch bootstrap service    |              |         |
-   |    is not enabled, then exit.        |              |         |
-   |                                      |              |         |
-   | 2. for each source supported, check  |              |         |
-   |    for bootstrapping data.           |              |         |
-   |------------------------------------->|              |         |
-   |                                      |              |         |
-   | 3. if onboarding information found,  |              |         |
-   |    initialize self and, only if      |              |         |
-   |    source is a bootstrap server,     |              |         |
-   |    send progress updates.            |              |         |
-   |------------------------------------->#              |         |
-   |                                      # webhook      |         |
-   |                                      #----------------------->|
-   |                                                     |         |
-   | 4. else if redirect-information found, for each     |         |
-   |    bootstrap server specified, check for data.      |         |
-   |-+-------------------------------------------------->|         |
-   | |                                                   |         |
-   | |  if more redirect-information is found, recurse   |         |
-   | |  (not depicted), else if onboarding-information   |         |
-   | |  found, initialize self and post progress reports |         |
-   | +-------------------------------------------------->#         |
-   |                                                     # webhook |
-   |                                                     #-------->|
+                                                  +----------+
+                                   +-----------+  |Deployment|
+                                   | Source of |  | Specific |
++------+                           | Bootstrap |  |Bootstrap |  +---+
+|Device|                           |   Data    |  |  Server  |  |NMS|
++------+                           +-----------+  +----------+  +---+
+   |                                     |              |         |
+   |                                     |              |         |
+   | 1. if zerotouch bootstrap service   |              |         |
+   |    is not enabled, then exit.       |              |         |
+   |                                     |              |         |
+   | 2. for each source supported, check |              |         |
+   |    for bootstrapping data.          |              |         |
+   |------------------------------------>|              |         |
+   |                                     |              |         |
+   | 3. if onboarding information found, |              |         |
+   |    initialize self and, only if     |              |         |
+   |    source is a bootstrap server,    |              |         |
+   |    send progress updates.           |              |         |
+   |------------------------------------>#              |         |
+   |                                     # webhook      |         |
+   |                                     #----------------------->|
+   |                                                    |         |
+   | 4. else if redirect-information found, for each    |         |
+   |    bootstrap server specified, check for data.     |         |
+   |-+------------------------------------------------->|         |
+   | |                                                  |         |
+   | | if more redirect-information is found, recurse   |         |
+   | | (not depicted), else if onboarding-information   |         |
+   | | found, initialize self and post progress reports |         |
+   | +------------------------------------------------->#         |
+   |                                                    # webhook |
+   |                                                    #-------->|
    |
    | 5. retry sources and/or wait for manual provisioning.
    |

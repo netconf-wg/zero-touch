@@ -25,26 +25,26 @@ module ietf-zerotouch-information {
      Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
 
   description
-    "This module defines the data model for the Zero Touch Information
-     artifact defined in RFC XXXX: Zero Touch Provisioning for
-     Networking Devices.
+   "This module defines the data model for the Zero Touch
+    Information artifact defined in RFC XXXX: Zero Touch
+    Provisioning for Networking Devices.
 
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
-     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
-     and 'OPTIONAL' in the module text are to be interpreted as
-     described in RFC 2119.
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
+    and 'OPTIONAL' in the module text are to be interpreted as
+    described in RFC 2119.
 
-     Copyright (c) 2018 IETF Trust and the persons identified as 
-     authors of the code. All rights reserved.
+    Copyright (c) 2018 IETF Trust and the persons identified as 
+    authors of the code. All rights reserved.
 
-     Redistribution and use in source and binary forms, with or 
-     without modification, is permitted pursuant to, and subject
-     to the license terms contained in, the Simplified BSD License
-     set forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents (http://trustee.ietf.org/license-info)
+    Redistribution and use in source and binary forms, with or 
+    without modification, is permitted pursuant to, and subject
+    to the license terms contained in, the Simplified BSD License
+    set forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents (http://trustee.ietf.org/license-info)
 
-     This version of this YANG module is part of RFC XXXX; see the
-     RFC itself for full legal notices.";
+    This version of this YANG module is part of RFC XXXX; see the
+    RFC itself for full legal notices.";
 
   revision YYYY-MM-DD {
     description
@@ -108,41 +108,41 @@ module ietf-zerotouch-information {
             type inet:host;
             mandatory true;
             description
-              "The IP address or hostname of the bootstrap server the
-               device should redirect to.";
+             "The IP address or hostname of the bootstrap server the
+              device should redirect to.";
           }
           leaf port {
             type inet:port-number;
             default "443";
             description
-              "The port number the bootstrap server listens on.  If no
-               port is specified, the IANA-assigned port for 'https'
-               (443) is used.";
+             "The port number the bootstrap server listens on.  If no
+              port is specified, the IANA-assigned port for 'https'
+              (443) is used.";
           }
           leaf trust-anchor {
             type cms;
             description
-              "A CMS structure that MUST contain the chain of X.509
-               certificates needed to authenticate the TLS certificate
-               presented by this bootstrap server.  In all cases, the
-               chain MUST include a self-signed root certificate.
-               In the case where the root certificate is itself the
-               issuer of the bootstrap server's TLS certificate, only
-               one X.509 certificate is present.  If needed by the
-               device, this CMS structure MAY also contain suitably
-               fresh CRL and/or OCSP Responses with which the device
-               can use to verify the revocation status of the
-               certificates.
-      
-               X.509 certificates and CRLs are described in RFC 5280.
-               OCSP Responses are described in RFC 6960.";
+             "A CMS structure that MUST contain the chain of X.509
+              certificates needed to authenticate the TLS certificate
+              presented by this bootstrap server.  In all cases, the
+              chain MUST include a self-signed root certificate.
+              In the case where the root certificate is itself the
+              issuer of the bootstrap server's TLS certificate, only
+              one X.509 certificate is present.  If needed by the
+              device, this CMS structure MAY also contain suitably
+              fresh CRL and/or OCSP Responses with which the device
+              can use to verify the revocation status of the
+              certificates.
+     
+              X.509 certificates and CRLs are described in RFC 5280.
+              OCSP Responses are described in RFC 6960.";
             reference
-              "RFC 5280:
-                 Internet X.509 Public Key Infrastructure Certificate
-                 and Certificate Revocation List (CRL) Profile.
-               RFC 6960:
-                 X.509 Internet Public Key Infrastructure Online
-                 Certificate Status Protocol - OCSP.";
+             "RFC 5280:
+                Internet X.509 Public Key Infrastructure Certificate
+                and Certificate Revocation List (CRL) Profile.
+              RFC 6960:
+                X.509 Internet Public Key Infrastructure Online
+                Certificate Status Protocol - OCSP.";
           }
         }
       }
@@ -168,9 +168,9 @@ module ietf-zerotouch-information {
           leaf os-version {
             type string;
             description
-              "The version of the operating system software the device
-               MUST be running in order to not require a software
-               image upgrade (ex. 17.3R2.1).";
+              "The version of the operating system software the
+               device MUST be running in order to not require a
+               software image upgrade (ex. 17.3R2.1).";
           }
           leaf-list download-uri {
             type inet:uri;
@@ -210,8 +210,9 @@ module ietf-zerotouch-information {
               type yang:hex-string;
               mandatory true;
               description
-                "The hex-encoded value of the specified hash algorithm
-                 over the contents of the boot image file.";
+                "The hex-encoded value of the specified hash
+                 algorithm over the contents of the boot image
+                 file.";
             }
           }
         }
@@ -242,10 +243,11 @@ module ietf-zerotouch-information {
           type binary;
           must '../configuration-handling';
           description
-            "Any configuration known to the device.  The use of the
-             'binary' type enables e.g., XML-content to be embedded
-             into a JSON document.  The exact encoding of the content,
-             as with the scripts, is vendor specific.";
+            "Any configuration known to the device.  The use of
+             the 'binary' type enables e.g., XML-content to be
+             embedded into a JSON document.  The exact encoding
+             of the content, as with the scripts, is vendor
+             specific.";
         }
         leaf post-configuration-script {
           type script;
@@ -270,16 +272,17 @@ module ietf-zerotouch-information {
        contents of the script are considered specific to the vendor,
        product line, and/or model of the device.
         
-       If a script is erroneously provided to a device that does
-       not support the execution of scripts, and the device obtained
-       the onboarding information from a trusted bootstrap server,
-       the device SHOULD send either a 'pre-script-warning' or 
-       'post-script-warning' progress report, based on which kind of
-       script was presented, but otherwise continue processing the
-       bootstrapping data as if the script had not been present.
+       If a script is erroneously provided to a device that does not
+       support the execution of scripts, and the device obtained the
+       onboarding information from a trusted bootstrap server, the
+       device SHOULD send either a 'pre-script-warning' or 
+       'post-script-warning' progress report, based on which kind
+       of script was presented, but otherwise continue processing
+       the bootstrapping data as if the script had not been present.
 
-       The script returns exit status code zero on success and non-zero
-       otherwise, with accompanying stderr/stdout for logging purposes.
+       The script returns exit status code zero on success and
+       non-zero otherwise, with accompanying stderr/stdout for
+       logging purposes.
 
        If the exit status code is greater than zero, then the device
        should assume that the script had a soft error, which the
