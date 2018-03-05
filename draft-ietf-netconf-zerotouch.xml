@@ -1719,6 +1719,76 @@ Reference: [RFCXXXX]
         </references>
 
 
+        <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
+          <t>The following diagram illustrates a sequence of
+          bootstrapping activities that promote an untrusted
+          connection to a bootstrap server to a trusted connection
+          to the same bootstrap server.  This enables a device
+          to limit the amount of information it might disclose
+          to an adversary hosting an untrusted bootstrap server.</t>
+          <t><figure>
+            <artwork><![CDATA[
+                                                      +----------+
+                                                      |Deployment|
+                                                      | Specific |
++------+                                              |Bootstrap |
+|Device|                                              |  Server  |
++------+                                              +----------+
+   |                                                        |
+   | 1. "HTTPS" Request ('untrusted-connection', nonce)     |
+   |------------------------------------------------------->|
+   | 2. "HTTPS" Response (signed redirect information)      |
+   |<-------------------------------------------------------|
+   |                                                        |
+   |                                                        |
+   | 3. HTTPS Request (os-name=xyz, os-version=123, etc.)   |
+   |------------------------------------------------------->|
+   | 4. HTTPS Response (unsigned onboarding information     |
+   |<-------------------------------------------------------|
+   |                                                        |
+]]></artwork>
+          </figure></t>
+          <t>The interactions in the above diagram are described below.</t>
+          <t><list style="numbers">
+            <t>The device initiates an untrusted connection to a bootstrap
+            server, as is indicated by putting "HTTPS" in double quotes
+            above.  It is still an HTTPS connection, but the device is
+            unable to authenticate the bootstrap server's TLS certificate.
+            Because the device is unable to trust the bootstrap server, it
+            sends the 'untrusted-connection' input parameter, and optionally
+            also the 'nonce' input parameter, in the 'get-bootstrapping-data'
+            RPC.  The 'untrusted-connection' parameter informs the
+            bootstrap server that the device does not trust it and may
+            be holding back some additional input parameters from the
+            server (e.g., other input parameters, progress reports, etc.).
+            The 'nonce' input parameter enables the bootstrap server to
+            dynamically obtain an ownership voucher from a MASA, which
+            may be important for devices that do not have a reliable clock.</t>
+            <t>The bootstrap server, seeing the 'untrusted-connection'
+            input parameter, knows that it can either send unsigned
+            redirect information or signed data of any type.  But, in
+            this case, the bootstrap server has the ability to sign
+            data and chooses to respond with signed redirect information,
+            not signed onboarding information as might be expected,
+            securely redirecting the device back to it again.  Not
+            displayed but, if the 'nonce' input parameter was passed,
+            the bootstrap server could dynamically connect to a 
+            download a voucher from the MASA having the nonce value
+            in it.  Details regarding a protocol enabling this integration
+            is outside the scope of this document.</t>
+            <t>Upon validating the signed redirect information, the
+            device establishes a secure connection to the bootstrap
+            server.  Unbeknownst to the device, it is the same bootstrap
+            server it was connected to previously but, because the device
+            is able to authenticate the bootstrap server tis time, it sends its
+            normal 'get-bootstrapping-data' request (i.e., with additional
+            input parameters) as well as its progress reports (not depicted).</t>
+            <t>This time, because the 'untrusted-connection' parameter was
+            not passed, having access to all of the device's input parameters,
+            the bootstrap server returns unsigned onboarding information
+            to the device.</t>
+          </list></t>
+        </section>
         <section title="Workflow Overview" anchor="workflow-overview">
 
           <t>The zero touch solution presented in this document is conceptualized
@@ -2023,67 +2093,6 @@ device   |        |             |            |        |         |
               </list>
             </t>
           </section>
-        </section>
-        <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
-          <t>The following diagram illustrates a sequence of
-          bootstrapping activities that promote an untrusted
-          connection to a bootstrap server to a trusted connection
-          to the same bootstrap server.  This enables a device
-          to limit the amount of information it might disclose
-          to an adversary hosting an untrusted bootstrap server.</t>
-          <t><figure>
-            <artwork><![CDATA[
-                                                      +----------+
-                                                      |Deployment|
-                                                      | Specific |
-+------+                                              |Bootstrap |
-|Device|                                              |  Server  |
-+------+                                              +----------+
-   |                                                        |
-   | 1. "HTTPS" Request ('untrusted-connection')            |
-   |------------------------------------------------------->|
-   | 2. "HTTPS" Response (signed redirect information)      |
-   |<-------------------------------------------------------|
-   |                                                        |
-   |                                                        |
-   | 3. HTTPS Request (os-name=xyz, os-version=123, etc.)   |
-   |------------------------------------------------------->|
-   | 4. HTTPS Response (unsigned onboarding information     |
-   |<-------------------------------------------------------|
-   |                                                        |
-]]></artwork>
-          </figure></t>
-          <t>The interactions in the above diagram are described below.</t>
-          <t><list style="numbers">
-            <t>The device initiates an untrusted connection to a bootstrap
-            server, as is indicated by putting "HTTPS" in double quotes
-            above.  It is still an HTTPS connection, but the device is
-            unable to authenticate the bootstrap server's TLS certificate.
-            Because the device is unable to trust the bootstrap server,
-            it purposely only sends the 'untrusted-connection' input
-            parameter to the 'get-bootstrapping-data' RPC, informing the
-            bootstrap server that it doesn't trust it and may be holding
-            back some information from the server (e.g., other input
-            parameters, progress reports, etc.).</t>
-            <t>The bootstrap server, seeing the 'untrusted-connection'
-            input parameters, knows that it can either send unsigned
-            redirect information or signed data of any type.  But, in
-            this case, the bootstrap server has the ability to sign
-            data and chooses to respond with signed redirect information,
-            not signed onboarding information as might be expected,
-            securely redirecting the device back to it again.</t>
-            <t>Upon validating the signed redirect information, the
-            device establishes a secure connection to the bootstrap
-            server.  Unbeknownst to the device, it is the same bootstrap
-            server it was connected to previously but, because the device
-            is able to authenticate the bootstrap server tis time, it sends its
-            normal 'get-bootstrapping-data' request (i.e., with additional
-            input parameters) as well as its progress reports (not depicted).</t>
-            <t>This time, because the 'untrusted-connection' parameter was
-            not passed, having access to all of the device's input parameters,
-            the bootstrap server returns unsigned onboarding information
-            to the device.</t>
-          </list></t>
         </section>
         <section title="Change Log">
           <section title="ID to 00">
