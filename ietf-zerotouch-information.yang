@@ -57,7 +57,7 @@ module ietf-zerotouch-information {
 
   identity hash-algorithm {
     description 
-      "A base identity for hash algorith verification";
+      "A base identity for hash algorithm verification";
   }
 
   identity sha-256 {
@@ -122,27 +122,25 @@ module ietf-zerotouch-information {
           leaf trust-anchor {
             type cms;
             description
-             "A CMS structure that MUST contain the chain of X.509
-              certificates needed to authenticate the TLS certificate
-              presented by this bootstrap server.  In all cases, the
-              chain MUST include a self-signed root certificate.
-              In the case where the root certificate is itself the
-              issuer of the bootstrap server's TLS certificate, only
-              one X.509 certificate is present.  If needed by the
-              device, this CMS structure MAY also contain suitably
-              fresh CRL and/or OCSP Responses with which the device
-              can use to verify the revocation status of the
-              certificates.
-     
-              X.509 certificates and CRLs are described in RFC 5280.
-              OCSP Responses are described in RFC 6960.";
+              "A CMS structure that MUST contain the chain of
+               X.509 certificates needed to authenticate the TLS
+               certificate presented by this bootstrap server.
+               In all cases, the chain MUST include a self-signed
+               root certificate.  In the case where the root
+               certificate is itself the issuer of the bootstrap
+               server's TLS certificate, only one X.509 certificate
+               is present.  If needed by the device, this CMS
+               structure MAY also contain suitably fresh revocation
+               objects with which the device can verify the
+               revocation status of the certificates.
+
+               This CMS encodes the degenerate form of the SignedData
+               structure that is commonly used to disseminate X.509
+               certificates and revocation objects.";
             reference
-             "RFC 5280:
-                Internet X.509 Public Key Infrastructure Certificate
-                and Certificate Revocation List (CRL) Profile.
-              RFC 6960:
-                X.509 Internet Public Key Infrastructure Online
-                Certificate Status Protocol - OCSP.";
+              "RFC 5280:
+                 Internet X.509 Public Key Infrastructure Certificate
+                 and Certificate Revocation List (CRL) Profile.";
           }
         }
       }
