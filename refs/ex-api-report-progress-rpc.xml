@@ -3,18 +3,10 @@
   <progress-type>bootstrap-complete</progress-type>
   <message>example message</message>
   <ssh-host-keys>
-    <ssh-host-key>
-      <format>ssh-rsa</format>
-      <key-data>base64encodedvalue==</key-data>
-    </ssh-host-key>
-    <ssh-host-key>
-      <format>ssh-dss</format>
-      <key-data>base64encodedvalue==</key-data>
-    </ssh-host-key>
+    <ssh-host-key>base64encodedvalue==</ssh-host-key>
+    <ssh-host-key>base64encodedvalue2=</ssh-host-key>
   </ssh-host-keys>
-  <trust-anchors>
-    <trust-anchor>
-      <certificate>base64encodedvalue==</certificate>
-    </trust-anchor>
-  </trust-anchors>
+  <trust-anchor-certs>
+    <trust-anchor-cert>base64encodedvalue==</trust-anchor-cert>
+  </trust-anchor-certs>
 </input>

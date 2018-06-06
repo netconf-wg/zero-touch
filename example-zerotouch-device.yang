@@ -7,42 +7,41 @@ module example-zerotouch-device {
     prefix inet;
     reference "RFC 6991: Common YANG Data Types";
   }
-  import ietf-keystore {
-    prefix ks;
-    revision-date 2017-10-30;
+
+  import ietf-crypto-types {
+    prefix ct;
+    revision-date 2018-06-04;
     description
-     "This revision is defined in draft-ietf-netconf-keystore-04.";
+     "This revision is defined in the -00 version of
+      draft-ietf-netconf-crypto-types";
     reference
-     "I-D.ietf-netconf-keystore:
-        YANG Data Model for a Keystore Mechanism";
+     "draft-ietf-netconf-crypto-types:
+        Common YANG Data Types for Cryptography";
+  }
+
+  import ietf-trust-anchors {
+    prefix ta;
+    revision-date 2018-06-04;
+    description
+     "This revision is defined in -00 version of
+      draft-ietf-netconf-trust-anchors.";
+    reference
+     "draft-ietf-netconf-trust-anchors:
+        YANG Data Model for Global Trust Anchors";
   }
 
   organization
-    "IETF NETCONF (Network Configuration) Working Group";
+    "Example Corporation";
 
   contact
-    "WG Web:   <http://tools.ietf.org/wg/netconf/>
-     WG List:  <mailto:netconf@ietf.org>
-     Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
+    "Author: Bootstrap Admin <mailto:admin@example.com>";
 
   description
-   "This module defines a data model to enable zerotouch 
-    bootstrapping and discover what parameters are used.
-    This module assumes the use of an IDevID certificate,
-    as opposed to any other client certificate, or the
-    use of an HTTP-based client authentication scheme.
-
-    Copyright (c) 2018 IETF Trust and the persons identified as 
-    authors of the code. All rights reserved.
-
-    Redistribution and use in source and binary forms, with or 
-    without modification, is permitted pursuant to, and subject
-    to the license terms contained in, the Simplified BSD License
-    set forth in Section 4.c of the IETF Trust's Legal Provisions
-    Relating to IETF Documents (http://trustee.ietf.org/license-info)
-
-    This version of this YANG module is part of RFC XXXX; see the
-    RFC itself for full legal notices.";
+    "This module defines a data model to enable zerotouch 
+     bootstrapping and discover what parameters are used.
+     This module assumes the use of an IDevID certificate,
+     as opposed to any other client certificate, or the
+     use of an HTTP-based client authentication scheme.";
 
   revision YYYY-MM-DD {
     description
@@ -63,24 +62,6 @@ module example-zerotouch-device {
       "The device supports bootstrapping off signed data.";
   }
 
-  // typedefs
-
-  typedef cms {
-    type binary;
-    description
-      "A CMS structure, as specified in RFC 5652, encoded using
-       ASN.1 distinguished encoding rules (DER), as specified in
-       ITU-T X.690.";
-    reference
-      "RFC 5652:
-         Cryptographic Message Syntax (CMS)
-       ITU-T X.690:
-         Information technology – ASN.1 encoding rules:
-         Specification of Basic Encoding Rules (BER), 
-         Canonical Encoding Rules (CER) and Distinguished
-         Encoding Rules (DER).";
-  }
-
   // protocol accessible nodes
 
   container zerotouch {
@@ -97,24 +78,17 @@ module example-zerotouch-device {
     }
     leaf idevid-certificate {
       if-feature bootstrap-servers;
-      type cms;
+      type ct:end-entity-cert-cms;
       config false;
       description
-        "An CMS SignedData structure, as specified by Section 5 of
-         RFC 5652.  This is the degenerate form of the SignedData
-         structure, whereby there are no signers, that is commonly
-         used to disseminate certificates.
-
-         This CMS structure contains the IEEE 802.1AR-2009
+        "This CMS structure contains the IEEE 802.1AR-2009
          IDevID certificate itself, and all intermediate
          certificates leading up to, and optionally including,
          the manufacturer's well-known trust anchor certificate
          for IDevID certificates.  The well-known trust anchor
          does not have to be a self-signed certificate.";
       reference
-        "RFC 5652:
-           Cryptographic Message Syntax (CMS)
-         IEEE 802.1AR-2009:
+        "IEEE 802.1AR-2009:
            IEEE Standard for Local and metropolitan area
            networks - Secure Device Identity.";
     }
@@ -147,9 +121,7 @@ module example-zerotouch-device {
     }
     leaf bootstrap-server-pinned-certificates {
       if-feature bootstrap-servers;
-      type leafref {
-        path "/ks:keystore/ks:pinned-certificates/ks:name";
-      }
+      type ta:pinned-certificates-ref;
       config false;
       description
         "A reference to a list of pinned certificate authority (CA)
@@ -158,9 +130,7 @@ module example-zerotouch-device {
     }
     leaf voucher-pinned-certificates {
       if-feature signed-data;
-      type leafref {
-        path "/ks:keystore/ks:pinned-certificates/ks:name";
-      }
+      type ta:pinned-certificates-ref;
       config false;
       description
         "A reference to a list of pinned certificate authority (CA)

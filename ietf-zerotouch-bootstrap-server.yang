@@ -123,9 +123,10 @@ module ietf-zerotouch-bootstrap-server {
            an accurate clock, as then the bootstrap server
            can dynamically obtain from the manufacturer a
            voucher with the nonce value in it, as described
-           in I-D.ietf-anima-voucher.";
+           in RFC 8366.";
         reference
-          "RFC ZZZZ: Voucher Profile for Bootstrapping Protocols.";
+          "RFC 8366:
+             A Voucher Artifact for Bootstrapping Protocols";
       }
     }
     output {
@@ -233,21 +234,17 @@ module ietf-zerotouch-bootstrap-server {
           }
           enum "pre-script-warning" {
             description
-              "Indicates that the device obtained a greater than
-               zero exit status code from the script when it was
-               executed.  The 'message' node below SHOULD indicate
-               both the resulting exit status code, as well as 
-               capture any stdout/stderr messages the script may
-               have produced.";
+              "Indicates that the device obtained a warning from the
+               'pre-configuration-script' when it was executed.  The
+               'message' node below SHOULD capture any output the
+               script produces.";
           }
           enum "pre-script-error" {
             description
-              "Indicates that the device obtained a less than
-               zero exit status code from the script when it was
-               executed.  The 'message' node below SHOULD indicate
-               both the resulting exit status code, as well as
-               capture any stdout/stderr messages the script may
-               have produced.  This progress type also indicates
+              "Indicates that the device obtained an error from the
+               'pre-configuration-script' when it was executed. The
+               'message' node below SHOULD capture any output the
+               script produces.  This progress type also indicates
                that the device has abandoned trying to bootstrap
                off this bootstrap server.";
           }
@@ -269,21 +266,17 @@ module ietf-zerotouch-bootstrap-server {
           }
           enum "post-script-warning" {
             description
-              "Indicates that the device obtained a greater than
-               zero exit status code from the script when it was
-               executed.  The 'message' node below SHOULD indicate
-               both the resulting exit status code, as well as 
-               capture any stdout/stderr messages the script may
-               have produced.";
+              "Indicates that the device obtained a warning from the
+               'post-configuration-script' when it was executed. The
+               'message' node below SHOULD capture any output the
+               script produces.";
           }
           enum "post-script-error" {
             description
-              "Indicates that the device obtained a less than
-               zero exit status code from the script when it was
-               executed.  The 'message' node below SHOULD indicate
-               both the resulting exit status code, as well as
-               capture any stdout/stderr messages the script may
-               have produced.  This progress type also indicates
+              "Indicates that the device obtained an error from the
+               'post-configuration-script' when it was executed. The
+               'message' node below SHOULD capture any output the
+               script produces.  This progress type also indicates
                that the device has abandoned trying to bootstrap
                off this bootstrap server.";
           }
@@ -300,8 +293,8 @@ module ietf-zerotouch-bootstrap-server {
           enum "informational" {
             description
               "Indicates any additional information not captured
-               by any of the other progress types. For instance, a
-               message indicating that the device is about to 
+               by any of the other progress types. For instance,
+               a message indicating that the device is about to 
                reboot after having installed a boot-image could
                be provided.  The 'message' node below SHOULD
                contain information that the manufacturer thinks
@@ -327,33 +320,21 @@ module ietf-zerotouch-bootstrap-server {
           "A list of trust anchor certificates an NMS may use to
            authenticate subsequent SSH-based connections to this
            device (e.g., netconf-ssh, netconf-ch-ssh).";
-        list ssh-host-key {
+        leaf-list ssh-host-key {
+          type binary;
           description
-            "An SSH host-key.";
-          leaf format {
-            type enumeration {
-              enum "ssh-dss" {
-                description
-                  "The SSH host key is a ssh-dss based key.";
-              }
-              enum "ssh-rsa" {
-                description
-                  "The SSH host key is a ssh-rsa based key.";
-              }
-            }
-            mandatory true;
-            description
-              "The format of the SSH host key.";
-          }
-          leaf key-data {
-            type string;
-            mandatory true;
-            description
-              "The key data for the SSH host key";
-          }
+            "The binary public key data for this SSH key, as
+             specified by RFC 4253, Section 6.6, i.e.:
+        
+               string    certificate or public key format
+                         identifier
+               byte[n]   key/certificate data.";
+          reference
+            "RFC 4253: The Secure Shell (SSH) Transport Layer
+                       Protocol";
         }
       }
-      container trust-anchors {
+      container trust-anchor-certs {
         when "../progress-type = 'bootstrap-complete'" {
           description
             "Trust anchors are only sent when the progress type
@@ -369,28 +350,38 @@ module ietf-zerotouch-bootstrap-server {
         reference
           "RFC 6187: 
              X.509v3 Certificates for Secure Shell Authentication.";
-        list trust-anchor {
+        leaf-list trust-anchor-cert {
+          type cms;
           description
-            "A trust anchor.";
-          leaf certificate {
-            type cms;
-            mandatory true;
-            description
-              "An X.509 v3 certificate structure, as specified
-               by Section 4 in RFC 5280, encoded using ASN.1
-               distinguished encoding rules (DER), as specified
-               in ITU-T X.690.";
-            reference
-              "RFC 5280:
-                 Internet X.509 Public Key Infrastructure
-                 Certificate and Certificate Revocation List (CRL)
-                 Profile.
-               ITU-T X.690:
-                  Information technology – ASN.1 encoding rules:
-                  Specification of Basic Encoding Rules (BER), 
-                  Canonical Encoding Rules (CER) and Distinguished
-                  Encoding Rules (DER).";
-          }
+           "A CMS structure whose top-most content type MUST be the
+            signed-data content type, as described by Section 5 in
+            RFC 5652.
+
+            The CMS MUST contain the chain of X.509 certificates
+            needed to authenticate the certificate presented by
+            the device.
+     
+            The CMS MUST contain only a single chain of
+            certificates.  The device's end-entity certificate
+            MUST only authenticate to last intermediate CA
+            certificate listed in the chain.
+     
+            In all cases, the chain MUST include a self-signed
+            root certificate.  In the case where the root
+            certificate is itself the issuer of the device's
+            end-entity certificate, only one certificate is
+            present.
+     
+            This CMS encodes the degenerate form of the SignedData
+            structure that is commonly used to disseminate X.509
+            certificates and revocation objects (RFC 5280).";
+          reference
+            "RFC 5280:
+               Internet X.509 Public Key Infrastructure
+               Certificate and Certificate Revocation List (CRL)
+               Profile.
+             RFC 5652:
+               Cryptographic Message Syntax (CMS)";
         }
       }
     }

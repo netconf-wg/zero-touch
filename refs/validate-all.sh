@@ -137,7 +137,7 @@ printf "okay.\n"
 
 
 echo
-echo "Tranisitioning to testing ietf-zerotouch-information.yang examples"
+echo "Transitioning to testing ietf-zerotouch-information.yang examples"
 echo
 
 # first, we need to create a version of the YANG module without the "yang-data"
@@ -205,7 +205,7 @@ echo "Tranisitioning to testing example-zerotouch-device.yang examples"
 echo
 
 printf "validating ex-api-device-model.xml..."
-response=`yanglint -m -p ../ -s ../example-zerotouch-device\@*.yang ex-api-device-model.xml ../../keystore/refs/ex-keystore.xml 2>&1`
+response=`yanglint -m -s -p ../ ../example-zerotouch-device\@*.yang ./ietf-origin.yang ex-api-device-model.xml ../../trust-anchors/refs/ex-trust-anchors.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"

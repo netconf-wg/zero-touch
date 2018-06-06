@@ -52,7 +52,7 @@
             commit an initial configuration, and execute arbitrary scripts to
             address auxiliary needs.  The updated device is subsequently able
             to establish secure connections with other systems.  For instance,
-            a device may establish NETCONF [RFC6241] and/or RESTCONF [RFC8040]
+            a device may establish NETCONF (RFC 6241) and/or RESTCONF (RFC 8040)
             connections with deployment-specific network management systems.</t>
         </abstract>
         <note title="Editorial Note (To be removed by RFC Editor)">
@@ -72,18 +72,12 @@
           progress.  Please apply the following replacements:
             <list  style="symbols">
               <t><spanx style="verb">XXXX</spanx> --&gt; the assigned numerical RFC value for this draft</t>
-              <t><spanx style="verb">ZZZZ</spanx> --&gt; the assigned numerical RFC value for <xref target="I-D.ietf-anima-voucher"/></t>
             </list>
           </t>
           <t>Artwork in this document contains placeholder values for the date of publication of this
           draft.  Please apply the following replacement:
             <list  style="symbols">
               <t><spanx style="verb">YYYY-MM-DD</spanx> --&gt; the publication date of this draft</t>
-            </list>
-          </t>
-          <t>Please update the following informative references to reflect its final RFC assignment:
-            <list style="symbols">
-              <t>I-D.ietf-netmod-yang-tree-diagrams</t>
             </list>
           </t>
           <t>The following one Appendix section is to be removed prior to publication:
@@ -213,7 +207,7 @@
 
               <t hangText="Ownership Voucher:">The term "ownership voucher" is used in
               this document to represent the voucher artifact defined in <xref
-              target="I-D.ietf-anima-voucher"/>.  The ownership voucher is used to
+              target="RFC8366"/>.  The ownership voucher is used to
               assign a device to an owner.  The ownership voucher is one of
               the three bootstrapping artifacts described in <xref target="artifacts"/>.</t>
 
@@ -255,7 +249,7 @@
 
         <section title="Tree Diagrams">
           <t>Tree diagrams used in this document follow the notation
-          defined in <xref target="I-D.ietf-netmod-yang-tree-diagrams"/>.</t>
+          defined in <xref target="RFC8340"/>.</t>
         </section>
       </section>  <!-- end Introduction -->
 
@@ -349,7 +343,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>The zero touch information artifact is a CMS structure, as described
           in <xref target="RFC5652"/>, encoded using ASN.1 distinguished encoding
-          rules (DER), as specified in ITU-T X.690 <xref target="ITU.X690.1994"/>.
+          rules (DER), as specified in ITU-T X.690 <xref target="ITU.X690.2015"/>.
           The CMS structure MUST contain content conforming to the
           YANG module specified in <xref target="info-yang-module"/>.</t>
 
@@ -379,7 +373,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>When the zero touch information artifact is signed and encrypted,
           as it might be when communicated over untrusted channels and 
-          privacy is important, the CMS's structure's top-most content type
+          privacy is important, the CMS structure's top-most content type
           MUST be the OID id-envelopedData (1.2.840.113549.1.7.3), and 
           the encryptedContentInfo's content type MUST be the OID id-signedData
           (1.2.840.113549.1.7.2), whose eContentType MUST be one of the OIDs
@@ -411,7 +405,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The owner certificate artifact is formally a CMS structure, as
           specified by <xref target="RFC5652"/>, encoded using ASN.1
           distinguished encoding rules (DER), as specified in ITU-T X.690
-          <xref target="ITU.X690.1994"/>.</t>
+          <xref target="ITU.X690.2015"/>.</t>
 
           <t>The owner certificate CMS structure MUST contain the owner
           certificate itself, as well as all intermediate certificates leading
@@ -457,7 +451,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           hence also the pinned-domain-cert.</t>
 
           <t>When unencrypted, the ownership voucher artifact is as defined
-          in <xref target="I-D.ietf-anima-voucher"/>.  As described, it is
+          in <xref target="RFC8366"/>.  As described, it is
           a CMS structure whose top-most content type MUST be the OID 
           id-signedData (1.2.840.113549.1.7.2), whose eContentType MUST
           be OID id-ct-animaJSONVoucher (1.2.840.113549.1.9.16.1), or the
@@ -1017,7 +1011,7 @@ with revocations                         revocations     revocations
           MUST verify the revocation status of the certificate chain used to sign
           the owner certificate and, if the revocation status is not attainable or
           if it is determined that a certificate has been revoked, the device
-          MUST not validate the owner certificate.</t>
+          MUST NOT validate the owner certificate.</t>
           <t>Finally the device MUST verify the zero touch information
           artifact was signed by the validated owner certificate.</t>
           <t>If any of these steps fail, the device MUST invalidate the
@@ -1145,7 +1139,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
           (<xref target="onboarding-information"/>) can be encoded using JSON.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
+INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
 ]]></artwork>
           </figure>
         </section>
@@ -1154,11 +1148,11 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json,68)
           <t>The zero touch information data model is defined
           by the YANG module presented in this section.</t>
 
-          <t>Note: the module defined herein uses data types defined
-          in <xref target="RFC5280"/>, <xref target="RFC6234"/>, and
-          <xref target="RFC6991"/>, and an extension statement from
+          <t>This module uses data types defined in <xref target="RFC5280"/>,
+          <xref target="RFC5652"/>, <xref target="RFC6234"/>, and
+          <xref target="RFC6991"/>, an extension statement from
           <xref target="I-D.ietf-netmod-yang-data-ext"/>, and an
-          encoding defined in <xref target="ITU.X690.1994"/>.</t>
+          encoding defined in <xref target="ITU.X690.2015"/>.</t>
 
           <figure>
             <artwork><![CDATA[
@@ -1287,10 +1281,10 @@ Server: example-server
           <t>The bootstrap server's device-facing API is normatively defined
           by the YANG module defined in this section.</t>
 
-          <t>Note: the module defined herein uses data types
-          defined in <xref target="RFC5652"/>, <xref target="RFC5280"/>,
-          <xref target="RFC6960"/>, and <xref target="I-D.ietf-anima-voucher"/>,
-          and uses an encoding defined in <xref target="ITU.X690.1994"/>.</t>
+          <t>This module uses data types defined in <xref target="RFC4253"/>,
+          <xref target="RFC5652"/>, <xref target="RFC5280"/>,
+          <xref target="RFC6960"/>, and <xref target="RFC8366"/>, and uses
+          an encoding defined in <xref target="ITU.X690.2015"/>.</t>
           <figure>
             <artwork><![CDATA[
 <CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
@@ -1299,57 +1293,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 ]]></artwork>
           </figure>
         </section> <!-- YANG Module -->
-
-      </section>
-
-
-
-
-      <section title="The Zero Touch Device Data Model" anchor="device-model">
-
-        <t>This section defines a non-normative data model that 
-        enables the configuration of zerotouch bootstrapping and
-        discovery of what parameters are used by a device's bootstrapping logic.</t>
-
-        <section title="Data Model Overview">
-          <t>The following tree diagram provides an overview for the zerotouch
-          device data model.</t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/example-zerotouch-device-tree.txt)
-]]></artwork>
-          </figure>
-          <t>In the above diagram, notice that there is only one configurable node
-          'enabled'.  The expectation is that this node would be set to 'true' in
-          device's factory default configuration and that it would either be set
-          to 'false' or deleted when the zerotouch bootstrapping is longer needed.</t>
-        </section>
-
-        <section title="Example Usage" anchor="device-example">
-          <t>Following is an instance example for this data model.</t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml,68)
-]]></artwork>
-          </figure>
-        </section>  <!-- Example Usage -->
-
-        <section title="YANG Module" anchor="device-yang-module">
-          <t>The device model is defined by the YANG module
-          defined in this section.</t>
-
-          <t>Note: the module defined herein uses data types
-          defined in <xref target="RFC5652"/>, <xref target="RFC6991"/>,
-          and <xref target="I-D.ietf-netconf-keystore"/>, and uses an
-          encoding defined in <xref target="ITU.X690.1994"/>.</t>
-          <figure>
-            <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
-]]></artwork>
-          </figure>
-        </section> <!-- YANG Module -->
-
-      </section>
+      </section> <!-- The Zero Touch Bootstrap Server API -->
 
       <section title="DHCP Zero Touch Options" anchor="dhcp-options">
 
@@ -1736,91 +1680,125 @@ Reference: [RFCXXXX]
         </section>
       </section>
 
-      <section title="Acknowledgements">
-        <t>The authors would like to thank for following for
-        lively discussions on list and in the halls (ordered
-        by last name):
-        David Harrington,
-        Michael Behringer,
-        Dean Bogdanovic,
-        Martin Bjorklund,
-        Joe Clarke,
-        Toerless Eckert,
-        Stephen Farrell,
-        Stephen Hanna,
-        Wes Hardaker,
-        Radek Krejci,
-        Russ Mundy,
-        Reinaldo Penno,
-        Randy Presuhn,
-        Max Pritikin,
-        Michael Richardson,
-        Phil Shafer,
-        Juergen Schoenwaelder.</t>
-
-        <t>Special thanks goes to Steve Hanna, Russ Mundy, and
-        Wes Hardaker for brainstorming the original I-D's solution
-        during the IETF 87 meeting in Berlin.</t>
-      </section>
     </middle>
 
     <back>
-        <references title="Normative References">
-          <?rfc include="reference.RFC.1035.xml"?>
-          <?rfc include="reference.RFC.2119.xml"?>
-          <?rfc include="reference.RFC.5652.xml"?>
-          <?rfc include="reference.RFC.3315.xml"?>
-          <?rfc include="reference.RFC.3396.xml"?>
-          <?rfc include="reference.RFC.5280.xml"?>
-          <?rfc include="reference.RFC.6020.xml"?>
-          <?rfc include="reference.RFC.6125.xml"?>
-          <?rfc include="reference.RFC.6234.xml"?>
-          <?rfc include="reference.RFC.6762.xml"?>
-          <?rfc include="reference.RFC.6763.xml"?>
-          <?rfc include="reference.RFC.6991.xml"?>
-          <?rfc include="reference.RFC.7227.xml"?>
-          <?rfc include="reference.RFC.7950.xml"?>
-          <?rfc include="reference.RFC.8040.xml"?>
-          <?rfc include="reference.RFC.8174.xml"?>
-          <?rfc include="reference.I-D.ietf-anima-voucher"?>
-          <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
+      <references title="Normative References">
+        <?rfc include="reference.RFC.1035.xml"?>
+        <?rfc include="reference.RFC.2119.xml"?>
+        <?rfc include="reference.RFC.5652.xml"?>
+        <?rfc include="reference.RFC.3315.xml"?>
+        <?rfc include="reference.RFC.3396.xml"?>
+        <?rfc include="reference.RFC.4253.xml"?>
+        <?rfc include="reference.RFC.5280.xml"?>
+        <?rfc include="reference.RFC.6020.xml"?>
+        <?rfc include="reference.RFC.6125.xml"?>
+        <?rfc include="reference.RFC.6234.xml"?>
+        <?rfc include="reference.RFC.6762.xml"?>
+        <?rfc include="reference.RFC.6763.xml"?>
+        <?rfc include="reference.RFC.6991.xml"?>
+        <?rfc include="reference.RFC.7227.xml"?>
+        <?rfc include="reference.RFC.7950.xml"?>
+        <?rfc include="reference.RFC.8040.xml"?>
+        <?rfc include="reference.RFC.8174.xml"?>
+        <?rfc include="reference.RFC.8366.xml"?>
+        <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
 
-          <?rfc include="_reference.ITU.X690.1994.xml"?>
+        <!-- THE FOLLOWING LINE DOESN'T RESOLVE FOR SOME REASON:
+             <?rfc include="_reference.ITU.X690.2015.xml"?> -->
+        <!-- THE FOLLOWING IS COPYIED FROM RFC 8366 -->
+        <reference anchor="ITU.X690.2015" target="https://www.itu.int/rec/T-REC-X.690/">
+          <front>
+            <title>Information Technology - ASN.1 encoding rules: Specification of Basic
+            Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished
+            Encoding Rules (DER)</title>
+            <author>
+              <organization>International Telecommunication Union</organization>
+            </author>
+            <date month="August" year="2015" />
+          </front>
+          <seriesInfo name="ITU-T Recommendation X.690," value="ISO/IEC 8825-1" />
+	</reference>
 
-          <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
-            <front>
-              <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
-              <author fullname="WG802.1 - Higher Layer LAN Protocols Working Group">
-                 <organization>IEEE SA-Standards Board</organization>
-              </author>
-              <date month="December" year="2009"/>
-            </front>
-          </reference>
-        </references>
+        <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
+          <front>
+            <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
+            <author fullname="WG802.1 - Higher Layer LAN Protocols Working Group">
+               <organization>IEEE SA-Standards Board</organization>
+            </author>
+            <date month="December" year="2009"/>
+          </front>
+        </reference>
+      </references>
 
-        <references title="Informative References">
-          <?rfc include="reference.RFC.3688.xml"?>
-          <?rfc include="reference.RFC.5246.xml"?>
-          <?rfc include="reference.RFC.6241.xml"?>
-          <?rfc include="reference.RFC.6242.xml"?>
-          <?rfc include="reference.RFC.6536.xml"?>
-          <?rfc include="reference.RFC.6960.xml"?>
-          <?rfc include="reference.RFC.6698.xml"?>
-          <?rfc include="reference.RFC.8071.xml"?>
-          <?rfc include="reference.I-D.ietf-netmod-yang-tree-diagrams"?>
-          <?rfc include="reference.I-D.ietf-netconf-keystore"?>
-        </references>
+      <references title="Informative References">
+        <?rfc include="reference.RFC.3688.xml"?>
+        <?rfc include="reference.RFC.5246.xml"?>
+        <?rfc include="reference.RFC.6241.xml"?>
+        <?rfc include="reference.RFC.6536.xml"?>
+        <?rfc include="reference.RFC.6960.xml"?>
+        <?rfc include="reference.RFC.6698.xml"?>
+        <?rfc include="reference.RFC.8071.xml"?>
+        <?rfc include="reference.RFC.8340.xml"?>
+        <?rfc include="reference.I-D.ietf-netconf-crypto-types"?>
+        <?rfc include="reference.I-D.ietf-netconf-trust-anchors"?>
+      </references>
 
 
-        <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
-          <t>The following diagram illustrates a sequence of
-          bootstrapping activities that promote an untrusted
-          connection to a bootstrap server to a trusted connection
-          to the same bootstrap server.  This enables a device
-          to limit the amount of information it might disclose
-          to an adversary hosting an untrusted bootstrap server.</t>
-          <t><figure>
+      <section title="The Zero Touch Device Data Model" anchor="device-model">
+
+        <t>This section defines a non-normative data model that 
+        enables the configuration of zerotouch bootstrapping and
+        discovery of what parameters are used by a device's bootstrapping logic.</t>
+
+        <section title="Data Model Overview">
+          <t>The following tree diagram provides an overview for the zerotouch
+          device data model.</t>
+          <figure>
             <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/example-zerotouch-device-tree.txt)
+]]></artwork>
+          </figure>
+          <t>In the above diagram, notice that there is only one configurable node
+          'enabled'.  The expectation is that this node would be set to 'true' in
+          device's factory default configuration and that it would either be set
+          to 'false' or deleted when the zerotouch bootstrapping is longer needed.</t>
+        </section>
+
+        <section title="Example Usage" anchor="device-example">
+          <t>Following is an instance example for this data model.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml)
+]]></artwork>
+          </figure>
+        </section>  <!-- Example Usage -->
+
+        <section title="YANG Module" anchor="device-yang-module">
+          <t>The device model is defined by the YANG module
+          defined in this section.</t>
+
+          <t>This module uses data types defined in <xref target="RFC6991"/>,
+          <xref target="I-D.ietf-netconf-crypto-types"/>, and
+          <xref target="I-D.ietf-netconf-trust-anchors"/>.</t>
+          <figure>
+            <artwork><![CDATA[
+INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
+]]></artwork>
+          </figure>
+        </section> <!-- YANG Module -->
+      </section> <!-- The Zero Touch Device Data Model -->
+
+
+      <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
+        <t>The following diagram illustrates a sequence of
+        bootstrapping activities that promote an untrusted
+        connection to a bootstrap server to a trusted connection
+        to the same bootstrap server.  This enables a device
+        to limit the amount of information it might disclose
+        to an adversary hosting an untrusted bootstrap server.</t>
+        <t><figure>
+          <artwork><![CDATA[
                                                       +----------+
                                                       |Deployment|
                                                       | Specific |
@@ -1840,63 +1818,63 @@ Reference: [RFCXXXX]
    |<-------------------------------------------------------|
    |                                                        |
 ]]></artwork>
-          </figure></t>
-          <t>The interactions in the above diagram are described below.</t>
-          <t><list style="numbers">
-            <t>The device initiates an untrusted connection to a bootstrap
-            server, as is indicated by putting "HTTPS" in double quotes
-            above.  It is still an HTTPS connection, but the device is
-            unable to authenticate the bootstrap server's TLS certificate.
-            Because the device is unable to trust the bootstrap server, it
-            sends the 'untrusted-connection' input parameter, and optionally
-            also the 'nonce' input parameter, in the 'get-bootstrapping-data'
-            RPC.  The 'untrusted-connection' parameter informs the
-            bootstrap server that the device does not trust it and may
-            be holding back some additional input parameters from the
-            server (e.g., other input parameters, progress reports, etc.).
-            The 'nonce' input parameter enables the bootstrap server to
-            dynamically obtain an ownership voucher from a MASA, which
-            may be important for devices that do not have a reliable clock.</t>
-            <t>The bootstrap server, seeing the 'untrusted-connection'
-            input parameter, knows that it can either send unsigned
-            redirect information or signed data of any type.  But, in
-            this case, the bootstrap server has the ability to sign
-            data and chooses to respond with signed redirect information,
-            not signed onboarding information as might be expected,
-            securely redirecting the device back to it again.  Not
-            displayed but, if the 'nonce' input parameter was passed,
-            the bootstrap server could dynamically connect to a 
-            download a voucher from the MASA having the nonce value
-            in it.  Details regarding a protocol enabling this integration
-            is outside the scope of this document.</t>
-            <t>Upon validating the signed redirect information, the
-            device establishes a secure connection to the bootstrap
-            server.  Unbeknownst to the device, it is the same bootstrap
-            server it was connected to previously but, because the device
-            is able to authenticate the bootstrap server tis time, it sends its
-            normal 'get-bootstrapping-data' request (i.e., with additional
-            input parameters) as well as its progress reports (not depicted).</t>
-            <t>This time, because the 'untrusted-connection' parameter was
-            not passed, having access to all of the device's input parameters,
-            the bootstrap server returns unsigned onboarding information
-            to the device.</t>
-          </list></t>
-        </section>
-        <section title="Workflow Overview" anchor="workflow-overview">
+        </figure></t>
+        <t>The interactions in the above diagram are described below.</t>
+        <t><list style="numbers">
+          <t>The device initiates an untrusted connection to a bootstrap
+          server, as is indicated by putting "HTTPS" in double quotes
+          above.  It is still an HTTPS connection, but the device is
+          unable to authenticate the bootstrap server's TLS certificate.
+          Because the device is unable to trust the bootstrap server, it
+          sends the 'untrusted-connection' input parameter, and optionally
+          also the 'nonce' input parameter, in the 'get-bootstrapping-data'
+          RPC.  The 'untrusted-connection' parameter informs the
+          bootstrap server that the device does not trust it and may
+          be holding back some additional input parameters from the
+          server (e.g., other input parameters, progress reports, etc.).
+          The 'nonce' input parameter enables the bootstrap server to
+          dynamically obtain an ownership voucher from a MASA, which
+          may be important for devices that do not have a reliable clock.</t>
+          <t>The bootstrap server, seeing the 'untrusted-connection'
+          input parameter, knows that it can either send unsigned
+          redirect information or signed data of any type.  But, in
+          this case, the bootstrap server has the ability to sign
+          data and chooses to respond with signed redirect information,
+          not signed onboarding information as might be expected,
+          securely redirecting the device back to it again.  Not
+          displayed but, if the 'nonce' input parameter was passed,
+          the bootstrap server could dynamically connect to a 
+          download a voucher from the MASA having the nonce value
+          in it.  Details regarding a protocol enabling this integration
+          is outside the scope of this document.</t>
+          <t>Upon validating the signed redirect information, the
+          device establishes a secure connection to the bootstrap
+          server.  Unbeknownst to the device, it is the same bootstrap
+          server it was connected to previously but, because the device
+          is able to authenticate the bootstrap server tis time, it sends its
+          normal 'get-bootstrapping-data' request (i.e., with additional
+          input parameters) as well as its progress reports (not depicted).</t>
+          <t>This time, because the 'untrusted-connection' parameter was
+          not passed, having access to all of the device's input parameters,
+          the bootstrap server returns unsigned onboarding information
+          to the device.</t>
+        </list></t>
+      </section>
+      <section title="Workflow Overview" anchor="workflow-overview">
 
-          <t>The zero touch solution presented in this document is conceptualized
-          to be composed of the non-normative workflows described in this section.
-          Implementation details are expected to vary.  Each diagram is followed
-          by a detailed description of the steps presented in the diagram, with
-          further explanation on how implementations may vary.</t>
+        <t>The zero touch solution presented in this document is conceptualized
+        to be composed of the non-normative workflows described in this section.
+        Implementation details are expected to vary.  Each diagram is followed
+        by a detailed description of the steps presented in the diagram, with
+        further explanation on how implementations may vary.</t>
 
-          <section title="Enrollment and Ordering Devices" anchor="onboarding-and-ordering">
-            <t>The following diagram illustrates key interactions that may occur from when a
-            prospective owner enrolls in a manufacturer's zero touch program to when the
-            manufacturer ships devices for an order placed by the prospective owner.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
+        <section title="Enrollment and Ordering Devices" anchor="onboarding-and-ordering">
+          <t>The following diagram illustrates key interactions that may occur from when a
+          prospective owner enrolls in a manufacturer's zero touch program to when the
+          manufacturer ships devices for an order placed by the prospective owner.</t>
+          <t>
+            <figure>
+              <artwork><![CDATA[
                                +-----------+
 +------------+                 |Prospective|                    +---+
 |Manufacturer|                 |   Owner   |                    |NMS|
@@ -1933,70 +1911,70 @@ Reference: [RFCXXXX]
       |                              #--------------------------->|
       |                              |                            |
   ]]></artwork>
-              </figure>
-            </t>
-            <t>Each numbered item below corresponds to a numbered item
-            in the diagram above.
-              <list style="numbers">
-                <t>A prospective owner of a manufacturer's devices initiates an
-                enrollment process with the manufacturer.  This process includes
-                the following:
-                <list style="symbols">
-                  <t>Regardless how the prospective owner intends to bootstrap their devices,
-                  they will always obtain from the manufacturer the trust anchor
-                  certificate for the IDevID certificates.  This certificate will
-                  is installed on the prospective owner's NMS so that the NMS can
-                  authenticate the IDevID certificates when they're presented to
-                  subsequent steps.</t>
-                  <t>If the manufacturer hosts an Internet based bootstrap server (e.g., a
-                  redirect server) such as described in <xref target="bootstrap-server"/>,
-                  then credentials necessary to configure the bootstrap server would be
-                  provided to the prospective owner.  If the bootstrap server is
-                  configurable through an API (outside the scope of this document), then
-                  the credentials might be installed on the prospective owner's NMS so
-                  that the NMS can subsequently configure the manufacturer-hosted
-                  bootstrap server directly.</t>
-                </list></t>
-                <t>If the manufacturer's devices are able to validate signed data
-                (<xref target="validating-signed-data"/>), and assuming that the
-                prospective owner's NMS is able to prepare and sign the bootstrapping
-                data itself, the prospective owner's NMS might set a trust anchor
-                certificate onto the manufacturer's bootstrap server, using the
-                credentials provided in the previous step.  This certificate is the
-                trust anchor certificate that the prospective owner would like the
-                manufacturer to place into the ownership vouchers it generates, thereby
-                enabling devices to trust the owner's owner certificate.  How this trust
-                anchor certificate is used to enable devices to validate signed bootstrapping
-                data is described in <xref target="validating-signed-data"/>.</t>
-                <t>Some time later, the prospective owner places an order
-                with the manufacturer, perhaps with a special
-                flag checked for zero touch handling.  At this time, or
-                perhaps before placing the order, the owner may model
-                the devices in their NMS, creating virtual objects for the
-                devices with no real-world device associations.  For instance
-                the model can be used to simulate the device's location in the
-                network and the configuration it should have when fully
-                operational.</t>
-                <t>When the manufacturer fulfills the order, shipping
-                the devices to their intended locations, they may notify the owner
-                of the devices's serial numbers and shipping destinations, which
-                the owner may use to stage the network for when the devices power
-                on.  Additionally,  the manufacturer may send one or more ownership
-                vouchers, cryptographically assigning ownership of those devices to
-                the owner.  The owner may set this information on their NMS, perhaps
-                binding specific modeled devices to the serial numbers and ownership
-                vouchers.</t>
-              </list>
-            </t>
-          </section>
+            </figure>
+          </t>
+          <t>Each numbered item below corresponds to a numbered item
+          in the diagram above.
+            <list style="numbers">
+              <t>A prospective owner of a manufacturer's devices initiates an
+              enrollment process with the manufacturer.  This process includes
+              the following:
+              <list style="symbols">
+                <t>Regardless how the prospective owner intends to bootstrap their devices,
+                they will always obtain from the manufacturer the trust anchor
+                certificate for the IDevID certificates.  This certificate will
+                is installed on the prospective owner's NMS so that the NMS can
+                authenticate the IDevID certificates when they're presented to
+                subsequent steps.</t>
+                <t>If the manufacturer hosts an Internet based bootstrap server (e.g., a
+                redirect server) such as described in <xref target="bootstrap-server"/>,
+                then credentials necessary to configure the bootstrap server would be
+                provided to the prospective owner.  If the bootstrap server is
+                configurable through an API (outside the scope of this document), then
+                the credentials might be installed on the prospective owner's NMS so
+                that the NMS can subsequently configure the manufacturer-hosted
+                bootstrap server directly.</t>
+              </list></t>
+              <t>If the manufacturer's devices are able to validate signed data
+              (<xref target="validating-signed-data"/>), and assuming that the
+              prospective owner's NMS is able to prepare and sign the bootstrapping
+              data itself, the prospective owner's NMS might set a trust anchor
+              certificate onto the manufacturer's bootstrap server, using the
+              credentials provided in the previous step.  This certificate is the
+              trust anchor certificate that the prospective owner would like the
+              manufacturer to place into the ownership vouchers it generates, thereby
+              enabling devices to trust the owner's owner certificate.  How this trust
+              anchor certificate is used to enable devices to validate signed bootstrapping
+              data is described in <xref target="validating-signed-data"/>.</t>
+              <t>Some time later, the prospective owner places an order
+              with the manufacturer, perhaps with a special
+              flag checked for zero touch handling.  At this time, or
+              perhaps before placing the order, the owner may model
+              the devices in their NMS, creating virtual objects for the
+              devices with no real-world device associations.  For instance
+              the model can be used to simulate the device's location in the
+              network and the configuration it should have when fully
+              operational.</t>
+              <t>When the manufacturer fulfills the order, shipping
+              the devices to their intended locations, they may notify the owner
+              of the devices's serial numbers and shipping destinations, which
+              the owner may use to stage the network for when the devices power
+              on.  Additionally,  the manufacturer may send one or more ownership
+              vouchers, cryptographically assigning ownership of those devices to
+              the owner.  The owner may set this information on their NMS, perhaps
+              binding specific modeled devices to the serial numbers and ownership
+              vouchers.</t>
+            </list>
+          </t>
+        </section>
 
 
-          <section title="Owner Stages the Network for Bootstrap">
-            <t>The following diagram illustrates how an owner might stage the
-            network for bootstrapping devices.</t>
-            <t>
-              <figure>
-                <artwork><![CDATA[
+        <section title="Owner Stages the Network for Bootstrap">
+          <t>The following diagram illustrates how an owner might stage the
+          network for bootstrapping devices.</t>
+          <t>
+            <figure>
+              <artwork><![CDATA[
             +----------+ +------------+
             |Deployment| |Manufacturer| +------+ +------+
             | Specific | |   Hosted   | | Local| | Local| +---------+
@@ -2033,66 +2011,66 @@ device  |        |             |            |        |         |
         |        |             |            |        |         |
         |        |             |            |        |         |
   ]]></artwork>
-              </figure>
-            </t>
+            </figure>
+          </t>
 
-            <t>Each numbered item below corresponds to a numbered item
-            in the diagram above.
-              <list style="numbers">
-                <t>Having previously modeled the devices, including setting their
-                fully operational configurations and associating device serial
-                numbers and (optionally) ownership vouchers, the owner might "activate" one or
-                more modeled devices.  That is, the owner tells the NMS to perform
-                the steps necessary to prepare for when the real-world devices
-                power up and initiate the bootstrapping process.  Note that,
-                in some deployments, this step might be combined with the last step
-                from the previous workflow.  Here it is depicted that an NMS performs
-                the steps, but they may be performed manually or through some other
-                mechanism.</t>
-                <t>If it is desired to use a deployment specific bootstrap server,
-                it must be configured to provide the bootstrapping information for
-                the specific devices.   Configuring the bootstrap server may occur
-                via a programmatic API not defined by this document.  Illustrated
-                here as an external component, the bootstrap server may be
-                implemented as an internal component of the NMS itself.</t>
-                <t>If it is desired to use a manufacturer hosted bootstrap
-                server, it must be configured to provide the bootstrapping information
-                for the specific devices.  The configuration must be either redirect or
-                onboarding information.  That is, either the manufacturer hosted bootstrap
-                server will redirect the device to another bootstrap server, or provide
-                the device with the onboarding information itself.  The types of
-                bootstrapping information the manufacturer hosted bootstrap server
-                supports may vary by implementation; some implementations may only
-                support redirect information, or only support onboarding information,
-                or support both redirect and onboarding information.  Configuring the
-                bootstrap server may occur via a programmatic API not defined by this
-                document.</t>
-                <t>If it is desired to use a DNS server to supply bootstrapping
-                information, a DNS server needs to be configured.  If multicast
-                DNS-SD is desired, then the server must reside on the local network,
-                otherwise the DNS server may reside on a remote network.  Please see
-                <xref target="dns-server"/> for more information about how to
-                configure DNS servers.  Configuring the DNS server may occur via
-                a programmatic API not defined by this document.</t>
-                <t>If it is desired to use a DHCP server to supply bootstrapping
-                data, a DHCP server needs to be configured.  The DHCP server may
-                be accessed directly or via a DHCP relay.  Please see
-                <xref target="dhcp-server"/> for more information about how to
-                configure DHCP servers.  Configuring the DHCP server may occur
-                via a programmatic API not defined by this document.</t>
-                <t>If it is desired to use a removable storage device (e.g., USB flash
-                drive) to supply bootstrapping information, the information would need
-                to be placed onto it.  Please see <xref target="removable-storage"/>
-                for more information about how to configure a removable storage device.</t>
-              </list>
-            </t>
-          </section>
+          <t>Each numbered item below corresponds to a numbered item
+          in the diagram above.
+            <list style="numbers">
+              <t>Having previously modeled the devices, including setting their
+              fully operational configurations and associating device serial
+              numbers and (optionally) ownership vouchers, the owner might "activate" one or
+              more modeled devices.  That is, the owner tells the NMS to perform
+              the steps necessary to prepare for when the real-world devices
+              power up and initiate the bootstrapping process.  Note that,
+              in some deployments, this step might be combined with the last step
+              from the previous workflow.  Here it is depicted that an NMS performs
+              the steps, but they may be performed manually or through some other
+              mechanism.</t>
+              <t>If it is desired to use a deployment specific bootstrap server,
+              it must be configured to provide the bootstrapping information for
+              the specific devices.   Configuring the bootstrap server may occur
+              via a programmatic API not defined by this document.  Illustrated
+              here as an external component, the bootstrap server may be
+              implemented as an internal component of the NMS itself.</t>
+              <t>If it is desired to use a manufacturer hosted bootstrap
+              server, it must be configured to provide the bootstrapping information
+              for the specific devices.  The configuration must be either redirect or
+              onboarding information.  That is, either the manufacturer hosted bootstrap
+              server will redirect the device to another bootstrap server, or provide
+              the device with the onboarding information itself.  The types of
+              bootstrapping information the manufacturer hosted bootstrap server
+              supports may vary by implementation; some implementations may only
+              support redirect information, or only support onboarding information,
+              or support both redirect and onboarding information.  Configuring the
+              bootstrap server may occur via a programmatic API not defined by this
+              document.</t>
+              <t>If it is desired to use a DNS server to supply bootstrapping
+              information, a DNS server needs to be configured.  If multicast
+              DNS-SD is desired, then the server must reside on the local network,
+              otherwise the DNS server may reside on a remote network.  Please see
+              <xref target="dns-server"/> for more information about how to
+              configure DNS servers.  Configuring the DNS server may occur via
+              a programmatic API not defined by this document.</t>
+              <t>If it is desired to use a DHCP server to supply bootstrapping
+              data, a DHCP server needs to be configured.  The DHCP server may
+              be accessed directly or via a DHCP relay.  Please see
+              <xref target="dhcp-server"/> for more information about how to
+              configure DHCP servers.  Configuring the DHCP server may occur
+              via a programmatic API not defined by this document.</t>
+              <t>If it is desired to use a removable storage device (e.g., USB flash
+              drive) to supply bootstrapping information, the information would need
+              to be placed onto it.  Please see <xref target="removable-storage"/>
+              for more information about how to configure a removable storage device.</t>
+            </list>
+          </t>
+        </section>
 
-          <section title="Device Powers On" anchor="device-powers-on">
-            <t>The following diagram illustrates the sequence of activities
-            that occur when a device powers on.
-              <figure>
-                <artwork><![CDATA[
+        <section title="Device Powers On" anchor="device-powers-on">
+          <t>The following diagram illustrates the sequence of activities
+          that occur when a device powers on.
+            <figure>
+              <artwork><![CDATA[
                                                   +----------+
                                    +-----------+  |Deployment|
                                    | Source of |  | Specific |
@@ -2130,384 +2108,434 @@ device  |        |             |            |        |         |
    | 5. retry sources and/or wait for manual provisioning.
    |
   ]]></artwork>
-              </figure>
-            </t>
-            <t>The interactions in the above diagram are described below.
-              <list style="numbers">
-                <t>Upon power being applied, the device checks to see if zerotouch
-                bootstrapping is configured, such as must be the case when running its
-                "factory default" configuration.  If zerotouch bootstrapping is
-                not configured, then the bootstrapping logic exits and none of the
-                following interactions occur.</t>
-                <t>For each source of bootstrapping data the device supports, preferably
-                in order of closeness to the device (e.g., removable storage before
-                Internet based servers), the device checks to see if there is any
-                bootstrapping data for it there.</t>
-                <t>If onboarding information is found, the device initializes
-                itself accordingly (e.g., installing a boot-image and committing an
-                initial configuration).  If the source is a bootstrap server, and the
-                bootstrap server can be trusted (i.e., TLS-level authentication), the
-                device also sends progress reports to the bootstrap server.
-                  <list style="symbols">
-                    <t>The contents of the initial configuration should configure
-                    an administrator account on the device (e.g., username, ssh-rsa
-                    key, etc.), and should configure the device either to listen for
-                    NETCONF or RESTCONF connections or to initiate call home connections
-                    <xref target="RFC8071"/>, and should disable the zerotouch
-                    bootstrapping service (e.g., the 'enabled' leaf in data model
-                    presented in <xref target="device-model"/>).</t>
-                    <t>If the bootstrap server supports forwarding device progress reports
-                    to external systems (e.g., via a webhook), a "bootstrap-complete"
-                    progress report (<xref target="yang-module"/>) informs the external
-                    system to know when it can, for instance, initiate a connection to
-                    the device.  To support this scenario further, the 'bootstrap-complete'
-                    progress report may also relay the device's SSH host keys and/or TLS
-                    certificates, with which the external system can use to authenticate
-                    subsequent connections to the device.</t>
-                  </list>
-                If the device successfully completes the bootstrapping process,
-                it exits the bootstrapping logic without considering any additional
-                sources of bootstrapping data.
-                </t>
+            </figure>
+          </t>
+          <t>The interactions in the above diagram are described below.
+            <list style="numbers">
+              <t>Upon power being applied, the device checks to see if zerotouch
+              bootstrapping is configured, such as must be the case when running its
+              "factory default" configuration.  If zerotouch bootstrapping is
+              not configured, then the bootstrapping logic exits and none of the
+              following interactions occur.</t>
+              <t>For each source of bootstrapping data the device supports, preferably
+              in order of closeness to the device (e.g., removable storage before
+              Internet based servers), the device checks to see if there is any
+              bootstrapping data for it there.</t>
+              <t>If onboarding information is found, the device initializes
+              itself accordingly (e.g., installing a boot-image and committing an
+              initial configuration).  If the source is a bootstrap server, and the
+              bootstrap server can be trusted (i.e., TLS-level authentication), the
+              device also sends progress reports to the bootstrap server.
+                <list style="symbols">
+                  <t>The contents of the initial configuration should configure
+                  an administrator account on the device (e.g., username, ssh-rsa
+                  key, etc.), and should configure the device either to listen for
+                  NETCONF or RESTCONF connections or to initiate call home connections
+                  <xref target="RFC8071"/>, and should disable the zerotouch
+                  bootstrapping service (e.g., the 'enabled' leaf in data model
+                  presented in <xref target="device-model"/>).</t>
+                  <t>If the bootstrap server supports forwarding device progress reports
+                  to external systems (e.g., via a webhook), a "bootstrap-complete"
+                  progress report (<xref target="yang-module"/>) informs the external
+                  system to know when it can, for instance, initiate a connection to
+                  the device.  To support this scenario further, the 'bootstrap-complete'
+                  progress report may also relay the device's SSH host keys and/or TLS
+                  certificates, with which the external system can use to authenticate
+                  subsequent connections to the device.</t>
+                </list>
+              If the device successfully completes the bootstrapping process,
+              it exits the bootstrapping logic without considering any additional
+              sources of bootstrapping data.
+              </t>
 
-                <t>Otherwise, if redirect information is found, the device iterates
-                through the list of specified bootstrap servers, checking to see if
-                it has bootstrapping data for the device.  If the bootstrap server
-                returns more redirect information, then the device processes it recursively.
-                Otherwise, if the bootstrap server returns onboarding information,
-                the device processes it following the description provided in (3) above.</t>
+              <t>Otherwise, if redirect information is found, the device iterates
+              through the list of specified bootstrap servers, checking to see if
+              it has bootstrapping data for the device.  If the bootstrap server
+              returns more redirect information, then the device processes it recursively.
+              Otherwise, if the bootstrap server returns onboarding information,
+              the device processes it following the description provided in (3) above.</t>
 
-                <t>After having tried all supported sources of bootstrapping data, the
-                device may retry again all the sources and/or provide manageability
-                interfaces for manual configuration (e.g., CLI, HTTP, NETCONF, etc.).
-                If manual configuration is allowed, and such configuration is provided,
-                the configuration should also disable the zerotouch bootstrapping service,
-                as the need for bootstrapping would no longer be present.</t>
-              </list>
-            </t>
-          </section>
+              <t>After having tried all supported sources of bootstrapping data, the
+              device may retry again all the sources and/or provide manageability
+              interfaces for manual configuration (e.g., CLI, HTTP, NETCONF, etc.).
+              If manual configuration is allowed, and such configuration is provided,
+              the configuration should also disable the zerotouch bootstrapping service,
+              as the need for bootstrapping would no longer be present.</t>
+            </list>
+          </t>
         </section>
-        <section title="Change Log">
-          <section title="ID to 00">
-            <t>
-            <list style="symbols">
-              <t>Major structural update; the essence is the same.
-              Most every section was rewritten to some degree.</t>
-              <t>Added a Use Cases section</t>
-              <t>Added diagrams for "Actors and Roles" and
-              "NMS Precondition" sections, and greatly improved
-              the "Device Boot Sequence" diagram</t>
-              <t>Removed support for physical presence or any
-              ability for configlets to not be signed.</t>
-              <t>Defined the Zero Touch Information DHCP option</t>
-              <t>Added an ability for devices to also download
-              images from configuration servers</t>
-              <t>Added an ability for configlets to be encrypted</t>
-              <t>Now configuration servers only have to support
-              HTTP/S - no other schemes possible</t>
-            </list>
-            </t>
-          </section>
-          <section title="00 to 01">
-            <t>
-            <list style="symbols">
-              <t>Added boot-image and validate-owner annotations
-                 to the "Actors and Roles" diagram.</t>
-              <t>Fixed 2nd paragraph in section 7.1 to reflect
-                 current use of anyxml.</t>
-              <t>Added encrypted and signed-encrypted examples</t>
-              <t>Replaced YANG module with XSD schema</t>
-              <t>Added IANA request for the Zero Touch Information DHCP Option</t>
-              <t>Added IANA request for media types for boot-image and configuration</t>
-            </list>
-            </t>
-          </section>
-          <section title="01 to 02">
-            <t>
-            <list style="symbols">
-              <t>Replaced the need for a configuration signer with the
-              ability for each NMS to be able to sign its own configurations,
-              using manufacturer signed ownership vouchers and owner certificates.</t>
-              <t>Renamed configuration server to bootstrap server, a more
-              representative name given the information devices download from it.</t>
-              <t>Replaced the concept of a configlet by defining a southbound
-              interface for the bootstrap server using YANG.</t>
-              <t>Removed the IANA request for the boot-image and configuration
-              media types</t>
-            </list>
-            </t>
-          </section>
-          <section title="02 to 03">
-            <t>
-            <list style="symbols">
-              <t>Minor update, mostly just to add an Editor's Note to show how this
-              draft might integrate with the draft-pritikin-anima-bootstrapping-keyinfra.</t>
-            </list>
-            </t>
-          </section>
-          <section title="03 to 04">
-            <t>
-            <list style="symbols">
-              <t>Major update formally introducing unsigned data and support for
-              Internet-based redirect servers.</t>
-              <t>Added many terms to Terminology section.</t>
-              <t>Added all new "Guiding Principles" section.</t>
-              <t>Added all new "Sources for Bootstrapping Data" section.</t>
-              <t>Rewrote the "Interactions" section and renamed it "Workflow Overview".</t>
-            </list>
-            </t>
-          </section>
-          <section title="04 to 05">
-            <t>
-            <list style="symbols">
-              <t>Semi-major update, refactoring the document into more logical parts</t>
-              <t>Created new section for information types</t>
-              <t>Added support for DNS servers</t>
-              <t>Now allows provisional TLS connections</t>
-              <t>Bootstrapping data now supports scripts</t>
-              <t>Device Details section overhauled</t>
-              <t>Security Considerations expanded</t>
-              <t>Filled in enumerations for notification types</t>
-             </list>
-            </t>
-          </section>
-          <section title="05 to 06">
-            <t>
-            <list style="symbols">
-              <t>Minor update</t>
-              <t>Added many Normative and Informative references.</t>
-              <t>Added new section Other Considerations.</t>
-            </list>
-            </t>
-          </section>
-          <section title="06 to 07">
-            <t>
-            <list style="symbols">
-              <t>Minor update</t>
-              <t>Added an Editorial Note section for RFC Editor.</t>
-              <t>Updated the IANA Considerations section.</t>
-            </list>
-            </t>
-          </section>
-          <section title="07 to 08">
-            <t>
-            <list style="symbols">
-              <t>Minor update</t>
-              <t>Updated to reflect review from Michael Richardson.</t>
-            </list>
-            </t>
-          </section>
-          <section title="08 to 09">
-            <t>
-            <list style="symbols">
-              <t>Added in missing "Signature" artifact example.</t>
-              <t>Added recommendation for manufacturers to use interoperable
-              formats and file naming conventions for removable storage devices.</t>
-              <t>Added configuration-handling leaf to guide if config should be
-              merged, replaced, or processed like an edit-config/yang-patch document.</t>
-              <t>Added a pre-configuration script, in addition to the
-              post-configuration script from -05 (issue #15).</t>
-            </list>
-            </t>
-          </section>
-          <section title="09 to 10">
-            <t>
-            <list style="symbols">
-              <t>Factored ownership voucher and voucher revocation to a
-              separate document: draft-kwatsen-netconf-voucher. (issue #11)</t>
-              <t>Removed &lt;configuration-handling&gt; options 'edit-config' and
-              'yang-patch'. (issue #12)</t>
-              <t>Defined how a signature over signed-data returned from a
-              bootstrap server is processed. (issue #13)</t>
-              <t>Added recommendation for removable storage devices to use
-              open/standard file systems when possible.  (issue #14)</t>
-              <t>Replaced notifications "script-[warning/error]" with
-              "[pre/post]-script-[warning/error]". (goes with issue #15)</t>
-              <t>switched owner-certificate to be encoded using the PKCS #7
-              format. (issue #16)</t>
-              <t>Replaced md5/sha1 with sha256 inside a choice statement, for
-              future extensibility. (issue #17)</t>
-              <t>A ton of editorial changes, as I went thru the entire draft
-              with a fine-toothed comb.</t>
-            </list>
-            </t>
-          </section>
-          <section title="10 to 11">
-            <t>
-            <list style="symbols">
-              <t>fixed yang validation issues found by IETFYANGPageCompilation.
-              note: these issues were NOT found by pyang --ietf or by the
-              submission-time validator...</t>
-              <t>fixed a typo in the yang module, someone the config false statement
-              was removed.</t>
-            </list>
-            </t>
-          </section>
-          <section title="11 to 12">
-            <t>
-            <list style="symbols">
-              <t>fixed typo that prevented Appendix B from loading the
-              examples correctly.</t>
-              <t>fixed more yang validation issues found by
-              IETFYANGPageCompilation.  note: again, these issues were
-              NOT found by pyang --ietf or by the submission-time
-              validator...</t>
-              <t>updated a few of the notification enumerations to be
-              more consistent with the other enumerations (following the
-              warning/error pattern).</t>
-              <t>updated the information-type artifact to state how it's
-              encoded, matching the language that was in Appendix B.</t>
-            </list>
-            </t>
-          </section>
-          <section title="12 to 13">
-            <t>
-            <list style="symbols">
-              <t>defined a standalone artifact to encode the old information-type
-              into a PKCS #7 structure.</t>
-              <t>standalone information artifact hardcodes JSON encoding (to
-              match the voucher draft).</t>
-              <t>combined the information and signature PKCS #7 structures into a
-              single PKCS #7 structure.</t>
-              <t>moved the certificate-revocations into the owner-certificate's
-              PKCS #7 structure.</t>
-              <t>eliminated support for voucher-revocations, to reflect the
-              voucher-draft's switch from revocations to renewals.</t>
-            </list>
-            </t>
-          </section>
-          <section title="13 to 14">
-            <t>
-            <list style="symbols">
-              <t>Renamed "bootstrap information" to "onboarding information".</t>
-              <t>Rewrote DHCP sections to address the packet-size limitation
-              issue, as discussed in Chicago.</t>
-              <t>Added Ian as an author for his text-contributions to the
-              DHCP sections.</t>
-              <t>Removed the Guiding Principles section.</t>
-            </list>
-            </t>
-          </section>
-          <section title="14 to 15">
-            <t>
-            <list style="symbols">
-              <t>Renamed action 'notification' to 'update-progress' and, likewise
-              'notification-type' to 'update-type'.</t>
-              <t>Updated examples to use "base64encodedvalue==" for binary values.</t>
-              <t>Greatly simplified the "Artifact Groupings" section, and
-                 moved it as a subsection to the "Artifacts" section.</t>
-              <t>Moved the "Workflow Overview" section to the Appendix.</t>
-              <t>Renamed "bootstrap information" to "update information".</t>
-              <t>Removed "Other Considerations" section.</t>
-              <t>Tons of editorial updates.</t>
-            </list>
-            </t>
-          </section>
-          <section title="15 to 16">
-            <t>
-              <list style="symbols">
-                <t>tweaked language to refer to "initial state" rather than "factory
-                default configuration", so as accommodate white-box scenarios.</t>
-                <t>added a paragraph to Intro regarding how the solution primarily regards
-                physical machines, but could be extended to VMs by a future document.</t>
-                <t>added a pointer to the Workflow Overview section (recently moved to
-                the Appendix) to the Intro.</t>
-                <t>added a note that, in order to simplify the verification process,
-                the "Zerotouch Information" PKCS #7 structure MUST also contain the
-                signing X.509 certificate.</t>
-                <t>noted that the owner certificate's must either have no Key Usage or
-                the Key Usage must set the "digitalSignature" bit.</t>
-                <t>noted that the owner certificate's subject and subjectAltName values
-                are not constrained.</t>
-                <t>moved/consolidated some text from the Artifacts section down to the
-                Device Details section.</t>
-                <t>tightened up some ambiguous language, for instance, by referring to
-                specific leaf names in the Voucher artifact.</t>
-                <t>reverted a previously overzealous s/unique-id/serial-number/ change.</t>
-                <t>modified language for when ZTP runs from when factory-default config
-                is running to when ZTP is configured, which the factory-defaults should set .</t>
-              </list>
-            </t>
-          </section>
-          <section title="16 to 17">
-            <t>
-              <list style="symbols">
-                <t>Added an example for how to promote an untrusted connection to a
-                trusted connection.</t>
-                <t>Added a "query parameters" section defining some parameters enabling
-                scenarios raised in last call.</t>
-                <t>Added a "Disclosing Information to Untrusted Servers" section to
-                the Security Considerations.</t>
-              </list>
-            </t>
-          </section>
-          <section title="17 to 18">
-            <t>
-              <list style="symbols">
-                <t>Added Security Considerations for each YANG module.</t>
-                <t>Reverted back to the device always sending its DevID cert.</t>
-                <t>Moved data tree to ac'get-bootstrapping-data' RPC.</t>
-                <t>Moved the 'update-progress' action to a 'report-progress' RPC.</t>
-                <t>Added an 'untrusted-connection' parameter to 'get-bootstrapping-data' RPC.</t>
-                <t>Added the "ietf-zerotouch-device" module.</t>
-                <t>Lots of small updates.</t>
-              </list>
-            </t>
-          </section>
-          <section title="18 to 19">
-            <t>
-              <list style="symbols">
-                <t>Fixed 'must' expressions, by converting 'choice' to a 'list' of
-                'image-verification', each of which now points to a base identity
-                called "hash-algorithm".  There's just one algorithm currently
-                defined (sha-256).  Wish there was a standard crypto module that
-                could identify such identities.</t>
-              </list>
-            </t>
-          </section>
-          <section title="19 to 20">
-            <t>
-              <list style="symbols">
-                <t>Now references I-D.ietf-netmod-yang-tree-diagrams.</t>
-                <t>Fixed tree-diagrams in Section 2 to always reflect
-                current YANG (now they are now dynamically generated).</t>
-                <t>The "redirect-information" container's "trust-anchor"
-                is now a CMS structure that can contain a chain of
-                certificates, rather than a single certificate.</t>
-                <t>The "onboarding-information" container's support
-                for image verification reworked to be extensible.</t>
-                <t>Added a reference to the "Device Details" section to
-                the new example-zerotouch-device module.</t>
-                <t>Clarified that the device must always pass its IDevID
-                certificate, even for untrusted bootstrap servers.</t>
-                <t>Fixed the description statement for the "script" typedef
-                to refer to the [pre/post]-script-[warning/error] enums,
-                rather than the legacy script-[warning/error] enums.</t>
-                <t>For the get-bootstrapping-data RPC's input, removed
-                the "remote-id" and "circuit-id" fields, and added a
-                "hw-model" field.</t>
-                <t>Improved DHCP error handling text.</t>
-                <t>Added MUST requirement for DHCPv6 client and server
-                implementing <xref target="RFC3396"/> to handle URI lists
-                longer than 255 octets.</t>
-                <t>Changed the "configuration" value in onboarding-information
-                to be type 'binary' instead of 'anydata'.</t>
-                <t>Moved everything from PKCS#7 to CMS (this shows up
-                as a big change).</t>
-                <t>Added the early code point allocation assignments for the
-                DHCP Options in the IANA Considerations section, and updated
-                the RFC Editor note accordingly.</t>
-                <t>Added RFC Editor request to replace the assigned values for
-                the CMS content types.</t>
-                <t>Relaxed auth requirements from device needing to always
-                send IDevID cert to device needing to always send authentication
-                credentials, as this better matches what RFC 8040 Section 2.5 says.</t>
-                <t>Moved normative module "ietf-zerotouch-device" to non-normative
-                module "example-zerotouch-device".</t>
-                <t>Updated Title, Abstract, and Introduction per discussion on list.</t>
-              </list>
-            </t>
+      </section>
+      <section title="Change Log">
+        <section title="ID to 00">
+          <t>
+          <list style="symbols">
+            <t>Major structural update; the essence is the same.
+            Most every section was rewritten to some degree.</t>
+            <t>Added a Use Cases section</t>
+            <t>Added diagrams for "Actors and Roles" and
+            "NMS Precondition" sections, and greatly improved
+            the "Device Boot Sequence" diagram</t>
+            <t>Removed support for physical presence or any
+            ability for configlets to not be signed.</t>
+            <t>Defined the Zero Touch Information DHCP option</t>
+            <t>Added an ability for devices to also download
+            images from configuration servers</t>
+            <t>Added an ability for configlets to be encrypted</t>
+            <t>Now configuration servers only have to support
+            HTTP/S - no other schemes possible</t>
+          </list>
+          </t>
         </section>
+        <section title="00 to 01">
+          <t>
+          <list style="symbols">
+            <t>Added boot-image and validate-owner annotations
+               to the "Actors and Roles" diagram.</t>
+            <t>Fixed 2nd paragraph in section 7.1 to reflect
+               current use of anyxml.</t>
+            <t>Added encrypted and signed-encrypted examples</t>
+            <t>Replaced YANG module with XSD schema</t>
+            <t>Added IANA request for the Zero Touch Information DHCP Option</t>
+            <t>Added IANA request for media types for boot-image and configuration</t>
+          </list>
+          </t>
+        </section>
+        <section title="01 to 02">
+          <t>
+          <list style="symbols">
+            <t>Replaced the need for a configuration signer with the
+            ability for each NMS to be able to sign its own configurations,
+            using manufacturer signed ownership vouchers and owner certificates.</t>
+            <t>Renamed configuration server to bootstrap server, a more
+            representative name given the information devices download from it.</t>
+            <t>Replaced the concept of a configlet by defining a southbound
+            interface for the bootstrap server using YANG.</t>
+            <t>Removed the IANA request for the boot-image and configuration
+            media types</t>
+          </list>
+          </t>
+        </section>
+        <section title="02 to 03">
+          <t>
+          <list style="symbols">
+            <t>Minor update, mostly just to add an Editor's Note to show how this
+            draft might integrate with the draft-pritikin-anima-bootstrapping-keyinfra.</t>
+          </list>
+          </t>
+        </section>
+        <section title="03 to 04">
+          <t>
+          <list style="symbols">
+            <t>Major update formally introducing unsigned data and support for
+            Internet-based redirect servers.</t>
+            <t>Added many terms to Terminology section.</t>
+            <t>Added all new "Guiding Principles" section.</t>
+            <t>Added all new "Sources for Bootstrapping Data" section.</t>
+            <t>Rewrote the "Interactions" section and renamed it "Workflow Overview".</t>
+          </list>
+          </t>
+        </section>
+        <section title="04 to 05">
+          <t>
+          <list style="symbols">
+            <t>Semi-major update, refactoring the document into more logical parts</t>
+            <t>Created new section for information types</t>
+            <t>Added support for DNS servers</t>
+            <t>Now allows provisional TLS connections</t>
+            <t>Bootstrapping data now supports scripts</t>
+            <t>Device Details section overhauled</t>
+            <t>Security Considerations expanded</t>
+            <t>Filled in enumerations for notification types</t>
+           </list>
+          </t>
+        </section>
+        <section title="05 to 06">
+          <t>
+          <list style="symbols">
+            <t>Minor update</t>
+            <t>Added many Normative and Informative references.</t>
+            <t>Added new section Other Considerations.</t>
+          </list>
+          </t>
+        </section>
+        <section title="06 to 07">
+          <t>
+          <list style="symbols">
+            <t>Minor update</t>
+            <t>Added an Editorial Note section for RFC Editor.</t>
+            <t>Updated the IANA Considerations section.</t>
+          </list>
+          </t>
+        </section>
+        <section title="07 to 08">
+          <t>
+          <list style="symbols">
+            <t>Minor update</t>
+            <t>Updated to reflect review from Michael Richardson.</t>
+          </list>
+          </t>
+        </section>
+        <section title="08 to 09">
+          <t>
+          <list style="symbols">
+            <t>Added in missing "Signature" artifact example.</t>
+            <t>Added recommendation for manufacturers to use interoperable
+            formats and file naming conventions for removable storage devices.</t>
+            <t>Added configuration-handling leaf to guide if config should be
+            merged, replaced, or processed like an edit-config/yang-patch document.</t>
+            <t>Added a pre-configuration script, in addition to the
+            post-configuration script from -05 (issue #15).</t>
+          </list>
+          </t>
+        </section>
+        <section title="09 to 10">
+          <t>
+          <list style="symbols">
+            <t>Factored ownership voucher and voucher revocation to a
+            separate document: draft-kwatsen-netconf-voucher. (issue #11)</t>
+            <t>Removed &lt;configuration-handling&gt; options 'edit-config' and
+            'yang-patch'. (issue #12)</t>
+            <t>Defined how a signature over signed-data returned from a
+            bootstrap server is processed. (issue #13)</t>
+            <t>Added recommendation for removable storage devices to use
+            open/standard file systems when possible.  (issue #14)</t>
+            <t>Replaced notifications "script-[warning/error]" with
+            "[pre/post]-script-[warning/error]". (goes with issue #15)</t>
+            <t>switched owner-certificate to be encoded using the PKCS #7
+            format. (issue #16)</t>
+            <t>Replaced md5/sha1 with sha256 inside a choice statement, for
+            future extensibility. (issue #17)</t>
+            <t>A ton of editorial changes, as I went thru the entire draft
+            with a fine-toothed comb.</t>
+          </list>
+          </t>
+        </section>
+        <section title="10 to 11">
+          <t>
+          <list style="symbols">
+            <t>fixed yang validation issues found by IETFYANGPageCompilation.
+            note: these issues were NOT found by pyang --ietf or by the
+            submission-time validator...</t>
+            <t>fixed a typo in the yang module, someone the config false statement
+            was removed.</t>
+          </list>
+          </t>
+        </section>
+        <section title="11 to 12">
+          <t>
+          <list style="symbols">
+            <t>fixed typo that prevented Appendix B from loading the
+            examples correctly.</t>
+            <t>fixed more yang validation issues found by
+            IETFYANGPageCompilation.  note: again, these issues were
+            NOT found by pyang --ietf or by the submission-time
+            validator...</t>
+            <t>updated a few of the notification enumerations to be
+            more consistent with the other enumerations (following the
+            warning/error pattern).</t>
+            <t>updated the information-type artifact to state how it's
+            encoded, matching the language that was in Appendix B.</t>
+          </list>
+          </t>
+        </section>
+        <section title="12 to 13">
+          <t>
+          <list style="symbols">
+            <t>defined a standalone artifact to encode the old information-type
+            into a PKCS #7 structure.</t>
+            <t>standalone information artifact hardcodes JSON encoding (to
+            match the voucher draft).</t>
+            <t>combined the information and signature PKCS #7 structures into a
+            single PKCS #7 structure.</t>
+            <t>moved the certificate-revocations into the owner-certificate's
+            PKCS #7 structure.</t>
+            <t>eliminated support for voucher-revocations, to reflect the
+            voucher-draft's switch from revocations to renewals.</t>
+          </list>
+          </t>
+        </section>
+        <section title="13 to 14">
+          <t>
+          <list style="symbols">
+            <t>Renamed "bootstrap information" to "onboarding information".</t>
+            <t>Rewrote DHCP sections to address the packet-size limitation
+            issue, as discussed in Chicago.</t>
+            <t>Added Ian as an author for his text-contributions to the
+            DHCP sections.</t>
+            <t>Removed the Guiding Principles section.</t>
+          </list>
+          </t>
+        </section>
+        <section title="14 to 15">
+          <t>
+          <list style="symbols">
+            <t>Renamed action 'notification' to 'update-progress' and, likewise
+            'notification-type' to 'update-type'.</t>
+            <t>Updated examples to use "base64encodedvalue==" for binary values.</t>
+            <t>Greatly simplified the "Artifact Groupings" section, and
+               moved it as a subsection to the "Artifacts" section.</t>
+            <t>Moved the "Workflow Overview" section to the Appendix.</t>
+            <t>Renamed "bootstrap information" to "update information".</t>
+            <t>Removed "Other Considerations" section.</t>
+            <t>Tons of editorial updates.</t>
+          </list>
+          </t>
+        </section>
+        <section title="15 to 16">
+          <t>
+            <list style="symbols">
+              <t>tweaked language to refer to "initial state" rather than "factory
+              default configuration", so as accommodate white-box scenarios.</t>
+              <t>added a paragraph to Intro regarding how the solution primarily regards
+              physical machines, but could be extended to VMs by a future document.</t>
+              <t>added a pointer to the Workflow Overview section (recently moved to
+              the Appendix) to the Intro.</t>
+              <t>added a note that, in order to simplify the verification process,
+              the "Zerotouch Information" PKCS #7 structure MUST also contain the
+              signing X.509 certificate.</t>
+              <t>noted that the owner certificate's must either have no Key Usage or
+              the Key Usage must set the "digitalSignature" bit.</t>
+              <t>noted that the owner certificate's subject and subjectAltName values
+              are not constrained.</t>
+              <t>moved/consolidated some text from the Artifacts section down to the
+              Device Details section.</t>
+              <t>tightened up some ambiguous language, for instance, by referring to
+              specific leaf names in the Voucher artifact.</t>
+              <t>reverted a previously overzealous s/unique-id/serial-number/ change.</t>
+              <t>modified language for when ZTP runs from when factory-default config
+              is running to when ZTP is configured, which the factory-defaults should set .</t>
+            </list>
+          </t>
+        </section>
+        <section title="16 to 17">
+          <t>
+            <list style="symbols">
+              <t>Added an example for how to promote an untrusted connection to a
+              trusted connection.</t>
+              <t>Added a "query parameters" section defining some parameters enabling
+              scenarios raised in last call.</t>
+              <t>Added a "Disclosing Information to Untrusted Servers" section to
+              the Security Considerations.</t>
+            </list>
+          </t>
+        </section>
+        <section title="17 to 18">
+          <t>
+            <list style="symbols">
+              <t>Added Security Considerations for each YANG module.</t>
+              <t>Reverted back to the device always sending its DevID cert.</t>
+              <t>Moved data tree to ac'get-bootstrapping-data' RPC.</t>
+              <t>Moved the 'update-progress' action to a 'report-progress' RPC.</t>
+              <t>Added an 'untrusted-connection' parameter to 'get-bootstrapping-data' RPC.</t>
+              <t>Added the "ietf-zerotouch-device" module.</t>
+              <t>Lots of small updates.</t>
+            </list>
+          </t>
+        </section>
+        <section title="18 to 19">
+          <t>
+            <list style="symbols">
+              <t>Fixed 'must' expressions, by converting 'choice' to a 'list' of
+              'image-verification', each of which now points to a base identity
+              called "hash-algorithm".  There's just one algorithm currently
+              defined (sha-256).  Wish there was a standard crypto module that
+              could identify such identities.</t>
+            </list>
+          </t>
+        </section>
+        <section title="19 to 20">
+          <t>
+            <list style="symbols">
+              <t>Now references I-D.ietf-netmod-yang-tree-diagrams.</t>
+              <t>Fixed tree-diagrams in Section 2 to always reflect
+              current YANG (now they are now dynamically generated).</t>
+              <t>The "redirect-information" container's "trust-anchor"
+              is now a CMS structure that can contain a chain of
+              certificates, rather than a single certificate.</t>
+              <t>The "onboarding-information" container's support
+              for image verification reworked to be extensible.</t>
+              <t>Added a reference to the "Device Details" section to
+              the new example-zerotouch-device module.</t>
+              <t>Clarified that the device must always pass its IDevID
+              certificate, even for untrusted bootstrap servers.</t>
+              <t>Fixed the description statement for the "script" typedef
+              to refer to the [pre/post]-script-[warning/error] enums,
+              rather than the legacy script-[warning/error] enums.</t>
+              <t>For the get-bootstrapping-data RPC's input, removed
+              the "remote-id" and "circuit-id" fields, and added a
+              "hw-model" field.</t>
+              <t>Improved DHCP error handling text.</t>
+              <t>Added MUST requirement for DHCPv6 client and server
+              implementing <xref target="RFC3396"/> to handle URI lists
+              longer than 255 octets.</t>
+              <t>Changed the "configuration" value in onboarding-information
+              to be type 'binary' instead of 'anydata'.</t>
+              <t>Moved everything from PKCS#7 to CMS (this shows up
+              as a big change).</t>
+              <t>Added the early code point allocation assignments for the
+              DHCP Options in the IANA Considerations section, and updated
+              the RFC Editor note accordingly.</t>
+              <t>Added RFC Editor request to replace the assigned values for
+              the CMS content types.</t>
+              <t>Relaxed auth requirements from device needing to always
+              send IDevID cert to device needing to always send authentication
+              credentials, as this better matches what RFC 8040 Section 2.5 says.</t>
+              <t>Moved normative module "ietf-zerotouch-device" to non-normative
+              module "example-zerotouch-device".</t>
+              <t>Updated Title, Abstract, and Introduction per discussion on list.</t>
+            </list>
+          </t>
+        </section>
+        <section title="20 to 21">
+          <t>
+            <list style="symbols">
+              <t>Now any of the three artifact can be encrypted.</t>
+              <t>Fixed some line-too-long issues.</t>
+            </list>
+          </t>
+        </section>
+        <section title="21 to 22">
+          <t>
+            <list style="symbols">
+              <t>Removed specifics around how scripts indicate warnings
+                 or errors and how scripts emit output.</t>
+              <t>Moved the Zero Touch Device Data Model section to
+                 the Appendix.</t>
+              <t>Modified the YANG module in the Zero Touch Device Data
+                 Model section to reflect the latest trust-anchors and
+                 keystore drafts.</t>
+              <t>Modified types in other YANG modules to more closely
+                 emulate what is in draft-ietf-netconf-crypto-types.</t>
+            </list>
+          </t>
+        </section>
+      </section>
+
+      <section title="Acknowledgements" numbered="no">
+        <t>The authors would like to thank for following for
+        lively discussions on list and in the halls (ordered
+        by last name):
+        David Harrington,
+        Michael Behringer,
+        Dean Bogdanovic,
+        Martin Bjorklund,
+        Joe Clarke,
+        Toerless Eckert,
+        Stephen Farrell,
+        Stephen Hanna,
+        Wes Hardaker,
+        Radek Krejci,
+        Russ Mundy,
+        Reinaldo Penno,
+        Randy Presuhn,
+        Max Pritikin,
+        Michael Richardson,
+        Phil Shafer,
+        Juergen Schoenwaelder.</t>
+
+        <t>Special thanks goes to Steve Hanna, Russ Mundy, and
+        Wes Hardaker for brainstorming the original I-D's solution
+        during the IETF 87 meeting in Berlin.</t>
       </section>
     </back>
 </rfc>

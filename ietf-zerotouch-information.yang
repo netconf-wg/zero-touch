@@ -71,9 +71,9 @@ module ietf-zerotouch-information {
   typedef cms {
     type binary;
     description
-      "A CMS structure, as specified in RFC 5652, encoded using
-       ASN.1 distinguished encoding rules (DER), as specified in
-       ITU-T X.690.";
+      "A ContentInfo structure, as specified in RFC 5652,
+       encoded using ASN.1 distinguished encoding rules (DER),
+       as specified in ITU-T X.690.";
     reference
       "RFC 5652:
          Cryptographic Message Syntax (CMS)
@@ -125,18 +125,26 @@ module ietf-zerotouch-information {
               "A CMS structure that MUST contain the chain of
                X.509 certificates needed to authenticate the TLS
                certificate presented by this bootstrap server.
+
+               The CMS MUST only contain a single chain of
+               certificates.  The bootstrap server MUST only
+               authenticate to last intermediate CA certificate
+               listed in the chain.
+
                In all cases, the chain MUST include a self-signed
                root certificate.  In the case where the root
                certificate is itself the issuer of the bootstrap
-               server's TLS certificate, only one X.509 certificate
-               is present.  If needed by the device, this CMS
-               structure MAY also contain suitably fresh revocation
-               objects with which the device can verify the
-               revocation status of the certificates.
+               server's TLS certificate, only one certificate
+               is present.
+
+               If needed by the device, this CMS structure MAY
+               also contain suitably fresh revocation objects
+               with which the device can verify the revocation
+               status of the certificates.
 
                This CMS encodes the degenerate form of the SignedData
                structure that is commonly used to disseminate X.509
-               certificates and revocation objects.";
+               certificates and revocation objects (RFC 5280).";
             reference
               "RFC 5280:
                  Internet X.509 Public Key Infrastructure Certificate
@@ -266,34 +274,31 @@ module ietf-zerotouch-information {
 
        No attempt is made to standardize the contents, running
        context, or programming language of the script, other than
-       that it can emit an exit status code and stderr/sdtout.  The
-       contents of the script are considered specific to the vendor,
-       product line, and/or model of the device.
+       that it can indicate if any warnings or errors occurred and
+       can emit output.  The contents of the script are considered
+       specific to the vendor, product line, and/or model of the
+       device.
         
        If a script is erroneously provided to a device that does not
        support the execution of scripts, and the device obtained the
-       onboarding information from a trusted bootstrap server, the
-       device SHOULD send either a 'pre-script-warning' or 
+       onboarding information from a trusted bootstrap server, then
+       the device SHOULD send either a 'pre-script-warning' or 
        'post-script-warning' progress report, based on which kind
        of script was presented, but otherwise continue processing
        the bootstrapping data as if the script had not been present.
 
-       The script returns exit status code zero on success and
-       non-zero otherwise, with accompanying stderr/stdout for
-       logging purposes.
+       If the script execution indicates that an warning occurred,
+       then the device MUST assume that the script had a soft error
+       that the script believes will not affect manageability.  If
+       the device obtained the bootstrap information from a trusted
+       bootstrap server, it SHOULD either send a 'pre-script-warning'
+       or 'post-script-warning' progress report, based on which kind
+       of script was executed.
 
-       If the exit status code is greater than zero, then the device
-       should assume that the script had a soft error, which the
-       script believes does not affect manageability.  If the device
-       obtained the bootstrap information from a trusted bootstrap
-       server, it SHOULD either send a 'pre-script-warning' or
-       'post-script-warning' progress report, based on which kind of
-       script was executed.
-
-       If the exit status code is less than zero, the device should
-       assume the script had a hard error, which the script believes
-       will affect manageability.  If the device obtained the
-       bootstrap information from a trusted bootstrap server, it 
+       If the script execution indicates that an error occurred, the
+       device MUST assume the script had a hard error that the script
+       believes will affect manageability.  If the device obtained
+       the bootstrap information from a trusted bootstrap server, it
        SHOULD send a 'pre-script-error' or 'post-script-error'
        progress report,  based on which kind of script was executed,
        followed by a reset that will wipe out any bad state left by
