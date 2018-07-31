@@ -54,7 +54,8 @@ $(next).xml: $(draft).xml
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-zerotouch-information.yang > ietf-zerotouch-information\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-zerotouch-bootstrap-server.yang > ietf-zerotouch-bootstrap-server\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" example-zerotouch-device.yang > example-zerotouch-device\@$(shell date +%Y-%m-%d).yang
-	cd refs; ./gen-trees.sh; cd ..;
+	cd refs; ./validate-all.sh; ./gen-trees.sh; cd ..;
+	#cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp
 	mv tmp $@
 	rm refs/*-tree.txt
