@@ -1076,7 +1076,7 @@ with revocations                         revocations     revocations
           the specified boot image, and thus will move to processing the next step.</t>
 
           <t>Next, for devices that support executing scripts, if a pre-configuration
-          script has been specified, the device MUST execute the script and check the script had any warnings or errors.  In the case of
+          script has been specified, the device MUST execute the script and check if the script had any warnings or errors.  In the case of
           errors, the device MUST reset itself in such a way that wipes out any bad
           state the script may have left behind.</t>
 
@@ -1088,7 +1088,7 @@ with revocations                         revocations     revocations
           this implies that the pre-configuration script must be idempotent.</t>
 
           <t>Again, for devices that support executing scripts, if a post-configuration script
-          has been specified, the device MUST execute the script and check the script had any warnings or errors.  In the case of errors,
+          has been specified, the device MUST execute the script and check if the script had any warnings or errors.  In the case of errors,
           the device MUST reset itself in such a way that wipes out any bad state the
           script may have left behind.</t>
 

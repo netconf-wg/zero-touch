@@ -4,7 +4,7 @@
 # HACK around `pyang --tree-print-yang-data` not yet supporting ietf-yang-data-ext
 name=`ls -1 ../ietf-zerotouch-information\@*.yang | sed 's/\.\.\///'`
 sed 's/ietf-yang-data-ext/ietf-restconf/' ../$name > $name
-pyang -f tree --tree-print-yang-data $name > ietf-zerotouch-information-tree.txt
+pyang -f tree --tree-print-yang-data $name > ietf-zerotouch-information-tree.txt 2> /dev/null
 rm $name
 
 cat ietf-zerotouch-information-tree.txt | sed -n '/:(redirect-information)/,/:(onboarding-information)/p' | sed '$d' | sed 's/^       |/        /' | sed 's/^       //' > redirect-information-tree.txt 
