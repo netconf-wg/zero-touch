@@ -924,24 +924,14 @@ with revocations                         revocations     revocations
           preconfigured trust anchors, or to a trust anchor that it learned
           from a previous step, then the device MUST set trust-state to TRUE.</t>
 
-          <t>When establishing a connection to a trusted bootstrap server
-          (i.e. trust-state is TRUE), the device MAY, per Section 2.5 in
-          <xref target="RFC8040"/>, identify and authenticate itself to the
-          bootstrap server using a TLS-level client certificate and/or an HTTP
-          authentication scheme.  If both mechanisms are used, they MUST
-          both identify the same device using its serial number.</t>
+          <t>When establishing a connection to a bootstrap server, whether
+          trusted or untrusted, the device MUST identify and authenticate
+          itself to the bootstrap server using a TLS-level client certificate
+          and/or an HTTP authentication scheme, per Section 2.5 in 
+          <xref target="RFC8040"/>.  If both authentication mechanisms
+          are used, they MUST both identify the same serial number.</t>
 
-          <t>When establishing a connection to an untrusted bootstrap server
-          (i.e. trust-state is FALSE), it is still necessary for the device
-          to identify itself, in order to receive device-specific signed data,
-          due to the ownership voucher encoding the device's serial number.  The
-          device MUST identify and authenticate itself to the bootstrap
-          server using a TLS-level client certificate and/or an HTTP
-          authentication scheme.  However, because the bootstrap server is
-          untrusted, the device MUST NOT use an authentication scheme
-          that conveys a shared secret, such as a password.</t>
-
-          <t>When sending a client certificate, the device MUST also send all
+          <t>When sending a client certificate, the device MUST also send all of
           the intermediate certificates leading up to, and optionally including,
           the client certificate's well-known trust anchor certificate.</t>
 
@@ -970,7 +960,8 @@ with revocations                         revocations     revocations
           source?" conditional described in the figure in the section.</t>
 
           <t>If the zero touch information artifact contains redirect information,
-          the device MUST process the redirect information as described in
+          the device MUST, within limits of how many recursive loops the device
+          allows, process the redirect information as described in
           <xref target="process-redirect-information"/>.  This is the recursion
           step, it will cause the device to reenter this algorithm, but this time
           the data source will definitely be a bootstrap server, as that is all
@@ -1009,7 +1000,7 @@ with revocations                         revocations     revocations
           owner certificate artifact.  If the ownership voucher's
           "domain-cert-revocation-checks" node's value is set to "true", the device
           MUST verify the revocation status of the certificate chain used to sign
-          the owner certificate and, if the revocation status is not attainable or
+          the owner certificate and, if suitably-fresh revocation status is unattainable or
           if it is determined that a certificate has been revoked, the device
           MUST NOT validate the owner certificate.</t>
           <t>Finally the device MUST verify the zero touch information
@@ -1052,55 +1043,124 @@ with revocations                         revocations     revocations
           <t>In order to process onboarding information (<xref target="onboarding-information"/>),
           the device MUST follow the steps presented in this section.</t>
 
-          <t>When processing onboarding information, the device MUST first process the boot image
-          information (if any), then execute the pre-configuration script (if any), then commit the initial
-          configuration (if any), and then execute the post-configuration script (if any), in that order.
-          If the device encounters an error at any step, it MUST NOT proceed to the next step.</t>
+          <t>When processing onboarding information, the device MUST first process the
+          boot image information (if any), then execute the pre-configuration script
+          (if any), then commit the initial configuration (if any), and then execute
+          the post-configuration script (if any), in that order.</t>
 
-          <t>When the onboarding information is obtained from a trusted bootstrap server, the
-          device SHOULD send progress reports throughout the bootstrapping process using the
-          bootstrap server's "report-progress" RPC.  When the onboarding information was obtained
-          from an untrusted bootstrap server, the device SHOULD NOT send any progress reports to
-          the bootstrap server, even after validating any signed data it may have received 
-          from the bootstrap server.</t>
+          <t>When the onboarding information is obtained from a trusted bootstrap server,
+          the device MUST send the "bootstrap-initiated" progress report, and send either
+          a "bootstrap-complete" progress report or an error-specific progress report.
+          The device MAY send other progress reports throughout the bootstrapping process,
+          as may be desired for visibility reasons.</t>
 
-          <t>If boot image criteria is specified, the device MUST first determine if the boot
-          image it is running satisfies the specified boot image criteria.  If the device is
-          not running the specified boot image, then it MUST install the specified boot image
-          or fail processing the onboarding information.  In order to install the specified
-          boot image, the device MUST download, verify, and install the specified boot image,
-          and then reboot.  To verify the downloaded boot image, the device MUST check that
-          the boot image file matches the verification fingerprint supplied by the onboarding
-          information.  Upon rebooting, the bootstrapping process runs again, which will
-          eventually come to this very point, but this time the device will be running
-          the specified boot image, and thus will move to processing the next step.</t>
+          <t>When the onboarding information is obtained from an untrusted bootstrap
+          server, the device MUST NOT send any progress reports to the bootstrap server.</t>
 
-          <t>Next, for devices that support executing scripts, if a pre-configuration
-          script has been specified, the device MUST execute the script and check if the script had any warnings or errors.  In the case of
-          errors, the device MUST reset itself in such a way that wipes out any bad
-          state the script may have left behind.</t>
+          <t>If the device encounters an error at any step, it MUST stop processing the
+          onboarding information and return to the bootstrapping sequence described in
+          <xref target="boot-sequence"/>. In the context of a recursive algorithm, the
+          device MUST return to the enclosing loop, not back to the very beginning.  Some
+          state MAY be retained from the bootstrapping process (e.g., updated boot image,
+          logs, remnants from a script, etc.), however, the retained state MUST NOT
+          hinder the ability for the device to continue the bootstrapping sequence
+          (i.e., process onboarding information from another bootstrap server).</t>
 
-          <t>Next, if an initial configuration has been supplied, the device MUST commit
-          the provided initial configuration, using the approach specified by the 
-          "configuration-handling" leaf.   If there is an error, and the device
-          previously executed a pre-configuration script, the device does not need to
-          reset itself in order to wipe out any state the script may have left behind;
-          this implies that the pre-configuration script must be idempotent.</t>
+          <t>At this point, the specific ordered sequence of actions the device MUST
+          perform is described.</t>
 
-          <t>Again, for devices that support executing scripts, if a post-configuration script
-          has been specified, the device MUST execute the script and check if the script had any warnings or errors.  In the case of errors,
-          the device MUST reset itself in such a way that wipes out any bad state the
-          script may have left behind.</t>
+          <t>If the onboarding information is obtained from a trusted bootstrap server,
+          the device MUST send a "bootstrap-initiated" progress report.  It is an error
+          if the device does not receive back the "204 No Content" HTTP status line.
+          If an error occurs, the device MUST try to send a "bootstrap-error" progress
+          report before exiting.</t>
+
+          <t>The device MUST parse the provided onboarding information document, to 
+          extract values used in subsequent steps.  Whether using a stream-based parser
+          or not, if there is an error when parsing the onboarding information, and the
+          device is connected to a trusted bootstrap server, the device MUST try to send
+          a "parsing-error" progress report before exiting.</t>
+
+          <t>If boot image criteria are specified, the device MUST first determine if the
+          boot image it is running satisfies the specified boot image criteria.  If the 
+          device is already running the specified boot image, then it skips the remainder
+          of this step.  If the device is not running the specified boot image, then it
+          MUST download, verify, and install, in that order, the specified boot
+          image, and then reboot.  If connected to a trusted bootstrap server, the
+          device MAY try to send a "boot-image-mismatch" progress report.  To download
+          the boot image, the device MUST only use the URIs supplied by the onboarding
+          information.  To verify the boot image, the device MUST either use one of the
+          verification fingerprints supplied by the onboarding information, or use a
+          cryptographic signature embedded into the boot image itself using a mechanism
+          not described by this document.  Before rebooting, if connected to a trusted
+          bootstrap server, the device MUST try to send a "boot-image-installed-rebooting"
+          progress report.  Upon rebooting, the bootstrapping process runs again, which
+          will eventually come to this step again, but then the device will be running
+          the specified boot image, and thus will move to processing the next step.  If
+          an error occurs at any step while the device is connected to a trusted
+          bootstrap server (i.e., before the reboot), the device MUST try to send
+          a "boot-image-error" progress report before exiting.</t>
+
+          <t>If a pre-configuration script has been specified, the device MUST execute the
+          script, capture any output emitted from the script, and check if the script had
+          any warnings or errors.  If an error occurs while the device is connected to a
+          trusted bootstrap server, the device MUST try to send a "pre-script-error"
+          progress report before exiting.</t>
+ 
+          <t>If an initial configuration has been specified, the device MUST atomically
+          commit the provided initial configuration, using the approach specified by the 
+          "configuration-handling" leaf.  If an error occurs while the device is connected
+          to a trusted bootstrap server, the device MUST try to send a "config-error"
+          progress report before exiting.</t>
+
+          <t>If a post-configuration script has been specified, the device MUST execute the
+          script, capture any output emitted from the script, and check if the script had
+          any warnings or errors. If an error occurs while the device is connected to a
+          trusted bootstrap server, the device MUST try to send a "post-script-error"
+          progress report before exiting.</t>
+
+          <t>If the onboarding information was obtained from a trusted bootstrap server,
+          and the result of the bootstrapping process did not disable the "flag to enable
+          zerotouch bootstrapping" described in <xref target="initial-state"/>, the device
+          SHOULD send an "bootstrap-warning" progress report.</t>
+
+          <t>If the onboarding information was obtained from a trusted bootstrap server,
+          the device MUST send a "bootstrap-complete" progress report.  It is an error
+          if the device does not receive back the "204 No Content" HTTP status line.
+          If an error occurs, the device MUST try to send a "bootstrap-error" progress
+          report before exiting.</t>
 
           <t>At this point, the device has completely processed the bootstrapping
-          data.  If the device obtained the onboarding information from a trusted
-          bootstrap server, the device MUST post the "bootstrap-complete" progress
-          report now, using the bootstrap server's "report-progress" RPC.</t>
+          data.</t>
 
           <t>The device is now running its initial configuration.  Notably,
           if NETCONF Call Home or RESTCONF Call Home <xref target="RFC8071"/> is
-          configured, the device initiates trying to establish a call home connection
-          at this time.</t>
+          configured, the device initiates trying to establish the call home
+          connections at this time.</t>
+
+          <t>Implementation Notes:
+           <list>
+            <t>Implementations may vary in how to ensure no unwanted state is retained
+            when an error occurs.</t>
+            <t>Following are some guidelines for if the implementation chooses to undo
+            previous steps:
+              <list style="symbols">
+                <t>When an error occurs, the device must roll out of the current step and
+                any previous steps.</t>
+                <t>Most steps are atomic.  For instance, when a commit fails, it is
+                expected to have no impact on the configuration.  Similarly, if the
+                error occurs when executing a script, the script will gracefully exit.</t>
+                <t>In case the error occurs after the initial configuration was committed,
+                the device must restore the configuration to the configuration that
+                existed prior to the configuration being committed.</t>
+                <t>In case the error occurs after a script had executed successfully,
+                it may be helpful for the implementation to define scripts as being
+                able to take a conceptual input parameter indicating that the script
+                should remove its previously set state.</t>
+              </list>
+            </t>
+           </list>
+          </t>
 
         </section>
       </section>  <!-- end device details -->
@@ -1441,34 +1501,6 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
 
       <section title="Security Considerations" anchor="sec-con">
-
-        <section title="Immutable Storage for Trust Anchors">
-          <t>Devices MUST ensure that all their trust anchor
-          certificates, including those for connecting to bootstrap
-          servers and verifying ownership vouchers, are protected from
-          external modification.</t>
-          <t>It may be necessary to update these
-          certificates over time (e.g., the manufacturer wants to
-          delegate trust to a new CA).  It is therefore expected
-          that devices MAY update these trust anchors when
-          needed through a verifiable process, such as a
-          software upgrade using signed software images.</t>
-        </section>
-        <section title="Secure Storage for Long-lived Private Keys">
-          <t>Manufacturer-generated device identifiers may have very long
-          lifetimes.  For instance, <xref target="Std-802.1AR-2009"/>
-          recommends using the "notAfter" value 99991231235959Z in IDevID
-          certificates.  Given the long-lived nature of these private keys,
-          it is paramount that they are stored so as to resist discovery,
-          such as in a secure cryptographic processor (e.g., a TPM).</t>
-        </section>
-        <section title="Use of IDevID Certificates">
-          <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2009"/>,
-          are RECOMMENDED, both for the TLS-level client certificate used
-          by devices when connecting to a bootstrap server, as well as for
-          the device identity certificate used by owners when encrypting
-          the zerotouch artifacts.</t>
-        </section>
         <section title="Clock Sensitivity">
           <t>The solution in this document relies on TLS certificates,
           owner certificates, and ownership vouchers, all of which
@@ -1488,7 +1520,32 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>Implementations SHOULD NOT rely on NTP for time, as
           NTP is not a secure protocol.</t>
         </section>
-        <section title="Blindly authenticating a bootstrap server">
+        <section title="Use of IDevID Certificates">
+          <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2009"/>,
+          are RECOMMENDED, both for the TLS-level client certificate used
+          by devices when connecting to a bootstrap server, as well as for
+          the device identity certificate used by owners when encrypting
+          the zero touch artifacts.</t>
+        </section>
+        <section title="Immutable Storage for Trust Anchors">
+          <t>Devices MUST ensure that all their trust anchor certificates,
+          including those for connecting to bootstrap servers and verifying
+          ownership vouchers, are protected from external modification.</t>
+          <t>It may be necessary to update these certificates over time 
+          (e.g., the manufacturer wants to delegate trust to a new CA).
+          It is therefore expected that devices MAY update these trust
+          anchors when needed through a verifiable process, such as a
+          software upgrade using signed software images.</t>
+        </section>
+        <section title="Secure Storage for Long-lived Private Keys">
+          <t>Manufacturer-generated device identifiers may have very long
+          lifetimes.  For instance, <xref target="Std-802.1AR-2009"/>
+          recommends using the "notAfter" value 99991231235959Z in IDevID
+          certificates.  Given the long-lived nature of these private keys,
+          it is paramount that they are stored so as to resist discovery,
+          such as in a secure cryptographic processor (e.g., a TPM).</t>
+        </section>
+        <section title="Blindly Authenticating a Bootstrap Server">
           <t>This document allows a device to blindly authenticate a
           bootstrap server's TLS certificate.  It does so to allow
           for cases where the redirect information may be obtained
@@ -1499,31 +1556,44 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           assert that data downloaded from the server is signed.</t>
         </section>
         <section title="Disclosing Information to Untrusted Servers">
-          <t>This document enables devices to establish provisional
-          connections to bootstrap servers, in order for the bootstrap
-          server to provide either unsigned redirect information or
-          signed data of any type to the device.  However, since the server is
-          untrusted, it may be under the control of an adversary, and
-          therefore devices should be cautious about the data they send
-          in such cases.</t>
-          <t>This document requires devices identify and authenticate
-          themselves to untrusted bootstrap servers.  Depending on the
-          authentication mechanisms used, this means that, at a minimum,
-          the device's serial number may be disclosed to an adversary.
-          Serial numbers are ubiquitous and prominently contained in
-          invoices and on labels affixed to devices and their packaging.
-          That said, serial numbers many times encode revealing information,
-          such as the device's model number, manufacture date, and/or
-          manufacturing sequence number.  Knowledge of this information
-          may provide an adversary with details needed to launch an
-          attack.</t>
-          <t>In addition to the information relayed during the authentication,
-          other potentially identifying values that may be disclosed to an
-          untrusted server, including "os-name", "os-version", "hw-model",
-          and progress reports.  In order to address this issue, it is
-          RECOMMENDED that bootstrap server implementations promote the
-          untrusted connection to a trusted connection, as described in
-          <xref target="untrust2trust"/>.</t>
+          <t>This document allows devices to establish connections to
+          untrusted bootstrap servers.  However, since the bootstrap
+          server is untrusted, it may be under the control of an
+          adversary, and therefore devices SHOULD be cautious about
+          the data they send to the bootstrap server in such cases.</t>
+          <t>Devices send different data to bootstrap servers at each
+          of the protocol layers TCP, TLS, HTTP, and RESTCONF.</t>
+          <t>At the TCP protocol layer, devices may relay their IP address,
+          subject to network translations.  Disclosure of this information
+          is not considered a security risk.</t>
+          <t>At the TLS protocol layer, devices may use a client certificate
+          to identify and authenticate themselves to untrusted bootstrap
+          servers.  At a minimum, the client certificate must disclose
+          the device's serial number, and may disclose additional information
+          such as the device's manufacturer, hardware model, public key, etc.
+          Knowledge of this information may provide an adversary with details
+          needed to launch an attack.  It is RECOMMENDED that secrecy of the
+          network topology is not relied on for security.</t>
+          <t>At the HTTP protocol layer, devices may use an HTTP authentication
+          scheme to identify and authenticate themselves to untrusted bootstrap
+          servers.  At a minimum, the authentication scheme must disclose the
+          device's serial number and, concerningly, may, depending on the
+          authentication mechanism used, reveal a secret that is only supposed
+          to be known to the device (e.g., a password).  Devices SHOULD NOT use
+          an HTTP authentication scheme with an untrusted bootstrap server that
+          reveals a secret that is only supposed to be known to the device.</t>
+          <t>At the RESTCONF protocol layer, devices use the "get-bootstrapping-data"
+          RPC, but not the "report-progress" RPC, when connected to an untrusted
+          bootstrap server.  The "get-bootstrapping-data" RPC allows additional
+          input parameters to be passed to the bootstrap server (e.g., "os-name",
+          "os-version", "hw-model").  It is RECOMMENDED that devices only pass
+          the "untrusted-connection" input parameter to an untrusted bootstrap
+          server.  While it is okay for a bootstrap server to immediately
+          return signed onboarding information, it is RECOMMENDED that
+          bootstrap servers instead promote the untrusted connection to a
+          trusted connection, as described in <xref target="untrust2trust"/>,
+          thus enabling the device to use the "report-progress" RPC while
+          processing the onboarding information.</t>
        </section>
         <section title="Sequencing Sources of Bootstrapping Data">
           <t>For devices supporting more than one source for bootstrapping
@@ -1532,6 +1602,141 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           equally secure.  However, from a privacy perspective, it is
           RECOMMENDED that devices access local sources before accessing
           remote sources.</t>
+        </section>
+        <section title="Safety of Private Keys used for Trust">
+          <t>The solution presented in this document enables bootstrapping
+          data to be trusted in two ways, either through transport level
+          security or through the signing of artifacts.</t>
+          <t>When transport level security (i.e., a trusted bootstrap server)
+          is used, the private key for the end-entity certificate must be
+          online in order to establish the TLS connection.</t>
+          <t>When artifacts are signed, the signing key is required to be
+          online only when the bootstrap server is returning a dynamically
+          generated signed-data response.  For instance, a bootstrap server,
+          upon receiving the "untrusted-connection" input parameter to the
+          "get-bootstrapping-data" RPC, may dynamically generate a response
+          that is signed.</t>
+          <t>Bootstrap server administrators are RECOMMENDED to follow best
+          practice to protect the private key used for any online operation.
+          Use of an hardware security module (HSM) is RECOMMENDED.  If an 
+          HSM is not used, frequent private key refreshes are RECOMMENDED.</t>
+          <t>For best security, it is RECOMMENDED that owners only provide
+          signed data, for use with any source of bootstrapping data
+          (see <xref target="sources"/>), using a private key that is not
+          accessible to a network of questionable integrity.</t>
+        </section>
+        <section title="Infinite Redirection Loops and Sequences">
+          <t>The recursive algorithm described in this document enables
+          redirect information to lead to more redirect information,
+          which may cause a device to redirect forever.</t>
+          <t>Whilst a trusted bootstrap server may be misconfigured
+          to cause a device to return to it again ad infitum, the
+          greater concern is that any untrusted source of bootstrapping
+          data could be used by an adversary to purposely cause this.</t>
+          <t>Infinite redirections are most easily constructed via
+          loops, where some bootstrap server redirects back to a
+          previously visited bootstrap server.  Infinite redirections
+          can also be created without a loop by an adversary dynamically
+          instantiated bootstrap servers on the fly.</t>
+          <t>Implementations SHOULD limit the maximum number of recursive 
+          redirects allowed; no more than a half dozen seems reasonable.</t>
+        </section>
+        <section title="Increased Reliance on Manufacturers">
+          <t>The zero touch bootstrapping protocol presented in this document shifts
+          some control of initial configuration away from the rightful owner of the
+          device and towards the manufacturer and its delegates.</t>
+          <t>The manufacturer maintains the list of well-known bootstrap servers
+          its devices will trust.  By design, if no bootstrapping data is found via
+          other methods first, the device will try to reach out to the well-known
+          bootstrap servers.  There is no mechanism to prevent this from occurring
+          other than by using an external firewall to block such connections.
+          Concerns related to trusted bootstrap servers are discussed in 
+          <xref target="seccon-trusted-bootstrap-servers"/>.</t>
+          <t>Similarly, the manufacturer maintains the list of voucher signing
+          authorities its devices will trust.  The voucher signing authorities
+          issue the vouchers that enable a device to trust an owner's domain
+          certificate.  It is vital that manufacturers ensure the integrity
+          of these voucher signing authorities, so as to avoid incorrect
+          assignments.</t>
+          <t>Operators should be aware that this system assumes that they trust
+          all the pre-configured bootstrap servers and voucher signing authorities
+          designated by the manufacturers.</t>
+        </section>
+        <section title="Concerns with Trusted Bootstrap Servers"
+                 anchor="seccon-trusted-bootstrap-servers">
+          <t>Trusted bootstrap servers, whether well-known or discovered,
+          have the potential cause problems, such as the following.
+            <list style="symbols">
+              <t>A trusted bootstrap server that has been compromised may be
+              modified to return unsigned data of any sort.  For instance, a
+              bootstrap server that is only suppose to return redirect 
+              information might be modified to return onboarding information.
+              Similarly, a bootstrap server that is only supposed to return
+              signed data, may be modified to return unsigned data.  In both
+              cases, the device will accept the response, unaware that it
+              wasn't supposed to be any different.  It is RECOMMENDED that
+              maintainers of trusted bootstrap servers ensure that their
+              systems are not easily compromised and, in case of compromise,
+              have mechanisms in place to detect and remediate the compromise
+              as expediently as possible.</t>
+              <t>A trusted bootstrap server hosting either unsigned or signed
+              but not encrypted data may disclose information to unwanted parties
+              (e.g., an administrator of the bootstrap server).  This is a privacy
+              issue only, but could reveal information that might be used in a
+              subsequent attack.  Disclosure of redirect information has limited
+              exposure (it is just a list of bootstrap servers), whereas disclosure
+              of onboarding information could be highly revealing (e.g., network
+              topology, firewall policies, etc.).  It is RECOMMENDED that operators
+              encrypt the bootstrapping data when its contents are considered 
+              sensitive, even to the administrators of a bootstrap server.</t>
+            </list>
+          </t>
+        </section>
+        <section title="Validity Period for Zero Touch Information">
+          <t>Zero touch information does not specify a validity period.  For
+          instance, neither redirect information nor onboarding information
+          enable "not-before" or "not-after" values to be specified, and
+          neither artifact alone can be revoked.</t>
+
+          <t>For unsigned data provided by an untrusted source of bootstrapping
+          data, it is not meaningful to discuss its validity period when the
+          information itself has no authenticity and may have come from anywhere.</t>
+
+          <t>For unsigned data provided by a trusted source of bootstrapping
+          data (i.e., a bootstrap server), the availability of the data
+          is the only measure of it being current.  Since the untrusted data
+          comes from a trusted source, its current availability is meaningful
+          and, since bootstrap servers use TLS, the contents of the exchange
+          cannot be modified or replayed.</t>
+
+          <t>For signed data, whether provided by an untrusted or trusted
+          source of bootstrapping data, the validity is constrained by
+          the validity of the both the ownership voucher and owner
+          certificate used to authenticate it.</t>
+          
+          <t>The ownership voucher's validity is primarily constrained by 
+          the ownership voucher's "created-on" and "expires-on" nodes.  
+          While <xref target="RFC8366"/> recommends short-lived vouchers
+          (see Section 6.1), the "expires-on" node may be set to any point
+          in the future, or omitted altogether to indicate that the voucher
+          never expires.  The ownership voucher's validity is secondarily
+          constrained by the manufacturer's PKI used to sign the voucher;
+          whilst an ownership voucher cannot be revoked directly, the PKI
+          used to sign it may be.</t>
+
+          <t>The owner certificate's validity is primarily constrained by
+          the X.509's validity field, the "notBefore" and "notAfter" values,
+          as specified by the certificate authority that signed it.  The
+          owner certificate's validity is secondarily constrained by the
+          validity of the PKI used to sign the voucher.  Owner certificates
+          may be revoked directly.</t>
+
+          <t>For owners that wish to have maximum flexibility in their
+          ability to specify and constrain the validity of signed data,
+          it is RECOMMENDED that a unique owner certificate is created
+          for each signed artifact.  Not only does this enable a
+          validity period to be specified, for each artifact, but it
+          also enables to the validity of each artifact to be revoke.</t>
         </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
@@ -1565,8 +1770,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>The ietf-zerotouch-bootstrap-server module defined in this document
           specifies an API for a RESTCONF <xref target="RFC8040"/>.  The lowest
           RESTCONF layer is HTTPS, and the mandatory-to-implement secure transport
-          is TLS <xref target="RFC5246"/>.</t>
-          <t>The NETCONF Access Control Model (NACM) <xref target="RFC6536"/>
+          is TLS <xref target="RFC8446"/>.</t>
+          <t>The NETCONF Access Control Model (NACM) <xref target="RFC8341"/>
           provides the means to restrict access for particular users
           to a preconfigured subset of all available protocol operations
           and content.</t>
@@ -1694,7 +1899,6 @@ Reference: [RFCXXXX]
         <?rfc include="reference.RFC.5280.xml"?>
         <?rfc include="reference.RFC.6020.xml"?>
         <?rfc include="reference.RFC.6125.xml"?>
-        <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6762.xml"?>
         <?rfc include="reference.RFC.6763.xml"?>
         <?rfc include="reference.RFC.6991.xml"?>
@@ -1734,13 +1938,14 @@ Reference: [RFCXXXX]
 
       <references title="Informative References">
         <?rfc include="reference.RFC.3688.xml"?>
-        <?rfc include="reference.RFC.5246.xml"?>
+        <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
-        <?rfc include="reference.RFC.6536.xml"?>
         <?rfc include="reference.RFC.6960.xml"?>
         <?rfc include="reference.RFC.6698.xml"?>
         <?rfc include="reference.RFC.8071.xml"?>
         <?rfc include="reference.RFC.8340.xml"?>
+        <?rfc include="reference.RFC.8341.xml"?>
+        <?rfc include="reference.RFC.8446.xml"?>
         <?rfc include="reference.I-D.ietf-netconf-crypto-types"?>
         <?rfc include="reference.I-D.ietf-netconf-trust-anchors"?>
       </references>
@@ -2334,7 +2539,7 @@ device  |        |             |            |        |         |
             <t>updated a few of the notification enumerations to be
             more consistent with the other enumerations (following the
             warning/error pattern).</t>
-            <t>updated the information-type artifact to state how it's
+            <t>updated the information-type artifact to state how it is
             encoded, matching the language that was in Appendix B.</t>
           </list>
           </t>
@@ -2510,13 +2715,52 @@ device  |        |             |            |        |         |
             </list>
           </t>
         </section>
+        <section title="22 to 23">
+          <t>
+            <list style="symbols">
+              <t>Rewrote section 5.6 (processing onboboarding information)
+              to be clearer about error handling and retained state.
+              Specifically:
+                <list style="symbols">
+                  <t>Clarified that a script, upon having an error, must
+                     gracefully exit, cleaning up any state that might hinder
+                     subsequent executions.</t>
+                  <t>Added ability for scripts to be executed again with a
+                     flag enabling them to clean up state from a previous
+                     execution.</t>
+                  <t>Clarified that the conifguration commit is atomic.</t>
+                  <t>Clarified that any error encountered after committing the
+                     configuration (e.g., in the "post-configuration-script")
+                     must rollback the configuration to the previous
+                     configuration.</t>
+                  <t>Clarified that failure to successfully deliver the
+                     "bootstrap-initiated" and "bootstrap-complete" progress
+                     types must be treated as an error.</t>
+                  <t>Clarified that "return to bootstrapping sequence" is to be
+                     interpreted in the recursive context.  Meaning that the
+                     device rolls-back one loop, rather than start over from
+                     scratch.</t>
+                </list>
+              </t>
+              <t>Changed how a device verifies a boot-image from just "MUST
+                 match one of the supplied fingerprints" to also allow for
+                 the verification to use an cyrptographic signature embedded
+                 into the image itself.</t>
+              <t>Added more "progress-type" enums for visibility reasons, 
+                 enabling more strongly-typed debug information to be sent
+                 to the bootstrap server.</t>
+              <t>Added Security Considerations based on early SecDir review.</t>
+              <t>Added recommendation for device to send warning if the 
+                 initial config does not disable the bootstrapping process.</t>
+            </list>
+          </t>
+        </section>
       </section>
 
       <section title="Acknowledgements" numbered="no">
         <t>The authors would like to thank for following for
         lively discussions on list and in the halls (ordered
         by last name):
-        David Harrington,
         Michael Behringer,
         Dean Bogdanovic,
         Martin Bjorklund,
@@ -2525,7 +2769,9 @@ device  |        |             |            |        |         |
         Stephen Farrell,
         Stephen Hanna,
         Wes Hardaker,
+        David Harrington,
         Radek Krejci,
+        David Mandelberg,
         Russ Mundy,
         Reinaldo Penno,
         Randy Presuhn,
