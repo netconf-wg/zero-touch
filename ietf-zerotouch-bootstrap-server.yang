@@ -130,6 +130,27 @@ module ietf-zerotouch-bootstrap-server {
       }
     }
     output {
+      leaf reporting-level {
+        type enumeration {
+          enum standard {
+            description
+              "Send just the progress reports required by RFC XXXX.";
+          }
+          enum verbose {
+            description
+              "Send additional progress reports that might help
+               troubleshooting an SZTP bootstrapping issue.";
+          }
+        }
+        default standard;
+        description
+          "Specifies the reporting level for progress reports the
+           bootstrap server would like to receive when processing
+           onboarding information.  Progress reports are not sent
+           when processing redirect information, or when the
+           bootstrap server is untrusted (e.g., device sent the
+           '<untrusted-connection>' input parameter).";
+      }
       leaf zerotouch-information {
         type cms;
         mandatory true;
@@ -264,6 +285,11 @@ module ietf-zerotouch-bootstrap-server {
                a new boot image and is about to reboot.  After
                sending this progress type, the device is not
                expected to access the bootstrap server again.";
+          }
+          enum "boot-image-complete" {
+            description
+              "Indicates that the device believes that it is
+               running the correct boot-image.";
           }
           enum "pre-script-initiated" {
             description

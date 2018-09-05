@@ -477,7 +477,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           sensitive.</t>
           <t>Each of the three artifacts are encrypted in the same way, by the
           unencrypted form being encapsulated inside a CMS EnvelopedData type.</t>
-          <t>As a consequence, both the zerotouch-information and ownership
+          <t>As a consequence, both the zerotouch information and ownership
           voucher artifacts are signed and then encrypted, never encrypted
           and then signed.</t>
           <t>This sequencing has the advantage of shrouding the signer's
@@ -1050,9 +1050,13 @@ with revocations                         revocations     revocations
 
           <t>When the onboarding information is obtained from a trusted bootstrap server,
           the device MUST send the "bootstrap-initiated" progress report, and send either
-          a "bootstrap-complete" progress report or an error-specific progress report.
-          The device MAY send other progress reports throughout the bootstrapping process,
-          as may be desired for visibility reasons.</t>
+          a terminating "boot-image-installed-rebooting", "bootstrap-complete", or error
+          specific progress report.  If the bootstrap server's "get-bootstrapping-data"
+          RPC-reply's "reporting-level" node is set to "verbose", the device MUST
+          additionally send all appropriate non-terminating progress reports (e.g.,
+          initiated, warning, complete, etc.).  Regardless the reporting-level indicated
+          by the bootstrap server, the device MAY send progress reports beyond the
+          mandatory ones specified for the given reporting level.</t>
 
           <t>When the onboarding information is obtained from an untrusted bootstrap
           server, the device MUST NOT send any progress reports to the bootstrap server.</t>
@@ -1060,11 +1064,13 @@ with revocations                         revocations     revocations
           <t>If the device encounters an error at any step, it MUST stop processing the
           onboarding information and return to the bootstrapping sequence described in
           <xref target="boot-sequence"/>. In the context of a recursive algorithm, the
-          device MUST return to the enclosing loop, not back to the very beginning.  Some
-          state MAY be retained from the bootstrapping process (e.g., updated boot image,
-          logs, remnants from a script, etc.), however, the retained state MUST NOT
-          hinder the ability for the device to continue the bootstrapping sequence
-          (i.e., process onboarding information from another bootstrap server).</t>
+          device MUST return to the enclosing loop, not back to the very beginning.
+          Some state MAY be retained from the bootstrapping process (e.g., updated
+          boot image, logs, remnants from a script, etc.).  However, the retained
+          state MUST NOT be active in any way (e.g., no new configuration or running
+          of software), and MUST NOT hinder the ability for the device to continue
+          the bootstrapping sequence (i.e., process onboarding information from
+          another bootstrap server).</t>
 
           <t>At this point, the specific ordered sequence of actions the device MUST
           perform is described.</t>
@@ -1573,15 +1579,16 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           such as the device's manufacturer, hardware model, public key, etc.
           Knowledge of this information may provide an adversary with details
           needed to launch an attack.  It is RECOMMENDED that secrecy of the
-          network topology is not relied on for security.</t>
+          network constituency is not relied on for security.</t>
           <t>At the HTTP protocol layer, devices may use an HTTP authentication
           scheme to identify and authenticate themselves to untrusted bootstrap
           servers.  At a minimum, the authentication scheme must disclose the
           device's serial number and, concerningly, may, depending on the
           authentication mechanism used, reveal a secret that is only supposed
           to be known to the device (e.g., a password).  Devices SHOULD NOT use
-          an HTTP authentication scheme with an untrusted bootstrap server that
-          reveals a secret that is only supposed to be known to the device.</t>
+          an HTTP authentication scheme (e.g., HTTP Basic) with an untrusted
+          bootstrap server that reveals a secret that is only supposed to be
+          known to the device.</t>
           <t>At the RESTCONF protocol layer, devices use the "get-bootstrapping-data"
           RPC, but not the "report-progress" RPC, when connected to an untrusted
           bootstrap server.  The "get-bootstrapping-data" RPC allows additional
@@ -1621,9 +1628,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           Use of an hardware security module (HSM) is RECOMMENDED.  If an 
           HSM is not used, frequent private key refreshes are RECOMMENDED.</t>
           <t>For best security, it is RECOMMENDED that owners only provide
-          signed data, for use with any source of bootstrapping data
-          (see <xref target="sources"/>), using a private key that is not
-          accessible to a network of questionable integrity.</t>
+          bootstrapping data that has been signed, using a private key that
+          is not accessible to a network of questionable integrity, and
+          encrypted, using the device's public key from its secure device
+          identity certificate.</t>
         </section>
         <section title="Infinite Redirection Loops and Sequences">
           <t>The recursive algorithm described in this document enables
@@ -1665,7 +1673,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         <section title="Concerns with Trusted Bootstrap Servers"
                  anchor="seccon-trusted-bootstrap-servers">
           <t>Trusted bootstrap servers, whether well-known or discovered,
-          have the potential cause problems, such as the following.
+          have the potential to cause problems, such as the following.
             <list style="symbols">
               <t>A trusted bootstrap server that has been compromised may be
               modified to return unsigned data of any sort.  For instance, a
@@ -1747,24 +1755,23 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           must be signed, in order for the device to trust it.</t>
           <t>Implementations should be aware that signed bootstrapping data
           only protects the data from modification, the contents are still
-          visible to others.  This doesn't affect Security so much as Privacy.
+          visible to others.  This doesn't affect security so much as privacy.
           That the contents may be read by unintended parties when accessed by
           insecure mechanisms is considered next.</t>
           <t>The ietf-zerotouch-information module defines a top-level "choice"
           statement that declares the contents are either "redirect-information"
           or "onboarding-information".  Each of these two cases are now considered.</t>
-          <t>When the contents of the CMS structure are redirect-information,
+          <t>When the content of the CMS structure is redirect-information,
           an observer can learn about the bootstrap servers the device is being
-          directed, their IP addresses or hostnames, ports, and trust anchor
+          directed to, their IP addresses or hostnames, ports, and trust anchor
           certificates.  Knowledge of this information could provide an observer
           some insight into a network's inner structure.</t>
-          <t>When the contents of the CMS structure are onboarding-information,
-          as observer could learn considerable information about how the device
-          is to be provisioned.  This information includes the specific operating
-          system version, the initial configuration, and the specific scripts that
-          the device is to run.  All of this information should be considered
-          highly sensitive and precautions should be taken to protect it from
-          falling into the wrong hands.</t>
+          <t>When the content of the CMS structure is onboarding-information,
+          an observer could learn considerable information about how the device
+          is to be provisioned.  This information includes the operating system
+          version, initial configuration, and script contents.  This information
+          should be considered sensitive and precautions should be taken to 
+          protect it (e.g., encrypt artifact with device public key).</t>
         </section>
         <section title="The &quot;ietf-zerotouch-bootstrap-server&quot; YANG Module">
           <t>The ietf-zerotouch-bootstrap-server module defined in this document
@@ -2057,13 +2064,13 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
           device establishes a secure connection to the bootstrap
           server.  Unbeknownst to the device, it is the same bootstrap
           server it was connected to previously but, because the device
-          is able to authenticate the bootstrap server tis time, it sends its
+          is able to authenticate the bootstrap server this time, it sends its
           normal "get-bootstrapping-data" request (i.e., with additional
           input parameters) as well as its progress reports (not depicted).</t>
           <t>This time, because the "untrusted-connection" parameter was
           not passed, having access to all of the device's input parameters,
-          the bootstrap server returns unsigned onboarding information
-          to the device.</t>
+          the bootstrap server returns, in this example, unsigned onboarding
+          information to the device.</t>
         </list></t>
       </section>
       <section title="Workflow Overview" anchor="workflow-overview">
@@ -2294,8 +2301,8 @@ device  |        |             |            |        |         |
    |                                     |              |         |
    | 3. if onboarding information found, |              |         |
    |    initialize self and, only if     |              |         |
-   |    source is a bootstrap server,    |              |         |
-   |    send progress updates.           |              |         |
+   |    source is a trusted bootstrap    |              |         |
+   |    server, send progress reports.   |              |         |
    |------------------------------------>#              |         |
    |                                     # webhook      |         |
    |                                     #----------------------->|
@@ -2744,7 +2751,7 @@ device  |        |             |            |        |         |
               </t>
               <t>Changed how a device verifies a boot-image from just "MUST
                  match one of the supplied fingerprints" to also allow for
-                 the verification to use an cyrptographic signature embedded
+                 the verification to use an cryptographic signature embedded
                  into the image itself.</t>
               <t>Added more "progress-type" enums for visibility reasons, 
                  enabling more strongly-typed debug information to be sent
@@ -2752,6 +2759,14 @@ device  |        |             |            |        |         |
               <t>Added Security Considerations based on early SecDir review.</t>
               <t>Added recommendation for device to send warning if the 
                  initial config does not disable the bootstrapping process.</t>
+            </list>
+          </t>
+        </section>
+        <section title="23 to 24">
+          <t>
+            <list style="symbols">
+              <t>Follow-ups from SecDir and Shepherd.</t>
+              <t>Added "boot-image-complete" enumeration.</t>
             </list>
           </t>
         </section>

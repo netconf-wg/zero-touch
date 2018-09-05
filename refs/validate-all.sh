@@ -84,7 +84,7 @@ fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-reply-trusted.xml..."
-cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | grep -v "xmlns=" | sed 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
+cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' -e 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
 response=`yanglint -s -t rpcreply ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
