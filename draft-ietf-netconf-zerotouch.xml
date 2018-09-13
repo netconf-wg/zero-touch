@@ -332,8 +332,8 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
         <t>This document defines three artifacts that can be made available
         to devices while they are bootstrapping.  Each source of bootstrapping
-        information specifies how it provides the artifacts
-        defined in this section (see <xref target="sources"/>).</t>
+        data specifies how it provides the artifacts defined in this section
+        (see <xref target="sources"/>).</t>
 
         <section title="Zero Touch Information" anchor="zerotouch-information">
           <t>The zero touch information artifact encodes the essential bootstrapping
@@ -477,7 +477,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           sensitive.</t>
           <t>Each of the three artifacts are encrypted in the same way, by the
           unencrypted form being encapsulated inside a CMS EnvelopedData type.</t>
-          <t>As a consequence, both the zerotouch information and ownership
+          <t>As a consequence, both the zero touch information and ownership
           voucher artifacts are signed and then encrypted, never encrypted
           and then signed.</t>
           <t>This sequencing has the advantage of shrouding the signer's
@@ -502,34 +502,38 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           various bootstrapping situations described in this document.  These groupings
           are:
             <list style="hanging" hangIndent="6">
-                <t hangText="   Unsigned Information:">This grouping is useful for cases
+                <t hangText="   Unsigned Data:">This artifact grouping is useful for cases
                   when transport level security can be used to convey trust (e.g., HTTPS),
-                  or when the information can be processed in a provisional manner (i.e.
+                  or when the zero touch information can be processed in a provisional manner (i.e.
                   unsigned redirect information).</t>
-                <t hangText="   Signed Information, without revocations:">This grouping
-                  is useful when signed information is needed, because it is obtained
-                  from an untrusted source, and it cannot be processed provisionally,
-                  and yet either revocations are not needed or they can be obtained
+                <t hangText="   Signed Data, without revocations:">This artifact grouping
+                  is useful when signed data is needed (i.e., because the data is obtained
+                  from an untrusted source and it cannot be processed provisionally)
+                  and either revocations are not needed or the revocations can be obtained
                   dynamically.</t>
-                <t hangText="   Signed Information, with revocations:">This grouping
-                  is useful when signed information is needed, because it is obtained
-                  from an untrusted source, and it cannot be processed provisionally,
-                  and revocations are needed and cannot be obtained dynamically.</t>
+                <t hangText="   Signed Data, with revocations:">This artifact grouping
+                  is useful when signed data is needed (i.e., because the data is obtained
+                  from an untrusted source and it cannot be processed provisionally), and
+                  revocations are needed, and the revocations cannot be obtained dynamically.</t>
             </list>
           </t>
-          <t>The artifacts associated with these groupings are described below:
+          <t>The presence of each artifact, and any distinguishing characteristics, are identified
+             for each artifact grouping in the table below ("yes/no" regards if the
+              artifact is present in the artifact grouping):
             <figure>
               <artwork><![CDATA[
-                        Zero Touch       Ownership       Owner
-Grouping                Information      Voucher         Certificate
---------------------    -------------    ------------    -----------
-Unsigned Information    Yes, no sig      No              No
-
-Signed Information,     Yes, with sig    Yes, without    Yes, without
-without revocations                      revocations     revocations
-
-Signed Information,     Yes, with sig    Yes, with       Yes, with
-with revocations                         revocations     revocations
++---------------------+---------------+--------------+--------------+
+| Artifact            | Zero Touch    | Ownership    | Owner        |
+| Grouping            | Information   | Voucher      | Certificate  |
++=====================+===============+==============+==============+
+| Unsigned Data       | Yes, no sig   | No           | No           |
++---------------------+---------------+--------------+--------------+
+| Signed Data,        | Yes, with sig | Yes, without | Yes, without |
+| without revocations |               | revocations  | revocations  |
++---------------------+---------------+--------------+--------------+
+| Signed Data,        | Yes, with sig | Yes, with    | Yes, with    |
+| with revocations    |               | revocations  | revocations  |
++---------------------+---------------+--------------+--------------+
   ]]></artwork>
             </figure>
           </t>
@@ -701,10 +705,9 @@ with revocations                         revocations     revocations
           <t>A bootstrap server may be a trusted or an untrusted source of bootstrapping
           data, depending on if the device learned about the bootstrap server's trust
           anchor from a trusted source.  When a bootstrap server is trusted, the
-          information returned from it MAY be signed.  However, when the server is
-          untrusted, in order for its information to be of any use to the device, the
-          bootstrap information either MUST be signed or MUST be information that can be
-          processed provisionally (e.g., unsigned redirect information).</t>
+          zero touch information returned from it MAY be signed.  When the bootstrap server is
+          untrusted, the zero touch information either MUST be signed or MUST be information
+          that can be processed provisionally (e.g., unsigned redirect information).</t>
 
           <t>From an artifact perspective, since a bootstrap server presents data
           conforming to a YANG data model, the bootstrapping artifacts need to be
@@ -887,8 +890,8 @@ with revocations                         revocations     revocations
           ultimately, obtain onboarding information.  The algorithm is recursive
           because sources of bootstrapping data may return redirect information,
           which causes the algorithm to run again, for the newly discovered sources
-          of bootstrapping information.  An expression that captures all possible
-          successful sequences of bootstrapping information is zero or more redirect
+          of bootstrapping data.  An expression that captures all possible
+          successful sequences of bootstrapping data is zero or more redirect
           information responses, followed by one onboarding information response.</t>
 
           <t>An important aspect of the algorithm is knowing when data needs to be
@@ -1347,8 +1350,9 @@ Server: example-server
 
           <t>This module uses data types defined in <xref target="RFC4253"/>,
           <xref target="RFC5652"/>, <xref target="RFC5280"/>,
-          <xref target="RFC6960"/>, and <xref target="RFC8366"/>, and uses
-          an encoding defined in <xref target="ITU.X690.2015"/>.</t>
+          <xref target="RFC6960"/>, and <xref target="RFC8366"/>, uses
+          an encoding defined in <xref target="ITU.X690.2015"/>, and 
+          makes a reference to <xref target="RFC6187"/>.</t>
           <figure>
             <artwork><![CDATA[
 <CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
@@ -1386,7 +1390,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
    o option-code: OPTION_V4_ZEROTOUCH_REDIRECT (143)
-   o option-length: The option length in octets
+   o option-length: The option length in octets.
    o bootstrap-server-list: A list of servers for the
       client to attempt contacting, in order to obtain
       further bootstrapping data, in the format shown
@@ -1440,13 +1444,13 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |       option-code (136)      |          option-length         |
+   |       option-code (136)       |          option-length        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    .           bootstrap-server-list (variable length)             .
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
    o option-code: OPTION_V6_ZEROTOUCH_REDIRECT (136)
-   o option-length: The option length in octets
+   o option-length: The option length in octets.
    o bootstrap-server-list: A list of servers for the client to
      attempt contacting, in order to obtain further bootstrapping
      data, in the format shown in [common-field-encoding].
@@ -1493,7 +1497,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
   |       uri-length              |          URI                  |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
 
-  o uri-length: variable, in octets.
+  o uri-length: 2 octets long, specifies the length of the URI data.
 
   o URI: URI of zerotouch bootstrap server, using the HTTPS URI
     scheme defined in Section 2.7.2 of RFC7230.  URI MUST be in
@@ -1846,7 +1850,7 @@ reference: RFC XXXX
         </t>
         </section>
         <section title="The SMI Security for S/MIME CMS Content Type Registry" anchor="cms_cts">
-          <t>IANA is kindly requested to two entries in the "SMI Security for
+          <t>IANA is kindly requested to add two entries in the "SMI Security for
           S/MIME CMS Content Type" registry (1.2.840.113549.1.9.16.1), with
           values as follows:</t>
           <t>
@@ -1945,6 +1949,7 @@ Reference: [RFCXXXX]
 
       <references title="Informative References">
         <?rfc include="reference.RFC.3688.xml"?>
+        <?rfc include="reference.RFC.6187.xml"?>
         <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
         <?rfc include="reference.RFC.6960.xml"?>
@@ -2241,25 +2246,25 @@ device  |        |             |            |        |         |
               the steps, but they may be performed manually or through some other
               mechanism.</t>
               <t>If it is desired to use a deployment specific bootstrap server,
-              it must be configured to provide the bootstrapping information for
+              it must be configured to provide the bootstrapping data for
               the specific devices.   Configuring the bootstrap server may occur
               via a programmatic API not defined by this document.  Illustrated
               here as an external component, the bootstrap server may be
               implemented as an internal component of the NMS itself.</t>
               <t>If it is desired to use a manufacturer hosted bootstrap
-              server, it must be configured to provide the bootstrapping information
+              server, it must be configured to provide the bootstrapping data
               for the specific devices.  The configuration must be either redirect or
               onboarding information.  That is, either the manufacturer hosted bootstrap
               server will redirect the device to another bootstrap server, or provide
               the device with the onboarding information itself.  The types of
-              bootstrapping information the manufacturer hosted bootstrap server
+              bootstrapping data the manufacturer hosted bootstrap server
               supports may vary by implementation; some implementations may only
               support redirect information, or only support onboarding information,
               or support both redirect and onboarding information.  Configuring the
               bootstrap server may occur via a programmatic API not defined by this
               document.</t>
               <t>If it is desired to use a DNS server to supply bootstrapping
-              information, a DNS server needs to be configured.  If multicast
+              data, a DNS server needs to be configured.  If multicast
               DNS-SD is desired, then the server must reside on the local network,
               otherwise the DNS server may reside on a remote network.  Please see
               <xref target="dns-server"/> for more information about how to
@@ -2272,7 +2277,7 @@ device  |        |             |            |        |         |
               configure DHCP servers.  Configuring the DHCP server may occur
               via a programmatic API not defined by this document.</t>
               <t>If it is desired to use a removable storage device (e.g., USB flash
-              drive) to supply bootstrapping information, the information would need
+              drive) to supply bootstrapping data, the data would need
               to be placed onto it.  Please see <xref target="removable-storage"/>
               for more information about how to configure a removable storage device.</t>
             </list>
@@ -2767,6 +2772,15 @@ device  |        |             |            |        |         |
             <list style="symbols">
               <t>Follow-ups from SecDir and Shepherd.</t>
               <t>Added "boot-image-complete" enumeration.</t>
+            </list>
+          </t>
+        </section>
+        <section title="24 to 25">
+          <t>
+            <list style="symbols">
+              <t>Removed remaining old "bootstrapping information" term usage.</t>
+              <t>Fixed DHCP Option length definition.</t>
+              <t>Added reference to RFC 6187.</t>
             </list>
           </t>
         </section>
