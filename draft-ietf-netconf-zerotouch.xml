@@ -611,7 +611,8 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           service "_zerotouch._tcp.local.".  Alternatively the device MAY perform
           DNS-SD <xref target="RFC6763"/> via normal DNS operation, using the domain
           returned to it from the DHCP server; for example, searching for the service
-          "_zerotouch._tcp.example.com".</t>
+          "_zerotouch._tcp.example.com".  <xref target="dns_srv"/> registers
+          the service name "zerotouch".</t>
 
           <t>Unsigned DNS records (e.g., not using DNSSEC as described in <xref target="RFC6698"/>)
           are an untrusted source of bootstrapping data.  This means that the information
@@ -1891,7 +1892,6 @@ Reference:   [RFCXXXX]
           <t>Note: this request is to make permanent a previously registered
           early code point allocation.</t>
         </section>
-
         <section title="The Dynamic Host Configuration Protocol for IPv6 (DHCPv6) Registry">
           <t>This document registers one DHCP code point in "Option Codes" subregistry
           of the "Dynamic Host Configuration Protocol for IPv6 (DHCPv6)" registry 
@@ -1910,6 +1910,31 @@ Reference:        [RFCXXXX]
           </t>
           <t>Note: this request is to make permanent a previously registered
           early code point allocation.</t>
+        </section>
+        <section title="The Service Name and Transport Protocol Port Number Registry" anchor="dns_srv">
+          <t>This document registers one service name in the Service Name and
+          Transport Protocol Port Number Registry <xref target="RFC6335"/> maintained at
+          https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml.
+          Following the format defined in Section 8.1.1 of <xref target="RFC6335"/>, the
+          below registration is requested:</t>
+          <t>
+            <figure>
+                <artwork><![CDATA[
+Service Name:            zerotouch
+Transport Protocol(s):   TCP
+Assignee:                IESG <iesg@ietf.org>
+Contact:                 IETF Chair <chair@ietf.org>
+Description:             This service name is used to construct the
+                         SRV service label "_zerotouch" for discovery
+                         of zero touch bootstrap servers.
+Reference:               [RFCXXXX]
+Port Number:             N/A
+Service Code:            N/A
+Known Unauthorized Uses: N/A
+Assignment Notes:        This is an extension of the HTTPS service.
+]]></artwork>
+            </figure>
+          </t>
         </section>
       </section>
 
@@ -1968,6 +1993,7 @@ Reference:        [RFCXXXX]
         <?rfc include="reference.RFC.6187.xml"?>
         <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
+        <?rfc include="reference.RFC.6335.xml"?>
         <?rfc include="reference.RFC.6960.xml"?>
         <?rfc include="reference.RFC.6698.xml"?>
         <?rfc include="reference.RFC.7107.xml"?>
