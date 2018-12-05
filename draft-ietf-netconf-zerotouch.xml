@@ -82,7 +82,7 @@
           </t>
           <t>The following one Appendix section is to be removed prior to publication:
             <list  style="symbols">
-              <t>Appendix A.  Change Log</t>
+              <t>Appendix D.  Change Log</t>
             </list>
           </t>
         </note>
@@ -254,10 +254,10 @@
       </section>  <!-- end Introduction -->
 
 
-      <section title="Types of Bootstrapping Information" anchor="types-of-information">
+      <section title="Types of Zero Touch Information" anchor="types-of-information">
 
-        <t>This document defines two types of information that devices can access during
-        the bootstrapping process.  These information types are described in
+        <t>This document defines two types of zero touch information that devices can access during
+        the bootstrapping process.  These zero touch information types are described in
         this section. Examples are provided in <xref target="zt-info-data-model-examples"/></t>
 
         <section title="Redirect Information" anchor="redirect-information">

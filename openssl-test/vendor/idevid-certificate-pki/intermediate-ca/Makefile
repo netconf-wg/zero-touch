@@ -6,7 +6,8 @@ gen_ca_env:
 
 
 cert_request: gen_ca_env
-	$(OPENSSL) ecparam -out private_key.pem -genkey -name prime256v1 >> /dev/null 2>&1
+	#$(OPENSSL) ecparam -out private_key.pem -genkey -name prime256v1 >> /dev/null 2>&1
+	$(OPENSSL) genrsa -out private_key.pem 2048 >> /dev/null 2>&1 # RSA 2048 per TPM 1.2 & 802.1AR-2018
 	$(OPENSSL) req -new -key private_key.pem -nodes -config openssl.cnf -out cert_request.pem -outform PEM >> /dev/null 2>&1
 
 

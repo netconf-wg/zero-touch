@@ -1,6 +1,6 @@
 # warning, this must point to at least openssl
 # version 1.0.1e (CRL extensions)
-export OPENSSL_DIR = /usr/local/openssl-1.1.0c
+export OPENSSL_DIR = /usr/local/openssl-1.1.0g
 export OPENSSL = $(OPENSSL_DIR)/bin/openssl
 
 all:
