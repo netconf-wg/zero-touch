@@ -640,7 +640,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>TXT records have an upper size limit of 65535 bytes (Section 3.2.1
           in RFC1035), since "RDLENGTH" is a 16-bit field.  Please see Section
-          3.1.3 in RFC4408 for how a TXT record can achieve this size.  Due to this
+          3.1.3 in <xref target="RFC4408"> for how a TXT record can achieve this size.  Due to this
           size limitation, some zero touch information artifacts may not fit.  In particular,
           onboarding information could hit this upper bound, depending
           on the size of the included configuration and scripts.</t>
@@ -823,15 +823,16 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               and authenticate themselves to a bootstrap server MUST possess the
               private key that corresponds to the public key encoded in the TLS-level
               client certificate.  This private key SHOULD be securely stored, ideally
-              in a cryptographic processor (e.g., a TPM).</t>
+              in a cryptographic processor, such as a trusted platform module (TPM)
+              chip.</t>
 
               <t>Devices that support decrypting zerotouch artifacts MUST posses the
               private key that corresponds to the public key encoded in the secure
               device identity certificate used when encrypting the artifacts.  This
               private key SHOULD be securely stored, ideally in a cryptographic 
-              processor (e.g., a TPM).  This private key MAY be the same as the one
-              associated to the TLS-level client certificate used when connecting
-              to bootstrap servers.</t>
+              processor, such as a trusted platform module (TPM) chip.  This private
+              key MAY be the same as the one associated to the TLS-level client
+              certificate used when connecting to bootstrap servers.</t>
             </list>
           </t>
           <t>A YANG module representing this data is provided in
@@ -861,8 +862,11 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         |
         | No
         v
- 4. Loop and/or wait for manual provisioning.
+ 4. Loop back to Step 1.
 
+
+ Note: At any time, the device MAY be configured via an alternate
+       provisioning mechanism (e.g., CLI).
 ]]></artwork>
             </figure>
           </t>
@@ -880,10 +884,16 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               <t>If the device is able to bootstrap itself from any of
               the sources of bootstrapping data, it runs with the new
               bootstrapped configuration.</t>
-              <t>Otherwise the device MAY loop back through the list of
-              bootstrapping sources again and/or wait for manual provisioning.</t>
+              <t>Otherwise the device MUST loop back through the list of
+              bootstrapping sources again.</t>
             </list>
           </t>
+          <t>This document does not limit the simultaneous use of alternate
+             provisioning mechanisms.  Such mechanisms may include, for instance,
+             a command line interface (CLI), a web-based user interface, or
+             even another bootstrapping protocol.  Regardless how it is
+             configured, the configuration SHOULD unset the flag enabling
+             zerotouch bootstrapping discussed in <xref target="initial-state"/>.</t>
         </section>  <!-- end boot sequence -->
 
         <section title="Processing a Source of Bootstrapping Data" anchor="processing-a-source">
@@ -1554,7 +1564,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           recommends using the "notAfter" value 99991231235959Z in IDevID
           certificates.  Given the long-lived nature of these private keys,
           it is paramount that they are stored so as to resist discovery,
-          such as in a secure cryptographic processor (e.g., a TPM).</t>
+          such as in a secure cryptographic processor, such as a trusted
+          platform module (TPM) chip.</t>
         </section>
         <section title="Blindly Authenticating a Bootstrap Server">
           <t>This document allows a device to blindly authenticate a
@@ -1990,6 +2001,7 @@ Assignment Notes:        This is an extension of the HTTPS service.
 
       <references title="Informative References">
         <?rfc include="reference.RFC.3688.xml"?>
+        <?rfc include="reference.RFC.4408.xml"?>
         <?rfc include="reference.RFC.6187.xml"?>
         <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
