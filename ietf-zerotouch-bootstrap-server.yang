@@ -422,21 +422,47 @@ module ietf-zerotouch-bootstrap-server {
              is 'bootstrap-complete'.";
         }
         description
-          "A list of trust anchor certificates an NMS may use to
-           authenticate subsequent SSH-based connections to this
-           device (e.g., netconf-ssh, netconf-ch-ssh).";
-        leaf-list ssh-host-key {
-          type binary;
+          "A list of SSH host keys an NMS may use to authenticate
+           subsequent SSH-based connections to this device (e.g.,
+           netconf-ssh, netconf-ch-ssh).";
+        list ssh-host-key {
           description
-            "The binary public key data for this SSH key, as
-             specified by RFC 4253, Section 6.6, i.e.:
-        
-               string    certificate or public key format
-                         identifier
-               byte[n]   key/certificate data.";
+            "An SSH host key an NMS may use to authenticate
+             subsequent SSH-based connections to this device
+             (e.g., netconf-ssh, netconf-ch-ssh).";
           reference
             "RFC 4253: The Secure Shell (SSH) Transport Layer
                        Protocol";
+          leaf algorithm {
+            type string;
+            mandatory true;
+            description
+              "The public key algorithm name for this SSH key.
+
+               Valid values are listed in the 'Public Key Algorithm
+               Names' subregistry of the 'Secure Shell (SSH) Protocol
+               Parameters' registry maintained by IANA.";
+            reference
+              "RFC 4250: The Secure Shell (SSH) Protocol Assigned
+                         Numbers
+               IANA URL: https://www.iana.org/assignments/ssh-param\\
+                         eters/ssh-parameters.xhtml#ssh-parameters-19
+                         ('\\' added for formatting reasons)";
+          }
+          leaf key-data {
+            type binary;
+            mandatory true;
+            description
+              "The binary public key data for this SSH key, as
+               specified by RFC 4253, Section 6.6, i.e.:
+
+                 string    certificate or public key format
+                           identifier
+                 byte[n]   key/certificate data.";
+            reference
+              "RFC 4253: The Secure Shell (SSH) Transport Layer
+                         Protocol";
+          }
         }
       }
       container trust-anchor-certs {

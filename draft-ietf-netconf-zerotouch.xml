@@ -1363,7 +1363,8 @@ Server: example-server
           <xref target="RFC5652"/>, <xref target="RFC5280"/>,
           <xref target="RFC6960"/>, and <xref target="RFC8366"/>, uses
           an encoding defined in <xref target="ITU.X690.2015"/>, and 
-          makes a reference to <xref target="RFC6187"/>.</t>
+          makes a reference to <xref target="RFC4250"/> and 
+          <xref target="RFC6187"/>.</t>
           <figure>
             <artwork><![CDATA[
 <CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
@@ -2013,6 +2014,7 @@ Assignment Notes:        This is an extension of the HTTPS service.
 
       <references title="Informative References">
         <?rfc include="reference.RFC.3688.xml"?>
+        <?rfc include="reference.RFC.4250.xml"?>
         <?rfc include="reference.RFC.4408.xml"?>
         <?rfc include="reference.RFC.6187.xml"?>
         <?rfc include="reference.RFC.6234.xml"?>
@@ -2854,6 +2856,8 @@ device  |        |             |            |        |         |
         <section title="25 to 26">
           <t>
             <list style="symbols">
+              <t>Updated "ietf-zerotouch-bootstrap-server:ssh-host-key" from
+                 leaf-list to list, per IESG review from Benjamin Kaduk.</t>
               <t>Added option size text to DHCPv4 option size to address
                  Suresh Krishnan's IESG review discuss point.</t>
               <t>Updated RFC3315 to RFC8415 and associated section references.</t>
@@ -2876,6 +2880,7 @@ device  |        |             |            |        |         |
         Wes Hardaker,
         David Harrington,
         Radek Krejci,
+        Benjamin Kaduk,
         David Mandelberg,
         Russ Mundy,
         Reinaldo Penno,
