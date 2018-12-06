@@ -2856,6 +2856,10 @@ device  |        |             |            |        |         |
         <section title="25 to 26">
           <t>
             <list style="symbols">
+              <t>Added IANA registration for the 'zerotouch' service, per IESG
+                 review from Adam Roach.</t>
+              <t>Clarified device's looping behavior and support for alternative
+                 provisioning mechanisms, per IESG review from Mirja Kühlewind.</t>
               <t>Updated "ietf-zerotouch-bootstrap-server:ssh-host-key" from
                  leaf-list to list, per IESG review from Benjamin Kaduk.</t>
               <t>Added option size text to DHCPv4 option size to address
@@ -2879,7 +2883,9 @@ device  |        |             |            |        |         |
         Stephen Hanna,
         Wes Hardaker,
         David Harrington,
+        Mirja Kühlewind,
         Radek Krejci,
+        Suresh Krishnan,
         Benjamin Kaduk,
         David Mandelberg,
         Russ Mundy,
@@ -2887,6 +2893,7 @@ device  |        |             |            |        |         |
         Randy Presuhn,
         Max Pritikin,
         Michael Richardson,
+        Adam Roach,
         Phil Shafer,
         Juergen Schoenwaelder.</t>
 
