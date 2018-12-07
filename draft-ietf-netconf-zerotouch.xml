@@ -1435,12 +1435,20 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             NOT send more than one instance of the OPTION_V4_ZEROTOUCH_REDIRECT option.
           </t>
 
-          <t>As the list of URIs may exceed the maximum allowed length of
-            a single DHCPv4 option (255 octets), the server MUST implement
-            <xref target="RFC3396"/>, allowing the URI list to be split
-            across a number of OPTION_V4_ZEROTOUCH_REDIRECT option
-            instances.
+          <t>The server’s DHCP message MUST contain only a single instance of the
+          OPTION_V4_ZEROTOUCH_REDIRECT’s 'bootstrap-server-list’
+          field. However, the list of URIs in this field may exceed the maximum
+          allowed length of a single DHCPv4 option (per <xref target="RFC3396"/>).
           </t>
+
+          <t>If the length of 'bootstrap-server-list’ is small enough to fit into
+          a single instance of OPTION_V4_ZEROTOUCH_REDIRECT,  the server MUST NOT
+          send more than one instance of this option.</t>
+
+          <t>If the length of the 'bootstrap-server-list’ field is too large to
+          fit into a single option, then OPTION_V4_ZEROTOUCH_REDIRECT MUST be
+          split into multiple instances of the option according to the process
+          described in <xref target="RFC3396"/>.</t>
 
         </section>
 
@@ -1490,20 +1498,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           code only if configured with specific values for that option code and
           if the client requested it.</t>
 
-          <t>The server’s DHCP message MUST contain only a single instance of the
-          OPTION_V4_ZEROTOUCH_REDIRECT’s 'bootstrap-server-list’
-          field. However, the list of URIs in this field may exceed the maximum
-          allowed length of a single DHCPv4 option (per <xref target="RFC3396"/>).
-          </t>
+          <t>Option OPTION_V6_ZEROTOUCH_REDIRECT is a singleton.  Servers MUST NOT
+           send more than one instance of the OPTION_V6_ZEROTOUCH_REDIRECT
+           option.</t>
 
-          <t>If the length of 'bootstrap-server-list’ is small enough to fit into
-          a single instance of OPTION_V4_ZEROTOUCH_REDIRECT,  the server MUST NOT
-          send more than one instance of this option.</t>
-
-          <t>If the length of the 'bootstrap-server-list’ field is too large to
-          fit into a single option, then OPTION_V4_ZEROTOUCH_REDIRECT MUST be
-          split into multiple instances of the option according to the process
-          described in <xref target="RFC3396"/>.</t>
 
         </section> <!-- DHCPv6 -->
 
