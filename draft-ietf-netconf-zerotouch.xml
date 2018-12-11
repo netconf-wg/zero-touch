@@ -1506,15 +1506,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
         </section> <!-- DHCPv6 -->
 
         <section title="Common Field Encoding" anchor="common-field-encoding">
-          <t>Both of the DHCPv4 and DHCPv6 options defined in this section
-          encode a list of bootstrap server URIs.  The "URI" structure is
-          an option that can contain multiple URIs (see <xref target="RFC7227"/>,
-          Section 5.7).</t>
+          <t>Both of the DHCPv4 and DHCPv6 options defined in this section encode
+            a list of bootstrap server URIs.  The "URI" structure is an option 
+            that can contain multiple URIs (see <xref target="RFC7227"/>, 
+            Section 5.7). Each URI entry in the bootstrap-server-list is 
+            structured as follows:
+          </t>
 
           <figure>
             <artwork><![CDATA[
-  bootstrap-server-list:
-
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
   |       uri-length              |          URI                  |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
@@ -1977,6 +1977,7 @@ Assignment Notes:        This is an extension of the HTTPS service.
         <?rfc include="reference.RFC.6763.xml"?>
         <?rfc include="reference.RFC.6991.xml"?>
         <?rfc include="reference.RFC.7227.xml"?>
+        <?rfc include="reference.RFC.7230.xml"?>
         <?rfc include="reference.RFC.7950.xml"?>
         <?rfc include="reference.RFC.8040.xml"?>
         <?rfc include="reference.RFC.8174.xml"?>
@@ -2854,6 +2855,8 @@ device  |        |             |            |        |         |
         <section title="25 to 26">
           <t>
             <list style="symbols">
+              <t>Updated URI structure text (sec 8.3) and added norm. ref to RFC7230
+              reflecting Alexey Melnikov's comment.</t>
               <t>Added IANA registration for the 'zerotouch' service, per IESG
                  review from Adam Roach.</t>
               <t>Clarified device's looping behavior and support for alternative
