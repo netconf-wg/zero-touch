@@ -649,12 +649,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             ownership voucher.  Exclusive use of SRV records maximally leverages
             existing DNS standards for what is likely to be a common case when
             using a DNS server as a source of bootstrapping data.</t>
-  
+ 
             <t>By example, assuming a device's serial number is "&lt;serial number&gt;",
             and that the domain discovered per Section 11 of <xref target="RFC6763"/>
-            is "example.com", and noting that this document registers the service name
-            "zerotouch" in <xref target="dns_srv"/>, the device may issue the following
-            sequence of DNS queries:
+            is "example.com", the device may issue the following sequence of DNS queries:
               <?rfc subcompact="yes"?>
               <list style="empty">
                 <t>TXT in &lt;serial number&gt;._zerotouch._tcp.local.</t>
@@ -664,6 +662,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               </list>
               <?rfc subcompact="no"?>
             </t>
+
+            <t>This document registers the service name "zerotouch" in
+            <xref target="dns_srv"/>.</t>
+
           </section>
 
           <section title="DNS Response for Device-Specific Queries" toc="exclude">
