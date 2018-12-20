@@ -178,7 +178,7 @@
               refer to the manufacturer of a device or a delegate of the manufacturer.</t>
 
               <t hangText="Network Management System (NMS):">The acronym "NMS" is used
-              throughout this document to refer to the deployment specific management
+              throughout this document to refer to the deployment-specific management
               system that the bootstrapping process is responsible for introducing devices to.
               From a device's perspective, when the bootstrapping process has completed,
               the NMS is a NETCONF or RESTCONF client.</t>
@@ -355,33 +355,36 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>When the zero touch information artifact is unsigned, as it might
           be when communicated over trusted channels, the CMS structure's 
           top-most content type MUST be one of the OIDs described in 
-          <xref target="cms_cts"/>, or the OID id-data (1.2.840.113549.1.7.1),
-          in which case the encoding (JSON, XML, etc.) SHOULD be communicated
-          externally. In either case, the associated content is an octet
-          string containing "zerotouch-information" data in the expected
-          encoding.</t>
+          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML or
+          id-ct-zerotouchInformationJSON), or the OID id-data (1.2.840.113549.1.7.1).
+          When the OID id-data is used, the encoding (JSON, XML, etc.)
+          SHOULD be communicated externally. In either case, the associated
+          content is an octet string containing "zerotouch-information"
+          data in the expected encoding.</t>
 
           <t>When the zero touch information artifact is signed, as it might
           be when communicated over untrusted channels, the CMS structure's
-          top-most content type MUST be the OID id-signedData (1.2.840.113549.1.7.2),
-          and its inner eContentType MUST be one of the OIDs described in
-          <xref target="cms_cts"/>, or the OID id-data (1.2.840.113549.1.7.1),
-          in which case the encoding (JSON, XML, etc.) SHOULD be communicated
-          externally.  In either case, the associated content or eContent is
-          an octet string containing "zerotouch-information" data in the
-          expected encoding.</t>
+          top-most content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
+          Furthermore, the inner eContentType MUST be one of the OIDs described in
+          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML or 
+          id-ct-zerotouchInformationJSON), or the OID id-data (1.2.840.113549.1.7.1).
+          When the OID id-data is used, the encoding (JSON, XML, etc.) SHOULD
+          be communicated externally.  In either case, the associated content
+          or eContent is an octet string containing "zerotouch-information"
+          data in the expected encoding.</t>
 
           <t>When the zero touch information artifact is signed and encrypted,
           as it might be when communicated over untrusted channels and 
           privacy is important, the CMS structure's top-most content type
-          MUST be the OID id-envelopedData (1.2.840.113549.1.7.3), and 
+          MUST be the OID id-envelopedData (1.2.840.113549.1.7.3). Furthermore, 
           the encryptedContentInfo's content type MUST be the OID id-signedData
           (1.2.840.113549.1.7.2), whose eContentType MUST be one of the OIDs
-          described in <xref target="cms_cts"/>, or the OID id-data
-          (1.2.840.113549.1.7.1), in which case the encoding (JSON, XML, etc.)
-          SHOULD be communicated externally.  In either case, the associated
-          content or eContent is an octet string containing "zerotouch-information"
-          data in the expected encoding.</t>
+          described in <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML
+          or id-ct-zerotouchInformationJSON), or the OID id-data
+          (1.2.840.113549.1.7.1).  When the OID id-data is used, the encoding
+          (JSON, XML, etc.) SHOULD be communicated externally.  In either case,
+          the associated content or eContent is an octet string containing
+          "zerotouch-information" data in the expected encoding.</t>
 
         </section>
 
@@ -455,20 +458,20 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           a CMS structure whose top-most content type MUST be the OID 
           id-signedData (1.2.840.113549.1.7.2), whose eContentType MUST
           be OID id-ct-animaJSONVoucher (1.2.840.113549.1.9.16.1), or the
-          OID id-data (1.2.840.113549.1.7.1), in which case the encoding
-          (JSON, XML, etc.) SHOULD be communicated externally.  In either
-          case, the associated content is an octet string containing
-          ietf-voucher data in the expected encoding.</t>
+          OID id-data (1.2.840.113549.1.7.1).  When the OID id-data is used,
+          the encoding (JSON, XML, etc.) SHOULD be communicated externally.
+          In either case, the associated content is an octet string
+          containing ietf-voucher data in the expected encoding.</t>
 
           <t>When encrypted, the ownership voucher artifact's CMS structure's
           top-most content type MUST be the OID id-envelopedData 
           (1.2.840.113549.1.7.3), and the encryptedContentInfo's content type
           MUST be the OID id-signedData (1.2.840.113549.1.7.2), whose eContentType
           MUST be OID id-ct-animaJSONVoucher (1.2.840.113549.1.9.16.1), or the OID
-          id-data (1.2.840.113549.1.7.1), in which case the encoding (JSON,
-          XML, etc.) SHOULD be communicated externally.  In either case, the
-          associated content is an octet string containing ietf-voucher data
-          in the expected encoding.</t>
+          id-data (1.2.840.113549.1.7.1).  When the OID id-data is used, the
+          encoding (JSON, XML, etc.) SHOULD be communicated externally.  In
+          either case, the associated content is an octet string containing
+          ietf-voucher data in the expected encoding.</t>
         </section>
 
         <section title="Artifact Encryption" anchor="artifact-encryption">
@@ -606,45 +609,170 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           that does not entail utilizing an Internet based resource hosted by a
           3rd-party.</t>
 
-          <t>To use a DNS server as a source of bootstrapping data, a device MAY
-          perform a multicast DNS <xref target="RFC6762"/> query searching for the
-          service "_zerotouch._tcp.local.".  Alternatively the device MAY perform
-          DNS-SD <xref target="RFC6763"/> via normal DNS operation, using the domain
-          returned to it from the DHCP server; for example, searching for the service
-          "_zerotouch._tcp.example.com".  <xref target="dns_srv"/> registers
-          the service name "zerotouch".</t>
+          <t>DNS is an untrusted source of bootstrapping data.  Even if DNSSEC
+          <xref target="RFC6698"/> is used to authenticate the various DNS resource
+          records (e.g., A, AAAA, CERT, TXT, and TLSA), the device cannot be
+          sure that the domain returned to it from e.g., a DHCP server, belongs
+          to its rightful owner.  This means that the information stored in the
+          DNS records either MUST be signed (per this document, not DNSSEC), or
+          MUST be information that can be processed provisionally (e.g., unsigned
+          redirect information).</t>
 
-          <t>Unsigned DNS records (e.g., not using DNSSEC as described in <xref target="RFC6698"/>)
-          are an untrusted source of bootstrapping data.  This means that the information
-          stored in the DNS records either MUST be signed, or MUST be information
-          that can be processed provisionally (e.g., unsigned redirect information).</t>
+          <section title="DNS Queries" toc="exclude">
 
-          <t>From an artifact perspective, since a DNS server presents resource records
-          (Section 3.2.1 of <xref target="RFC1035"/>), the bootstrapping artifacts need
-          to be presented as resource records.  The three artifacts defined in
-          <xref target="artifacts"/> are mapped to resource records below.</t>
+            <t>Devices claiming to support DNS as a source of bootstrapping
+            data MUST first query for device-specific DNS records using DNS-SD
+            <xref target="RFC6763"/> and, only if doing so does not result in a
+            successful bootstrap, then query for device-independent records
+            using traditional service discovery <xref target="RFC2782"/>.
+            Furthermore, when issuing the device-specific and device-independent
+            queries, devices MUST first query using multicast DNS <xref target="RFC6762"/>
+            and, only if doing so does not result in a successful bootstrap, then
+            query again using unicast DNS <xref target="RFC1035"/><xref target="RFC7766"/>,
+            assuming the address of a DNS server is known.</t>
+  
+            <t>When querying for device-specific DNS records, devices SHOULD
+            immediately query for their instance-specific record, without first
+            querying for PTR records (Section 4.1 of <xref target="RFC6763"/>).
+            Device MUST use their serial number (i.e., the same value as in the
+            device identity certificate) for the "&lt;instance&gt;" portion of
+            the service instance name (Section 4.1.1 of <xref target="RFC6763"/>).
+            Device MUST only query for TXT records, in order to access the three
+            bootstrapping artifacts defined in <xref target="artifacts"/>.</t>
+  
+            <t>When querying for device-independent DNS records, devices MUST only
+            query for SRV records.  Multiple SRV records, each specifying an address,
+            port, weight, and priority <xref target="RFC2782"/> is comparable to 
+            an unsigned redirect information's list of bootstrap servers.  Note
+            that a device-independent response is only able to encode unsigned
+            data, since signed data necessitates the use of a device-specific
+            ownership voucher.  Exclusive use of SRV records maximally leverages
+            existing DNS standards for what is likely to be a common case when
+            using a DNS server as a source of bootstrapping data.</t>
+  
+            <t>By example, assuming a device's serial number is "&lt;serial number&gt;",
+            and that the domain discovered per Section 11 of <xref target="RFC6763"/>
+            is "example.com", and noting that this document registers the service name
+            "zerotouch" in <xref target="dns_srv"/>, the device may issue the following
+            sequence of DNS queries:
+              <?rfc subcompact="yes"?>
+              <list style="empty">
+                <t>TXT in &lt;serial number&gt;._zerotouch._tcp.local.</t>
+                <t>TXT in &lt;serial number&gt;._zerotouch._tcp.example.com.</t>
+                <t>SRV in _zerotouch._tcp.local.</t>
+                <t>SRV in _zerotouch._tcp.example.com.</t>
+              </list>
+              <?rfc subcompact="no"?>
+            </t>
+          </section>
 
-          <t>Artifact to Resource Record Mapping:
-            <list style="hanging" hangIndent="6">
-              <t hangText="   Zero Touch Information:">Mapped to a TXT record called "zt-info"
-              containing the base64-encoding of the binary artifact described in
-              <xref target="zerotouch-information"/>.</t>
-              <t hangText="   Owner Certificate:">Mapped to a TXT record called
-              "zt-cert" containing the base64-encoding of the binary artifact
-              described in <xref target="owner-certificate"/>.</t>
-              <t hangText="   Ownership Voucher:">Mapped to a TXT record called
-              "zt-voucher" containing the base64-encoding of the binary artifact
-              described in <xref target="ownership-voucher"/>.</t>
-            </list>
-          </t>
+          <section title="DNS Response for Device-Specific Queries" toc="exclude">
 
-          <t>TXT records have an upper size limit of 65535 bytes (Section 3.2.1
-          in RFC1035), since "RDLENGTH" is a 16-bit field.  Please see Section
-          3.1.3 in <xref target="RFC4408"/> for how a TXT record can achieve this size.  Due to this
-          size limitation, some zero touch information artifacts may not fit.  In particular,
-          onboarding information could hit this upper bound, depending
-          on the size of the included configuration and scripts.</t>
-        </section>
+            <t>For device-specific queries, the three bootstrapping artifacts defined
+            in <xref target="artifacts"/> are encoded into the TXT records using 
+            key/value pairs, as described in Section 6.3 in <xref target="RFC6763"/>.</t>
+  
+            <t>Artifact to TXT Record Mapping:
+              <list style="hanging" hangIndent="6">
+                <t hangText="   Zero Touch Information:">Mapped to a TXT record
+                having the key "zi" and the value being the binary
+                artifact described in <xref target="zerotouch-information"/>.</t>
+                <t hangText="   Owner Certificate:">Mapped to a TXT record
+                having the key "oc" and the value being the binary
+                artifact described in <xref target="owner-certificate"/>.</t>
+                <t hangText="   Ownership Voucher:">Mapped to a TXT record
+                having the key "ov" and the value being the binary
+                artifact described in <xref target="ownership-voucher"/>.</t>
+              </list>
+            </t>
+  
+            <t>Devices MUST ignore any other keys that may be returned.</t>
+  
+            <t>Note that, despite the name, TXT records can and SHOULD (per
+            Section 6.5 of <xref target="RFC6763"/>) encode binary data.</t>
+  
+            <t>Following is an example of a device-specific response, as 
+            it might be presented by a user-agent, containing signed data.
+            This example assumes that the device's serial number is 
+            "&lt;sn&gt;":
+              <figure>
+                <artwork><![CDATA[
+  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "zi=<binary data>"
+  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "oc=<binary data>"
+  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "ov=<binary data>"]]>
+                </artwork>
+              </figure>
+            </t>
+
+            <t>Note that, in the case that "zi" encodes unsigned data,
+            the "oc" and "ov" keys would not be present in the response.</t>
+          </section>
+  
+          <section title="DNS Response for Device-Independent Queries" toc="exclude">
+            <t>For device-independent queries, the three bootstrapping
+            artifacts defined in <xref target="artifacts"/> are encoded
+            into the SVR records as follows.</t>
+  
+            <t>Artifact to SRV Record Mapping:
+              <list style="hanging" hangIndent="6">
+                <t hangText="   Zero Touch Information:">This artifact is not supported
+                directly.  Instead, the essence of unsigned redirect information is
+                mapped to SVR records per <xref target="RFC2782"/>.</t>
+                <t hangText="   Owner Certificate:">Not supported.  Device-independent
+                responses are never encode signed data, and hence there is no need for
+                an owner certificate artifact.</t>
+                <t hangText="   Ownership Voucher:">Not supported.  Device-independent
+                responses are never encode signed data, and hence there is no need for
+                an ownership voucher artifact.</t>
+              </list>
+            </t>
+  
+            <t>Following is an example of a device-independent response, as
+            it might be presented by a user-agent, containing (effectively)
+            unsigned redirect information to four bootstrap servers:
+              <figure>
+                <artwork>
+  _zerotouch._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
+  _zerotouch._tcp.example.com. 1800 IN SRV 1 0 443 sztp2.example.com.
+  _zerotouch._tcp.example.com. 1800 IN SRV 2 0 443 sztp3.example.com.
+  _zerotouch._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
+                </artwork>
+              </figure>
+            </t>
+
+            <t>Note that, in this example, "sztp3" and "sztp4" have equal
+            priority, and hence effectively represent a clustered pair
+            of bootstrap servers.  While "sztp1" and "sztp2" only have
+            a single SRV record each, it may be that the record points
+            to a load-balancer fronting a cluster of bootstrap servers.</t>
+          </section>
+
+          <section title="Size of Signed Data" toc="exclude">
+
+            <t>The signed data artifacts are large by DNS conventions.  In the
+            smallest-footprint scenario, they are each a few kilobytes in size.
+            However, onboarding information can easily be several kilobytes in
+            size, and has the potential to be many kilobytes in size.</t>
+  
+            <t>All resource records, including TXT records, have an upper
+            size limit of 65535 bytes, since "RDLENGTH" is a 16-bit field
+            (Section 3.2.1 in <xref target="RFC1035"/>).  If it is ever 
+            desired to encode onboarding information that exceeds this
+            limit, the DNS records returned should instead encode redirect
+            information, to direct the device to a bootstrap server from
+            which the onboarding information can be obtained.</t>
+  
+            <t>Given the expected size of the TXT records, it is unlikely
+            that signed data will fit into a UDP-based DNS packet, even
+            with the EDNS(0) Extensions <xref target="RFC6891"/> enabled.
+            Depending on content, signed data may also not fit into a
+            multicast DNS packet, which bounds the size of the TXT records
+            to 8900 bytes, per Section 6.1 in <xref target="RFC6763"/>.  Thus
+            it is expected that DNS Transport over TCP <xref target="RFC7766"/>
+            will be required in order to return signed data.</t>
+          </section>
+
+        </section> <!-- end DNS Server -->
 
         <section title="DHCP Server" anchor="dhcp-server">
           <t>A DHCP server MAY be used as a source of zero touch bootstrapping data.</t>
@@ -673,7 +801,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>From an artifact perspective, the three artifacts defined in
           <xref target="artifacts"/> are mapped to the DHCP fields specified in
-          <xref target="dhcp-options"/> as follows:
+          <xref target="dhcp-options"/> as follows.</t>
+
+          <t>Artifact to DHCP Option Fields Mapping:
             <list style="hanging" hangIndent="6">
               <t hangText="   Zero Touch Information:">This artifact is not supported
               directly.  Instead, the essence of unsigned redirect information is
@@ -960,7 +1090,18 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           trust-state to TRUE; otherwise, if the device is unable to validate
           the signed data, the device MUST set trust-state to FALSE.  Note,
           this is worded to cover the special case when signed data is returned
-          even from a trusted bootstrap server.</t>
+          even from a trusted source of bootstrapping data.</t>
+
+          <t>If the zero touch information artifact contains redirect information,
+          the device MUST, within limits of how many recursive loops the device
+          allows, process the redirect information as described in
+          <xref target="process-redirect-information"/>.  Implementations MUST
+          limit the maximum number of recursive redirects allowed; the maximum
+          number of recursive redirects allowed SHOULD be no more than ten.
+          This is the recursion step, it will cause the device to reenter this
+          algorithm, but this time the data source will definitely be a bootstrap
+          server, as redirect information is only able to redirect devices to
+          bootstrap servers.</t>
 
           <t>If the zero touch information artifact contains onboarding information, and
           trust-state is FALSE, the device MUST exit the recursive algorithm (as
@@ -972,14 +1113,6 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           the bootstrapping sequence described in <xref target="boot-sequence"/>, the only
           difference being in how it responds to the "Able to bootstrap from any
           source?" conditional described in the figure in the section.</t>
-
-          <t>If the zero touch information artifact contains redirect information,
-          the device MUST, within limits of how many recursive loops the device
-          allows, process the redirect information as described in
-          <xref target="process-redirect-information"/>.  This is the recursion
-          step, it will cause the device to reenter this algorithm, but this time
-          the data source will definitely be a bootstrap server, as that is all
-          redirect information is able to redirect a device to.</t>
         </section>
 
         <section title="Validating Signed Data" anchor="validating-signed-data">
@@ -1027,7 +1160,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>In order to process redirect information (<xref target="redirect-information"/>),
           the device MUST follow the steps presented in this section.</t>
 
-          <t>Processing redirect information is straightforward, the device sequentially
+          <t>Processing redirect information is straightforward; the device sequentially
           steps through the list of provided bootstrap servers until it can find one it
           can bootstrap from.</t>
 
@@ -1068,7 +1201,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           specific progress report.  If the bootstrap server's "get-bootstrapping-data"
           RPC-reply's "reporting-level" node is set to "verbose", the device MUST
           additionally send all appropriate non-terminating progress reports (e.g.,
-          initiated, warning, complete, etc.).  Regardless the reporting-level indicated
+          initiated, warning, complete, etc.).  Regardless of the reporting-level indicated
           by the bootstrap server, the device MAY send progress reports beyond the
           mandatory ones specified for the given reporting level.</t>
 
@@ -1165,11 +1298,11 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             <t>Following are some guidelines for if the implementation chooses to undo
             previous steps:
               <list style="symbols">
-                <t>When an error occurs, the device must roll out of the current step and
+                <t>When an error occurs, the device must rollback the current step and
                 any previous steps.</t>
-                <t>Most steps are atomic.  For instance, when a commit fails, it is
-                expected to have no impact on the configuration.  Similarly, if the
-                error occurs when executing a script, the script will gracefully exit.</t>
+                <t>Most steps are atomic.  For example, the processing configuration
+                is specified as atomic above, and the processing scripts is similarly
+                specified as atomic in the "ietf-zerotouch-information" YANG module.</t>
                 <t>In case the error occurs after the initial configuration was committed,
                 the device must restore the configuration to the configuration that
                 existed prior to the configuration being committed.</t>
@@ -1406,7 +1539,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
    o bootstrap-server-list: A list of servers for the
       client to attempt contacting, in order to obtain
       further bootstrapping data, in the format shown
-      in [common-field-encoding].
+      in Section 8.3.
 ]]></artwork>
           </figure>
 
@@ -1465,7 +1598,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
    o option-length: The option length in octets.
    o bootstrap-server-list: A list of servers for the client to
      attempt contacting, in order to obtain further bootstrapping
-     data, in the format shown in [common-field-encoding].
+     data, in the format shown in Section 8.3.
 ]]></artwork>
           </figure>
 
@@ -1535,7 +1668,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
 
       <section title="Security Considerations" anchor="sec-con">
-        <section title="Clock Sensitivity">
+        <section title="Clock Sensitivity" anchor="clock-sens">
           <t>The solution in this document relies on TLS certificates,
           owner certificates, and ownership vouchers, all of which
           require an accurate clock in order to be processed
@@ -1552,7 +1685,9 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           perspective, manufacturers SHOULD issue a single
           ownership voucher for the lifetime of such devices.</t>
           <t>Implementations SHOULD NOT rely on NTP for time, as
-          NTP is not a secure protocol.</t>
+          NTP is not a secure protocol at this time.  Note, there
+          is an IETF work-in-progress to secure NTP 
+          <xref target="I-D.ietf-ntp-using-nts-for-ntp"/>.</t>
         </section>
         <section title="Use of IDevID Certificates">
           <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2009"/>,
@@ -1654,29 +1789,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           that is signed.</t>
           <t>Bootstrap server administrators are RECOMMENDED to follow best
           practice to protect the private key used for any online operation.
-          Use of an hardware security module (HSM) is RECOMMENDED.  If an 
-          HSM is not used, frequent private key refreshes are RECOMMENDED.</t>
+          For instance, use of a hardware security module (HSM) is RECOMMENDED.
+          If an HSM is not used, frequent private key refreshes are RECOMMENDED,
+          assuming all bootstrapping devices have an accurate clock (see
+          <xref target="clock-sens"/>).</t>
           <t>For best security, it is RECOMMENDED that owners only provide
-          bootstrapping data that has been signed, using a private key that
-          is not accessible to a network of questionable integrity, and
-          encrypted, using the device's public key from its secure device
-          identity certificate.</t>
-        </section>
-        <section title="Infinite Redirection Loops and Sequences">
-          <t>The recursive algorithm described in this document enables
-          redirect information to lead to more redirect information,
-          which may cause a device to redirect forever.</t>
-          <t>Whilst a trusted bootstrap server may be misconfigured
-          to cause a device to return to it again ad infitum, the
-          greater concern is that any untrusted source of bootstrapping
-          data could be used by an adversary to purposely cause this.</t>
-          <t>Infinite redirections are most easily constructed via
-          loops, where some bootstrap server redirects back to a
-          previously visited bootstrap server.  Infinite redirections
-          can also be created without a loop by an adversary dynamically
-          instantiated bootstrap servers on the fly.</t>
-          <t>Implementations SHOULD limit the maximum number of recursive 
-          redirects allowed; no more than a half dozen seems reasonable.</t>
+          bootstrapping data that has been signed, using a protected private
+          key, and encrypted, using the device's public key from its secure
+          device identity certificate.</t>
         </section>
         <section title="Increased Reliance on Manufacturers">
           <t>The zero touch bootstrapping protocol presented in this document shifts
@@ -1697,7 +1817,10 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           assignments.</t>
           <t>Operators should be aware that this system assumes that they trust
           all the pre-configured bootstrap servers and voucher signing authorities
-          designated by the manufacturers.</t>
+          designated by the manufacturers.  While operators may use points in
+          the network to block access to the well-known bootstrap servers,
+          operators cannot prevent voucher signing authorities from generating
+          vouchers for their devices.</t>
         </section>
         <section title="Concerns with Trusted Bootstrap Servers"
                  anchor="seccon-trusted-bootstrap-servers">
@@ -1773,7 +1896,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           it is RECOMMENDED that a unique owner certificate is created
           for each signed artifact.  Not only does this enable a
           validity period to be specified, for each artifact, but it
-          also enables to the validity of each artifact to be revoke.</t>
+          also enables to the validity of each artifact to be revoked.</t>
         </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
@@ -1783,7 +1906,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           mechanism (e.g., removable storage device), then the CMS structure
           must be signed, in order for the device to trust it.</t>
           <t>Implementations should be aware that signed bootstrapping data
-          only protects the data from modification, the contents are still
+          only protects the data from modification, and that the contents are still
           visible to others.  This doesn't affect security so much as privacy.
           That the contents may be read by unintended parties when accessed by
           insecure mechanisms is considered next.</t>
@@ -1795,12 +1918,12 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           directed to, their IP addresses or hostnames, ports, and trust anchor
           certificates.  Knowledge of this information could provide an observer
           some insight into a network's inner structure.</t>
-          <t>When the content of the CMS structure is onboarding-information,
+          <t>When the content of the CMS structure is onboarding information,
           an observer could learn considerable information about how the device
           is to be provisioned.  This information includes the operating system
           version, initial configuration, and script contents.  This information
           should be considered sensitive and precautions should be taken to 
-          protect it (e.g., encrypt artifact with device public key).</t>
+          protect it (e.g., encrypt the artifact using the device's public key).</t>
         </section>
         <section title="The &quot;ietf-zerotouch-bootstrap-server&quot; YANG Module">
           <t>The ietf-zerotouch-bootstrap-server module defined in this document
@@ -1955,7 +2078,7 @@ Reference:               [RFCXXXX]
 Port Number:             N/A
 Service Code:            N/A
 Known Unauthorized Uses: N/A
-Assignment Notes:        This is an extension of the HTTPS service.
+Assignment Notes:        This protocol uses HTTPS as a substrate.
 ]]></artwork>
             </figure>
           </t>
@@ -1968,6 +2091,7 @@ Assignment Notes:        This is an extension of the HTTPS service.
       <references title="Normative References">
         <?rfc include="reference.RFC.1035.xml"?>
         <?rfc include="reference.RFC.2119.xml"?>
+        <?rfc include="reference.RFC.2782.xml"?>
         <?rfc include="reference.RFC.5652.xml"?>
         <?rfc include="reference.RFC.8415.xml"?>
         <?rfc include="reference.RFC.3396.xml"?>
@@ -2015,20 +2139,22 @@ Assignment Notes:        This is an extension of the HTTPS service.
       <references title="Informative References">
         <?rfc include="reference.RFC.3688.xml"?>
         <?rfc include="reference.RFC.4250.xml"?>
-        <?rfc include="reference.RFC.4408.xml"?>
         <?rfc include="reference.RFC.6187.xml"?>
         <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
         <?rfc include="reference.RFC.6335.xml"?>
+        <?rfc include="reference.RFC.6891.xml"?>
         <?rfc include="reference.RFC.6960.xml"?>
         <?rfc include="reference.RFC.6698.xml"?>
         <?rfc include="reference.RFC.7107.xml"?>
+        <?rfc include="reference.RFC.7766.xml"?>
         <?rfc include="reference.RFC.8071.xml"?>
         <?rfc include="reference.RFC.8340.xml"?>
         <?rfc include="reference.RFC.8341.xml"?>
         <?rfc include="reference.RFC.8446.xml"?>
         <?rfc include="reference.I-D.ietf-netconf-crypto-types"?>
         <?rfc include="reference.I-D.ietf-netconf-trust-anchors"?>
+        <?rfc include="reference.I-D.ietf-ntp-using-nts-for-ntp"?>
       </references>
 
 
@@ -2144,7 +2270,9 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
           <t>This time, because the "untrusted-connection" parameter was
           not passed, having access to all of the device's input parameters,
           the bootstrap server returns, in this example, unsigned onboarding
-          information to the device.</t>
+          information to the device.  Note also that, because the bootstrap
+          server is now trusted, the device will send progress reports to
+          the server.</t>
         </list></t>
       </section>
       <section title="Workflow Overview" anchor="workflow-overview">
@@ -2314,7 +2442,7 @@ device  |        |             |            |        |         |
               from the previous workflow.  Here it is depicted that an NMS performs
               the steps, but they may be performed manually or through some other
               mechanism.</t>
-              <t>If it is desired to use a deployment specific bootstrap server,
+              <t>If it is desired to use a deployment-specific bootstrap server,
               it must be configured to provide the bootstrapping data for
               the specific devices.   Configuring the bootstrap server may occur
               via a programmatic API not defined by this document.  Illustrated
@@ -2334,7 +2462,7 @@ device  |        |             |            |        |         |
               document.</t>
               <t>If it is desired to use a DNS server to supply bootstrapping
               data, a DNS server needs to be configured.  If multicast
-              DNS-SD is desired, then the server must reside on the local network,
+              DNS-SD is desired, then the DNS server must reside on the local network,
               otherwise the DNS server may reside on a remote network.  Please see
               <xref target="dns-server"/> for more information about how to
               configure DNS servers.  Configuring the DNS server may occur via
@@ -2386,7 +2514,7 @@ device  |        |             |            |        |         |
    |-+------------------------------------------------->|         |
    | |                                                  |         |
    | | if more redirect-information is found, recurse   |         |
-   | | (not depicted), else if onboarding-information   |         |
+   | | (not depicted), else if onboarding information   |         |
    | | found, initialize self and post progress reports |         |
    | +------------------------------------------------->#         |
    |                                                    # webhook |
@@ -2415,7 +2543,7 @@ device  |        |             |            |        |         |
               device also sends progress reports to the bootstrap server.
                 <list style="symbols">
                   <t>The contents of the initial configuration should configure
-                  an administrator account on the device (e.g., username, ssh-rsa
+                  an administrator account on the device (e.g., username, SSH public
                   key, etc.), and should configure the device either to listen for
                   NETCONF or RESTCONF connections or to initiate call home connections
                   <xref target="RFC8071"/>, and should disable the zerotouch
@@ -2437,7 +2565,7 @@ device  |        |             |            |        |         |
 
               <t>Otherwise, if redirect information is found, the device iterates
               through the list of specified bootstrap servers, checking to see if
-              it has bootstrapping data for the device.  If the bootstrap server
+              the bootstrap server has bootstrapping data for the device.  If the bootstrap server
               returns more redirect information, then the device processes it recursively.
               Otherwise, if the bootstrap server returns onboarding information,
               the device processes it following the description provided in (3) above.</t>
@@ -2865,6 +2993,9 @@ device  |        |             |            |        |         |
               <t>Added option size text to DHCPv4 option size to address
                  Suresh Krishnan's IESG review discuss point.</t>
               <t>Updated RFC3315 to RFC8415 and associated section references.</t>
+              <t>Revamped the DNS Server section, after digging into Alexey
+                 Melnikov comment.</t>
+              <t>Fixed IETF terminology template section in both YANG modules.</t>
             </list>
           </t>
         </section>
@@ -2888,6 +3019,7 @@ device  |        |             |            |        |         |
         Suresh Krishnan,
         Benjamin Kaduk,
         David Mandelberg,
+        Alexey Melnikov,
         Russ Mundy,
         Reinaldo Penno,
         Randy Presuhn,

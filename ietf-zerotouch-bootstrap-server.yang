@@ -17,12 +17,14 @@ module ietf-zerotouch-bootstrap-server {
     defined by RFC XXXX: Zero Touch Provisioning for Networking
     Devices.
 
-    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 
-    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'MAY',
-    and 'OPTIONAL' in the module text are to be interpreted as
-    described in RFC 2119.
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+    'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 
+    'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+    are to be interpreted as described in BCP 14 [RFC2119]
+    [RFC8174] when, and only when, they appear in all
+    capitals, as shown here.
 
-    Copyright (c) 2018 IETF Trust and the persons identified as 
+    Copyright (c) 2019 IETF Trust and the persons identified as 
     authors of the code. All rights reserved.
 
     Redistribution and use in source and binary forms, with or 
@@ -284,7 +286,11 @@ module ietf-zerotouch-bootstrap-server {
               "Indicates that the device successfully installed
                a new boot image and is about to reboot.  After
                sending this progress type, the device is not
-               expected to access the bootstrap server again.";
+               expected to access the bootstrap server again
+               for this bootrapping attempt.  The device may
+               access this bootstrap server after rebooting
+               and restarting the zerotouch bootstrapping
+               process.";
           }
           enum "boot-image-complete" {
             description
@@ -494,7 +500,7 @@ module ietf-zerotouch-bootstrap-server {
      
             The CMS MUST contain only a single chain of
             certificates.  The device's end-entity certificate
-            MUST only authenticate to last intermediate CA
+            MUST only authenticate to the last intermediate CA
             certificate listed in the chain.
      
             In all cases, the chain MUST include a self-signed
