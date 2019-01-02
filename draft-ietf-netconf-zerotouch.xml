@@ -362,6 +362,21 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           content is an octet string containing "zerotouch-information"
           data in the expected encoding.</t>
 
+          <t>When the zero touch information artifact is unsigned and 
+          encrypted, as it might be when communicated over trusted
+          channels but, for some reason, the operator wants to ensure
+          that only the device is able to see the contents, the CMS 
+          structure's top-most content type MUST be the OID id-envelopedData
+          (1.2.840.113549.1.7.3). Furthermore, the encryptedContentInfo's
+          content type MUST be one of the OIDs described in 
+          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML
+          or id-ct-zerotouchInformationJSON), or the OID id-data
+          (1.2.840.113549.1.7.1).  When the OID id-data is used,
+          the encoding (JSON, XML, etc.) SHOULD be communicated
+          externally. In either case, the associated content is
+          an octet string containing "zerotouch-information" data
+          in the expected encoding.</t>
+
           <t>When the zero touch information artifact is signed, as it might
           be when communicated over untrusted channels, the CMS structure's
           top-most content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
