@@ -1928,6 +1928,29 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           redirect information may result in compromise of all
           subsequent interactions.</t>
         </section>
+        <section title="Possible Reuse of Private Keys">
+          <t>This document describes two uses for secure device identity
+          certificates.</t>
+          <t>The primary use is for when the device authenticates
+          itself to a bootstrap server, using its private key for
+          TLS-level client-certificate based authentication.</t>
+          <t>A secondary use is for when the device needs to decrypt
+          provided bootstrapping artifacts, using its private key
+          to decrypt the data or, more precisely, per Section 6 in 
+          <xref target="RFC5652"/>, decrypt a symmetric key used to
+          decrypt the data.</t>
+          <t>This document, in <xref target="artifact-encryption"/>
+          allows for the possibility that the same secure device
+          identity certificate is used for both uses, as 
+          <xref target="Std-802.1AR-2009"/> states that a DevID
+          certificate MAY have the "keyEncipherment" KeyUsage bit,
+          in addition to the "digitalSignature" KeyUsage bit, set.</t>
+          <t>While it is understood that it is generally frowned
+          upon to reuse private keys, this document views such
+          reuse acceptable as there are not any known ways to cause
+          a signature made in one context to be (mis)interpreted
+          as valid in the other context.</t>
+        </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
           defines a data structure that is always wrapped by a CMS structure.
@@ -3033,7 +3056,11 @@ device  |        |             |            |        |         |
           </t>
         </section>
         <section title="26 to 27">
-          <t>Added Security Consideration for cascading trust via redirects, per Benjamin Kaduk's review.</t>
+          <t>Added Security Consideration for cascading trust via redirects,
+          per Benjamin Kaduk's DISCUSS.</t>
+          <t>Added Security Consideration regarding posible reuse of device's
+          private key, per Benjamin Kaduk's COMMENT.</t>
+        </section>
       </section>
 
       <section title="Acknowledgements" numbered="no">
