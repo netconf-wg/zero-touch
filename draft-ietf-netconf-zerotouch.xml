@@ -1657,8 +1657,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
         <section title="Common Field Encoding" anchor="common-field-encoding">
           <t>Both of the DHCPv4 and DHCPv6 options defined in this section encode
-            a list of bootstrap server URIs.  The "URI" structure is an option 
-            that can contain multiple URIs (see <xref target="RFC7227"/>, 
+            a list of bootstrap server URIs.  The "URI" structure is a DHCP
+            option that can contain multiple URIs (see <xref target="RFC7227"/>, 
             Section 5.7). Each URI entry in the bootstrap-server-list is 
             structured as follows:
           </t>
@@ -1671,11 +1671,14 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
   o uri-length: 2 octets long, specifies the length of the URI data.
 
-  o URI: URI of zerotouch bootstrap server, using the HTTPS URI
-    scheme defined in Section 2.7.2 of RFC7230.  URI MUST be in
-    form "https://<ip-address-or-hostname>[:<port>]".
+  o URI: URI of zerotouch bootstrap server.
 ]]></artwork>
           </figure>
+
+          <t>The URI of the zerotouch bootstrap server MUST use
+          the "https" URI scheme defined in Section 2.7.2 of 
+          <xref target="RFC7230"/>, and MUST be in form 
+          "https://&lt;ip-address-or-hostname&gt;[:&lt;port&gt;]".</t>
 
         </section> <!-- common -->
 
