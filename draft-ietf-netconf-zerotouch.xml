@@ -1951,6 +1951,15 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           a signature made in one context to be (mis)interpreted
           as valid in the other context.</t>
         </section>
+        <section title="Non-Issue with Encrypting Signed Artifacts">
+          <t>This document specifies the encryption of signed objects,
+          as opposed to the signing of encrypted objects, as might
+          be expected given well-publicized oracle attacks (e.g., the
+          padding oracle attack).</t>
+          <t>This document does not view such attacks as feasible in
+          the context of the solution because the decrypted text never
+          leaves the device.</t>
+        </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
           defines a data structure that is always wrapped by a CMS structure.
@@ -3060,6 +3069,8 @@ device  |        |             |            |        |         |
           per Benjamin Kaduk's DISCUSS.</t>
           <t>Added Security Consideration regarding posible reuse of device's
           private key, per Benjamin Kaduk's COMMENT.</t>
+          <t>Added Security Consideration regarding use of sign-then-encrypt,
+          per Benjamin Kaduk's COMMENT.</t>
         </section>
       </section>
 
