@@ -1916,6 +1916,18 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           validity period to be specified, for each artifact, but it
           also enables to the validity of each artifact to be revoked.</t>
         </section>
+        <section title="Cascading Trust via Redirects">
+          <t>Redirect Information (<xref target="redirect-information"/>),
+          by design, instructs a bootstrapping device to initiate a HTTPS
+          connection to the specified bootstrap servers.</t>
+          <t>When the redirect information is trusted, the redirect
+          information can encode a trust anchor certificate used by
+          the device to authenticate the TLS end-entity certificate
+          presented by each bootstrap server.</t>
+          <t>As a result, any compromise in an interaction providing 
+          redirect information may result in compromise of all
+          subsequent interactions.</t>
+        </section>
         <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
           <t>The ietf-zerotouch-information module defined in this document
           defines a data structure that is always wrapped by a CMS structure.
@@ -3020,6 +3032,8 @@ device  |        |             |            |        |         |
             </list>
           </t>
         </section>
+        <section title="26 to 27">
+          <t>Added Security Consideration for cascading trust via redirects, per Benjamin Kaduk's review.</t>
       </section>
 
       <section title="Acknowledgements" numbered="no">
