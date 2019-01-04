@@ -67,17 +67,17 @@ module ietf-sztp-bootstrap-server {
        username, to obtain bootstrapping data that has been made
        available for it.";
     input {
-      leaf untrusted-connection {
+      leaf signed-data-preferred {
         type empty;
         description
           "This optional input parameter enables a device to 
-           communicate to the bootstrap server that it is unable to
-           authenticate the bootstrap server's TLS certificate.  In
-           such circumstances, the device likely does not send any 
-           of the other input parameters, except for the 'nonce'
-           parameter.  Upon receiving this input parameter, the
-           bootstrap server should only return unsigned redirect
-           information or signed data of any type.";
+           communicate to the bootstrap server that it prefers
+           to receive signed data.  Devices SHOULD always send
+           this parameter when the bootstrap server is untrusted.
+           Upon receiving this input parameter, the bootstrap
+           server MUST return either signed data, or unsigned
+           redirect information; the bootstrap server MUST NOT
+           return unsigned onboarding information.";
       }
       leaf hw-model {
         type string;
@@ -149,7 +149,7 @@ module ietf-sztp-bootstrap-server {
            onboarding information.  Progress reports are not sent
            when processing redirect information, or when the
            bootstrap server is untrusted (e.g., device sent the
-           '<untrusted-connection>' input parameter).";
+           '<signed-data-preferred>' input parameter).";
       }
       leaf conveyed-information {
         type cms;
@@ -282,9 +282,7 @@ module ietf-sztp-bootstrap-server {
                a new boot image and is about to reboot.  After
                sending this progress type, the device is not
                expected to access the bootstrap server again
-               for this bootrapping attempt.  The device may
-               access this bootstrap server after rebooting
-               and restarting the SZTP bootstrapping process.";
+               for this bootstrapping attempt.";
           }
           enum "boot-image-complete" {
             description
@@ -493,10 +491,10 @@ module ietf-sztp-bootstrap-server {
             the device.
      
             The CMS MUST contain only a single chain of
-            certificates.  The device's end-entity certificate
-            MUST only authenticate to the last intermediate CA
-            certificate listed in the chain.
-     
+            certificates.  The last certificate in the chain
+            MUST be the issuer for the device's end-entity 
+            certificate.
+
             In all cases, the chain MUST include a self-signed
             root certificate.  In the case where the root
             certificate is itself the issuer of the device's

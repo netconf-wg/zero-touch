@@ -1121,14 +1121,15 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>If the conveyed information artifact contains onboarding information, and
           trust-state is FALSE, the device MUST exit the recursive algorithm (as
-          this is not allowed, see the figure above), returning to the bootstrapping sequence
-          described in <xref target="boot-sequence"/>.  Otherwise, the device MUST
-          attempt to process the onboarding information as described in
-          <xref target="process-onboarding-information"/>.  In either case, success
-          or failure, the device MUST exit the recursive algorithm, returning to
-          the bootstrapping sequence described in <xref target="boot-sequence"/>, the only
-          difference being in how it responds to the "Able to bootstrap from any
-          source?" conditional described in the figure in the section.</t>
+          this is not allowed, see the figure above), returning to the bootstrapping
+          sequence described in <xref target="boot-sequence"/>.  Otherwise, the device
+          MUST attempt to process the onboarding information as described in
+          <xref target="process-onboarding-information"/>.  Whether the processing
+          of the onboarding information succeeds or fails, the device MUST exit the
+          recursive algorithm, returning to the bootstrapping sequence described
+          in <xref target="boot-sequence"/>, the only difference being in how it
+          responds to the "Able to bootstrap from any source?" conditional described
+          in the figure in the section.</t>
         </section>
 
         <section title="Validating Signed Data" anchor="validating-signed-data">
@@ -1222,8 +1223,12 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           mandatory ones specified for the given reporting level.</t>
 
           <t>When the onboarding information is obtained from an untrusted bootstrap
-          server, the device MUST NOT send any progress reports to the bootstrap server.</t>
-
+          server, the device MUST NOT send any progress reports to the bootstrap server,
+          even though the onboarding information was, necessarily, signed and authenticated.
+          Please be aware that bootstrap servers are recommended to promote untrusted
+          connections to trusted connections, in the last paragraph of Section 9.6, so
+          as to, in part, be able to collect progress reports from devices.</t>
+ 
           <t>If the device encounters an error at any step, it MUST stop processing the
           onboarding information and return to the bootstrapping sequence described in
           <xref target="boot-sequence"/>. In the context of a recursive algorithm, the
@@ -1316,8 +1321,8 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               <list style="symbols">
                 <t>When an error occurs, the device must rollback the current step and
                 any previous steps.</t>
-                <t>Most steps are atomic.  For example, the processing configuration
-                is specified as atomic above, and the processing scripts is similarly
+                <t>Most steps are atomic.  For example, the processing of a configuration
+                is specified above as atomic, and the processing of scripts is similarly
                 specified as atomic in the "ietf-sztp-conveyed-info" YANG module.</t>
                 <t>In case the error occurs after the initial configuration was committed,
                 the device must restore the configuration to the configuration that
@@ -1418,7 +1423,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-sztp-bootstrap-server-tree.txt)
 
           <t>The following example illustrates a device using the API to fetch its
           bootstrapping data from a untrusted bootstrap server.  In this example, the
-          device sends the "untrusted-connection" input parameter and receives signed
+          device sends the "signed-data-preferred" input parameter and receives signed
           data in the response.</t>
           <figure>
             <artwork><![CDATA[
@@ -1775,7 +1780,7 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           bootstrap server.  The "get-bootstrapping-data" RPC allows additional
           input parameters to be passed to the bootstrap server (e.g., "os-name",
           "os-version", "hw-model").  It is RECOMMENDED that devices only pass
-          the "untrusted-connection" input parameter to an untrusted bootstrap
+          the "signed-data-preferred" input parameter to an untrusted bootstrap
           server.  While it is okay for a bootstrap server to immediately
           return signed onboarding information, it is RECOMMENDED that
           bootstrap servers instead promote the untrusted connection to a
@@ -1801,7 +1806,7 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           <t>When artifacts are signed, the signing key is required to be
           online only when the bootstrap server is returning a dynamically
           generated signed-data response.  For instance, a bootstrap server,
-          upon receiving the "untrusted-connection" input parameter to the
+          upon receiving the "signed-data-preferred" input parameter to the
           "get-bootstrapping-data" RPC, may dynamically generate a response
           that is signed.</t>
           <t>Bootstrap server administrators are RECOMMENDED to follow best
@@ -1856,8 +1861,8 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
               systems are not easily compromised and, in case of compromise,
               have mechanisms in place to detect and remediate the compromise
               as expediently as possible.</t>
-              <t>A trusted bootstrap server hosting either unsigned or signed
-              but not encrypted data may disclose information to unwanted parties
+              <t>A trusted bootstrap server hosting either unsigned, or signed
+              but not encrypted, data may disclose information to unwanted parties
               (e.g., an administrator of the bootstrap server).  This is a privacy
               issue only, but could reveal information that might be used in a
               subsequent attack.  Disclosure of redirect information has limited
@@ -1865,7 +1870,8 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
               of onboarding information could be highly revealing (e.g., network
               topology, firewall policies, etc.).  It is RECOMMENDED that operators
               encrypt the bootstrapping data when its contents are considered 
-              sensitive, even to the administrators of a bootstrap server.</t>
+              sensitive, even to the point of hiding it from the administrators
+              of the bootstrap server, which may be maintained by a 3rd-party.</t>
             </list>
           </t>
         </section>
@@ -2280,7 +2286,7 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
 |Device|                                              |  Server  |
 +------+                                              +----------+
    |                                                        |
-   | 1. "HTTPS" Request ("untrusted-connection", nonce)     |
+   | 1. "HTTPS" Request ("signed-data-preferred", nonce)    |
    |------------------------------------------------------->|
    | 2. "HTTPS" Response (signed redirect information)      |
    |<-------------------------------------------------------|
@@ -2300,16 +2306,16 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
           above.  It is still an HTTPS connection, but the device is
           unable to authenticate the bootstrap server's TLS certificate.
           Because the device is unable to trust the bootstrap server, it
-          sends the "untrusted-connection" input parameter, and optionally
+          sends the "signed-data-preferred" input parameter, and optionally
           also the "nonce" input parameter, in the "get-bootstrapping-data"
-          RPC.  The "untrusted-connection" parameter informs the
+          RPC.  The "signed-data-preferred" parameter informs the
           bootstrap server that the device does not trust it and may
           be holding back some additional input parameters from the
           server (e.g., other input parameters, progress reports, etc.).
           The "nonce" input parameter enables the bootstrap server to
           dynamically obtain an ownership voucher from a MASA, which
           may be important for devices that do not have a reliable clock.</t>
-          <t>The bootstrap server, seeing the "untrusted-connection"
+          <t>The bootstrap server, seeing the "signed-data-preferred"
           input parameter, knows that it can either send unsigned
           redirect information or signed data of any type.  But, in
           this case, the bootstrap server has the ability to sign
@@ -2328,7 +2334,7 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
           is able to authenticate the bootstrap server this time, it sends its
           normal "get-bootstrapping-data" request (i.e., with additional
           input parameters) as well as its progress reports (not depicted).</t>
-          <t>This time, because the "untrusted-connection" parameter was
+          <t>This time, because the "signed-data-preferred" parameter was
           not passed, having access to all of the device's input parameters,
           the bootstrap server returns, in this example, unsigned onboarding
           information to the device.  Note also that, because the bootstrap
@@ -2902,7 +2908,7 @@ device  |        |             |            |        |         |
               <t>Reverted back to the device always sending its DevID cert.</t>
               <t>Moved data tree to "get-bootstrapping-data" RPC.</t>
               <t>Moved the "update-progress" action to a "report-progress" RPC.</t>
-              <t>Added an "untrusted-connection" parameter to "get-bootstrapping-data" RPC.</t>
+              <t>Added an "signed-data-preferred" parameter to "get-bootstrapping-data" RPC.</t>
               <t>Added the "ietf-zerotouch-device" module.</t>
               <t>Lots of small updates.</t>
             </list>

@@ -1,5 +1,5 @@
 <input
  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
-  <untrusted-connection/>
+  <signed-data-preferred/>
 </input>
 
