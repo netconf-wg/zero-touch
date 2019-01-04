@@ -1,18 +1,18 @@
 {
-  "ietf-zerotouch-information:redirect-information" : {
+  "ietf-sztp-conveyed-info:redirect-information" : {
     "bootstrap-server" : [
       {
-        "address" : "phs1.example.com",
+        "address" : "sztp1.example.com",
         "port" : 8443,
         "trust-anchor" : "base64encodedvalue=="
       },
       {
-        "address" : "phs2.example.com",
+        "address" : "sztp2.example.com",
         "port" : 8443,
         "trust-anchor" : "base64encodedvalue=="
       },
       {
-        "address" : "phs3.example.com",
+        "address" : "sztp3.example.com",
         "port" : 8443,
         "trust-anchor" : "base64encodedvalue=="
       }

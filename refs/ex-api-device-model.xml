@@ -1,21 +1,21 @@
-<zerotouch
-  xmlns="https://example.com/zerotouch-device">
+<sztp
+  xmlns="https://example.com/sztp-device-data-model">
   <enabled>true</enabled>
   <idevid-certificate>base64encodedvalue==</idevid-certificate>
   <bootstrap-servers>
     <bootstrap-server>
-      <address>phs1.example.com</address>
+      <address>sztp1.example.com</address>
       <port>8443</port>
     </bootstrap-server> 
     <bootstrap-server>
-      <address>phs2.example.com</address>
+      <address>sztp2.example.com</address>
       <port>8443</port>
     </bootstrap-server> 
     <bootstrap-server>
-      <address>phs3.example.com</address>
+      <address>sztp3.example.com</address>
       <port>8443</port>
     </bootstrap-server> 
   </bootstrap-servers>
   <bootstrap-server-pinned-certificates>manufacturers-root-ca-certs</bootstrap-server-pinned-certificates>
   <voucher-pinned-certificates>manufacturers-root-ca-certs</voucher-pinned-certificates>
-</zerotouch>
+</sztp>

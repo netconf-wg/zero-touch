@@ -1,8 +1,7 @@
-module ietf-zerotouch-bootstrap-server {
+module ietf-sztp-bootstrap-server {
   yang-version 1.1;
-  namespace
-    "urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server";
-  prefix ztbs;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server";
+  prefix sztp-svr;
 
   organization
     "IETF NETCONF (Network Configuration) Working Group";
@@ -14,8 +13,7 @@ module ietf-zerotouch-bootstrap-server {
 
   description
    "This module defines an interface for bootstrap servers, as
-    defined by RFC XXXX: Zero Touch Provisioning for Networking
-    Devices.
+    defined by RFC XXXX: Secure Zero Touch Provisioning (SZTP).
 
     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 
@@ -40,7 +38,7 @@ module ietf-zerotouch-bootstrap-server {
     description
       "Initial version";
     reference
-      "RFC XXXX: Zero Touch Provisioning for Networking Devices";
+      "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
   }
 
   // typedefs
@@ -153,15 +151,14 @@ module ietf-zerotouch-bootstrap-server {
            bootstrap server is untrusted (e.g., device sent the
            '<untrusted-connection>' input parameter).";
       }
-      leaf zerotouch-information {
+      leaf conveyed-information {
         type cms;
         mandatory true;
         description
-          "A zero touch information artifact, as described in 
+          "An SZTP conveyed information artifact, as described in 
            Section 3.1 of RFC XXXX.";
         reference
-          "RFC XXXX:
-              Zero Touch Provisioning for Networking Devices";
+          "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
       }
       leaf owner-certificate {
         type cms;
@@ -173,11 +170,10 @@ module ietf-zerotouch-bootstrap-server {
         description
           "An owner certificate artifact, as described in Section
            3.2 of RFC XXXX.  This leaf is optional because it is
-           only needed when the zero touch information artifact
-           is signed.";
+           only needed when the conveyed information artifact is
+           signed.";
         reference
-          "RFC XXXX:
-              Zero Touch Provisioning for Networking Devices";
+          "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
       }
       leaf ownership-voucher {
         type cms;
@@ -189,11 +185,10 @@ module ietf-zerotouch-bootstrap-server {
         description
           "An ownership voucher artifact, as described by Section
            3.3 of RFC XXXX.  This leaf is optional because it is
-           only needed when the zero touch information artifact
-           is signed.";
+           only needed when the conveyed information artifact is
+           signed.";
         reference
-          "RFC XXXX:
-              Zero Touch Provisioning for Networking Devices";
+          "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
       }
     }
   }
@@ -289,8 +284,7 @@ module ietf-zerotouch-bootstrap-server {
                expected to access the bootstrap server again
                for this bootrapping attempt.  The device may
                access this bootstrap server after rebooting
-               and restarting the zerotouch bootstrapping
-               process.";
+               and restarting the SZTP bootstrapping process.";
           }
           enum "boot-image-complete" {
             description

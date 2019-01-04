@@ -1,17 +1,17 @@
 <redirect-information
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info">
   <bootstrap-server>
-    <address>phs1.example.com</address>
+    <address>sztp1.example.com</address>
     <port>8443</port>
     <trust-anchor>base64encodedvalue==</trust-anchor>
   </bootstrap-server> 
   <bootstrap-server>
-    <address>phs2.example.com</address>
+    <address>sztp2.example.com</address>
     <port>8443</port>
     <trust-anchor>base64encodedvalue==</trust-anchor>
   </bootstrap-server> 
   <bootstrap-server>
-    <address>phs3.example.com</address>
+    <address>sztp3.example.com</address>
     <port>8443</port>
     <trust-anchor>base64encodedvalue==</trust-anchor>
   </bootstrap-server> 

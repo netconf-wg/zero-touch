@@ -1,5 +1,5 @@
 <input xmlns=
-  "urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+  "urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <progress-type>bootstrap-complete</progress-type>
   <message>example message</message>
   <ssh-host-keys>

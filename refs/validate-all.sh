@@ -4,9 +4,9 @@ echo
 echo "Testing YANG modules first..."
 echo
 
-echo "validating ietf-zerotouch-bootstrap-server.yang..."
+echo "validating ietf-sztp-bootstrap-server.yang..."
 printf "  ^ with pyang..."
-response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-zerotouch-bootstrap-server\@*.yang 2>&1`
+response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-sztp-bootstrap-server\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -15,7 +15,7 @@ if [ $? -ne 0 ]; then
 fi
 printf "okay.\n"
 printf "  ^ with yanglint..."
-response=`yanglint ../ietf-zerotouch-bootstrap-server\@*.yang 2>&1`
+response=`yanglint ../ietf-sztp-bootstrap-server\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -25,9 +25,9 @@ fi
 printf "okay.\n\n"
 
 
-echo "validating ietf-zerotouch-information.yang..."
+echo "validating ietf-sztp-conveyed-info.yang..."
 printf "  ^ with pyang..."
-response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-zerotouch-information\@*.yang 2>&1`
+response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-sztp-conveyed-info\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -36,7 +36,7 @@ if [ $? -ne 0 ]; then
 fi
 printf "okay.\n"
 printf "  ^ with yanglint..."
-response=`yanglint ../ietf-zerotouch-information\@*.yang 2>&1`
+response=`yanglint ../ietf-sztp-conveyed-info\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -46,9 +46,9 @@ fi
 printf "okay.\n\n"
 
 
-echo "validating example-zerotouch-device.yang..."
+echo "validating example-device-data-model.yang..."
 printf "  ^ with pyang..."
-response=`pyang --lint --strict --canonical --max-line-length=69 ../example-zerotouch-device\@*.yang 2>&1`
+response=`pyang --lint --strict --canonical --max-line-length=69 ../example-device-data-model\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -57,7 +57,7 @@ if [ $? -ne 0 ]; then
 fi
 printf "okay.\n"
 printf "  ^ with yanglint..."
-response=`yanglint ../example-zerotouch-device\@*.yang 2>&1`
+response=`yanglint ../example-device-data-model\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -69,23 +69,26 @@ printf "okay.\n\n"
 
 
 echo
-echo "Tranisitioning to testing ietf-zerotouch-bootstrap-server.yang examples"
+echo "Tranisitioning to testing ietf-sztp-bootstrap-server.yang examples"
 echo
 
 printf "validating ex-api-get-bootstrap-data-rpc-trusted.xml..."
 sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-trusted.xml > ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
-response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
   echo
+  rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
   exit 1
 fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-reply-trusted.xml..."
-cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' -e 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
-response=`yanglint -s -t rpcreply ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' -e 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
+response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
+rm ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -96,18 +99,21 @@ printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-untrusted.xml..."
 sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-untrusted.xml > ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
-response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
   echo
+  rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
   exit 1
 fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-reply-untrusted.xml..."
-cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | grep -v "output" | grep -v "xmlns=" | sed 's/<zerotouch-information>/<zerotouch-information xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
-response=`yanglint -s -t rpcreply ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | grep -v "output" | grep -v "xmlns=" | sed 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
+response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
+rm ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -116,15 +122,11 @@ if [ $? -ne 0 ]; then
 fi
 printf "okay.\n"
 
-rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
-rm ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
-rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
-rm ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
 
 
 printf "validating ex-api-report-progress-rpc.xml..."
 sed 's/input/report-progress/' ex-api-report-progress-rpc.xml > ex-api-report-progress-rpc-4nc.xml
-response=`yanglint -s -t rpc ../ietf-zerotouch-bootstrap-server\@*.yang ex-api-report-progress-rpc-4nc.xml 2>&1`
+response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-report-progress-rpc-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
@@ -137,12 +139,12 @@ printf "okay.\n"
 
 
 echo
-echo "Transitioning to testing ietf-zerotouch-information.yang examples"
+echo "Transitioning to testing ietf-sztp-conveyed-info.yang examples"
 echo
 
 # first, we need to create a version of the YANG module without the "yang-data"
 # extension (e.g., make it look like it defines protocol-accessible nodes)
-name=`ls -1 ../ietf-zerotouch-information\@*.yang | sed 's/\.\.\///'`
+name=`ls -1 ../ietf-sztp-conveyed-info\@*.yang | sed 's/\.\.\///'`
 linenum=`grep -n "typedef script {" ../$name | sed 's/:.*//'`
 delline=`expr $linenum - 2`  # hope it doesn't move!
 awk "NR%$delline" ../$name > $name.2
@@ -201,11 +203,11 @@ rm $name
 
 
 echo
-echo "Tranisitioning to testing example-zerotouch-device.yang examples"
+echo "Tranisitioning to testing example-device-data-model.yang examples"
 echo
 
 printf "validating ex-api-device-model.xml..."
-response=`yanglint -m -s -p ../ ../example-zerotouch-device\@*.yang ./ietf-origin.yang ex-api-device-model.xml ../../trust-anchors/refs/ex-trust-anchors.xml 2>&1`
+response=`yanglint -m -s -p ../ ../example-device-data-model\@*.yang ./ietf-origin.yang ex-api-device-model.xml ../../trust-anchors/refs/ex-trust-anchors.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"

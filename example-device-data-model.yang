@@ -1,7 +1,7 @@
-module example-zerotouch-device {
+module example-device-data-model {
   yang-version 1.1;
-  namespace "https://example.com/zerotouch-device";
-  prefix ztd;
+  namespace "https://example.com/sztp-device-data-model";
+  prefix sztp-ddm;
 
   import ietf-inet-types {
     prefix inet;
@@ -37,7 +37,7 @@ module example-zerotouch-device {
     "Author: Bootstrap Admin <mailto:admin@example.com>";
 
   description
-    "This module defines a data model to enable zerotouch 
+    "This module defines a data model to enable SZTP 
      bootstrapping and discover what parameters are used.
      This module assumes the use of an IDevID certificate,
      as opposed to any other client certificate, or the
@@ -47,7 +47,7 @@ module example-zerotouch-device {
     description
       "Initial version";
     reference
-      "RFC XXXX: Zero Touch Provisioning for Networking Devices";
+      "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
   }
 
   // features
@@ -64,14 +64,14 @@ module example-zerotouch-device {
 
   // protocol accessible nodes
 
-  container zerotouch {
+  container sztp {
     description
-      "Top-level container for zerotouch data model.";
+      "Top-level container for SZTP data model.";
     leaf enabled {
       type boolean;
       default false;
       description
-        "The 'enabled' leaf controls if zerotouch bootstrapping is
+        "The 'enabled' leaf controls if SZTP bootstrapping is
          enabled or disabled.  The default is 'false' so that, when
          not enabled, which is most of the time, no configuration
          is needed.";

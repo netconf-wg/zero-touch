@@ -18,7 +18,7 @@
      ipr="trust200902"
      docName="draft-ietf-netconf-zerotouch-latest">
     <front>
-        <title abbrev="Secure Zero Touch Provisioning (SZTP)">Zero Touch Provisioning for Networking Devices</title>
+        <title abbrev="Secure Zero Touch Provisioning (SZTP)">Secure Zero Touch Provisioning (SZTP)</title>
         <author initials="K.W." surname="Watsen" fullname="Kent Watsen">
             <organization>Juniper Networks</organization>
             <address>
@@ -64,8 +64,8 @@
           values for DHCP options pending IANA assignment.  Please apply the
           following replacements:
             <list  style="symbols">
-              <t><spanx style="verb">TBD1</spanx> --&gt; the assigned value for id-ct-zerotouchInformationXML</t>
-              <t><spanx style="verb">TBD2</spanx> --&gt; the assigned value for id-ct-zerotouchInformationJSON</t>
+              <t><spanx style="verb">TBD1</spanx> --&gt; the assigned value for id-ct-sztpConveyedInfoXML</t>
+              <t><spanx style="verb">TBD2</spanx> --&gt; the assigned value for id-ct-sztpConveyedInfoJSON</t>
             </list>
           </t>
           <t>Artwork in this document contains shorthand references to drafts in
@@ -156,19 +156,24 @@
             <list style="hanging" hangIndent="4">
 
               <t hangText="Artifact:">The term "artifact" is used throughout to represent
-              any of the three artifacts defined in <xref target="artifacts"/> (zero touch
+              any of the three artifacts defined in <xref target="artifacts"/> (conveyed
               information, ownership voucher, and owner certificate).  These artifacts
               collectively provide all the bootstrapping data a device may use.</t>
 
               <t hangText="Bootstrapping Data:">The term "bootstrapping data" is used
               throughout this document to refer to the collection of data that a device
               may obtain during the bootstrapping process.  Specifically, it refers
-              to the three artifacts zero touch information, owner certificate, and
+              to the three artifacts conveyed information, owner certificate, and
               ownership voucher, as described in <xref target="artifacts"/>. </t>
 
               <t hangText="Bootstrap Server:">The term "bootstrap server" is used within
               this document to mean any RESTCONF server implementing the YANG module
               defined in <xref target="yang-module"/>.</t>
+
+              <t hangText="Conveyed Information:">The term "conveyed information" is used
+              herein to refer either redirect information or onboarding information.
+              Conveyed information is one of the three bootstrapping artifacts described in
+              <xref target="artifacts"/>.</t>
 
               <t hangText="Device:">The term "device" is used throughout this document
               to refer to a network element that needs to be bootstrapped.  See
@@ -184,7 +189,7 @@
               the NMS is a NETCONF or RESTCONF client.</t>
 
               <t hangText="Onboarding Information:">The term "onboarding information" is used
-              herein to refer to one of the two types of "zero touch information"
+              herein to refer to one of the two types of "conveyed information"
               defined in this document, the other being "redirect information".  Onboarding
               information is formally defined by the "onboarding-information" YANG-data
               structure in <xref target="info-yang-module"/>.</t>
@@ -200,7 +205,7 @@
               <t hangText="Owner Certificate:">The term "owner certificate" is used in
               this document to represent an X.509 certificate that binds an owner identity
               to a public key, which a device can use to validate a signature over the
-              zero touch information artifact.  The owner certificate may be communicated
+              conveyed information artifact.  The owner certificate may be communicated
               along with its chain of intermediate certificates leading up to a known
               trust anchor.  The owner certificate is one of the three bootstrapping
               artifacts described in <xref target="artifacts"/>.</t>
@@ -212,7 +217,7 @@
               the three bootstrapping artifacts described in <xref target="artifacts"/>.</t>
 
               <t hangText="Redirect Information:">The term "redirect information" is used
-              herein to refer to one of the two types of "zero touch information"
+              herein to refer to one of the two types of "conveyed information"
               defined in this document, the other being "onboarding information".  Redirect
               information is formally defined by the "redirect-information" YANG-data
               structure in <xref target="info-yang-module"/>.</t>
@@ -224,17 +229,11 @@
               deployment-specific bootstrap servers.</t>
 
               <t hangText="Signed Data:">The term "signed data" is used throughout to mean
-              zero touch information that has been signed, specifically by a private key
+              conveyed information that has been signed, specifically by a private key
               possessed by a device's owner.</t>
 
               <t hangText="Unsigned Data:">The term "unsigned data" is used throughout to mean
-              zero touch information that has not been signed.</t>
-
-              <t hangText="Zero Touch Information:">The term "zero touch information" is used
-              herein to refer either redirect information or onboarding information.
-              Zero touch information is one of the three bootstrapping artifacts described in
-              <xref target="artifacts"/>.</t>
-
+              conveyed information that has not been signed.</t>
             </list>
           </t>
         </section>
@@ -254,10 +253,10 @@
       </section>  <!-- end Introduction -->
 
 
-      <section title="Types of Zero Touch Information" anchor="types-of-information">
+      <section title="Types of Conveyed Information" anchor="types-of-information">
 
-        <t>This document defines two types of zero touch information that devices can access during
-        the bootstrapping process.  These zero touch information types are described in
+        <t>This document defines two types of conveyed information that devices can access during
+        the bootstrapping process.  These conveyed information types are described in
         this section. Examples are provided in <xref target="zt-info-data-model-examples"/></t>
 
         <section title="Redirect Information" anchor="redirect-information">
@@ -335,71 +334,71 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         data specifies how it provides the artifacts defined in this section
         (see <xref target="sources"/>).</t>
 
-        <section title="Zero Touch Information" anchor="zerotouch-information">
-          <t>The zero touch information artifact encodes the essential bootstrapping
+        <section title="Conveyed Information" anchor="conveyed-information">
+          <t>The conveyed information artifact encodes the essential bootstrapping
           data for the device.  This artifact is used to encode the redirect
           information and onboarding information types discussed in <xref
           target="types-of-information"/>.</t>
 
-          <t>The zero touch information artifact is a CMS structure, as described
+          <t>The conveyed information artifact is a CMS structure, as described
           in <xref target="RFC5652"/>, encoded using ASN.1 distinguished encoding
           rules (DER), as specified in ITU-T X.690 <xref target="ITU.X690.2015"/>.
           The CMS structure MUST contain content conforming to the
           YANG module specified in <xref target="info-yang-module"/>.</t>
 
-          <t>The zero touch information CMS structure may encode signed or
+          <t>The conveyed information CMS structure may encode signed or
           unsigned bootstrapping data.  When the bootstrapping data is signed,
           it may also be encrypted but, from a terminology perspective, it
           is still "signed data" <xref target="terminology"/>.</t>
 
-          <t>When the zero touch information artifact is unsigned, as it might
+          <t>When the conveyed information artifact is unsigned, as it might
           be when communicated over trusted channels, the CMS structure's 
           top-most content type MUST be one of the OIDs described in 
-          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML or
-          id-ct-zerotouchInformationJSON), or the OID id-data (1.2.840.113549.1.7.1).
+          <xref target="cms_cts"/> (i.e., id-ct-sztpConveyedInfoXML or
+          id-ct-sztpConveyedInfoJSON), or the OID id-data (1.2.840.113549.1.7.1).
           When the OID id-data is used, the encoding (JSON, XML, etc.)
           SHOULD be communicated externally. In either case, the associated
-          content is an octet string containing "zerotouch-information"
+          content is an octet string containing "conveyed-information"
           data in the expected encoding.</t>
 
-          <t>When the zero touch information artifact is unsigned and 
+          <t>When the conveyed information artifact is unsigned and 
           encrypted, as it might be when communicated over trusted
           channels but, for some reason, the operator wants to ensure
           that only the device is able to see the contents, the CMS 
           structure's top-most content type MUST be the OID id-envelopedData
           (1.2.840.113549.1.7.3). Furthermore, the encryptedContentInfo's
           content type MUST be one of the OIDs described in 
-          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML
-          or id-ct-zerotouchInformationJSON), or the OID id-data
+          <xref target="cms_cts"/> (i.e., id-ct-sztpConveyedInfoXML
+          or id-ct-sztpConveyedInfoJSON), or the OID id-data
           (1.2.840.113549.1.7.1).  When the OID id-data is used,
           the encoding (JSON, XML, etc.) SHOULD be communicated
           externally. In either case, the associated content is
-          an octet string containing "zerotouch-information" data
+          an octet string containing "conveyed-information" data
           in the expected encoding.</t>
 
-          <t>When the zero touch information artifact is signed, as it might
+          <t>When the conveyed information artifact is signed, as it might
           be when communicated over untrusted channels, the CMS structure's
           top-most content type MUST be the OID id-signedData (1.2.840.113549.1.7.2).
           Furthermore, the inner eContentType MUST be one of the OIDs described in
-          <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML or 
-          id-ct-zerotouchInformationJSON), or the OID id-data (1.2.840.113549.1.7.1).
+          <xref target="cms_cts"/> (i.e., id-ct-sztpConveyedInfoXML or 
+          id-ct-sztpConveyedInfoJSON), or the OID id-data (1.2.840.113549.1.7.1).
           When the OID id-data is used, the encoding (JSON, XML, etc.) SHOULD
           be communicated externally.  In either case, the associated content
-          or eContent is an octet string containing "zerotouch-information"
+          or eContent is an octet string containing "conveyed-information"
           data in the expected encoding.</t>
 
-          <t>When the zero touch information artifact is signed and encrypted,
+          <t>When the conveyed information artifact is signed and encrypted,
           as it might be when communicated over untrusted channels and 
           privacy is important, the CMS structure's top-most content type
           MUST be the OID id-envelopedData (1.2.840.113549.1.7.3). Furthermore, 
           the encryptedContentInfo's content type MUST be the OID id-signedData
           (1.2.840.113549.1.7.2), whose eContentType MUST be one of the OIDs
-          described in <xref target="cms_cts"/> (i.e., id-ct-zerotouchInformationXML
-          or id-ct-zerotouchInformationJSON), or the OID id-data
+          described in <xref target="cms_cts"/> (i.e., id-ct-sztpConveyedInfoXML
+          or id-ct-sztpConveyedInfoJSON), or the OID id-data
           (1.2.840.113549.1.7.1).  When the OID id-data is used, the encoding
           (JSON, XML, etc.) SHOULD be communicated externally.  In either case,
           the associated content or eContent is an octet string containing
-          "zerotouch-information" data in the expected encoding.</t>
+          "conveyed-information" data in the expected encoding.</t>
 
         </section>
 
@@ -414,11 +413,11 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           document.</t>
 
           <t>The owner certificate is used by a device to verify the signature over
-          the zero touch information artifact (<xref target="zerotouch-information"/>)
+          the conveyed information artifact (<xref target="conveyed-information"/>)
           that the device should have also received, as described in
           <xref target="artifact-groupings"/>.  In particular, the device
           verifies the signature using the public key in the owner certificate
-          over the content contained within the zero touch information artifact.</t>
+          over the content contained within the conveyed information artifact.</t>
 
           <t>The owner certificate artifact is formally a CMS structure, as
           specified by <xref target="RFC5652"/>, encoded using ASN.1
@@ -495,7 +494,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           sensitive.</t>
           <t>Each of the three artifacts are encrypted in the same way, by the
           unencrypted form being encapsulated inside a CMS EnvelopedData type.</t>
-          <t>As a consequence, both the zero touch information and ownership
+          <t>As a consequence, both the conveyed information and ownership
           voucher artifacts are signed and then encrypted, never encrypted
           and then signed.</t>
           <t>This sequencing has the advantage of shrouding the signer's
@@ -522,7 +521,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             <list style="hanging" hangIndent="6">
                 <t hangText="   Unsigned Data:">This artifact grouping is useful for cases
                   when transport level security can be used to convey trust (e.g., HTTPS),
-                  or when the zero touch information can be processed in a provisional manner (i.e.
+                  or when the conveyed information can be processed in a provisional manner (i.e.
                   unsigned redirect information).</t>
                 <t hangText="   Signed Data, without revocations:">This artifact grouping
                   is useful when signed data is needed (i.e., because the data is obtained
@@ -541,7 +540,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             <figure>
               <artwork><![CDATA[
 +---------------------+---------------+--------------+--------------+
-| Artifact            | Zero Touch    | Ownership    | Owner        |
+| Artifact            | Conveyed      | Ownership    | Owner        |
 | Grouping            | Information   | Voucher      | Certificate  |
 +=====================+===============+==============+==============+
 | Unsigned Data       | Yes, no sig   | No           | No           |
@@ -571,7 +570,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
         <section title="Removable Storage" anchor="removable-storage">
           <t>A directly attached removable storage device (e.g., a USB flash drive)
-          MAY be used as a source of zero touch bootstrapping data.</t>
+          MAY be used as a source of SZTP bootstrapping data.</t>
 
           <t>Use of a removable storage device is compelling, as it does not require
           any external infrastructure to work.  It is notable that the raw boot
@@ -595,9 +594,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>Artifact to File Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Zero Touch Information:">Mapped to a file containing
-              the binary artifact described in <xref target="zerotouch-information"/>
-              (e.g., zerotouch-information.cms).</t>
+              <t hangText="   Conveyed Information:">Mapped to a file containing
+              the binary artifact described in <xref target="conveyed-information"/>
+              (e.g., conveyed-information.cms).</t>
               <t hangText="   Owner Certificate:">Mapped to a file containing the
               binary artifact described in <xref target="owner-certificate"/>
               (e.g., owner-certificate.cms).</t>
@@ -617,7 +616,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         </section>
 
         <section title="DNS Server" anchor="dns-server">
-          <t>A DNS server MAY be used as a source of zero touch bootstrapping data.</t>
+          <t>A DNS server MAY be used as a source of SZTP bootstrapping data.</t>
 
           <t>Using a DNS server may be a compelling option for deployments having
           existing DNS infrastructure, as it enables a touchless bootstrapping option
@@ -670,15 +669,15 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             is "example.com", the device may issue the following sequence of DNS queries:
               <?rfc subcompact="yes"?>
               <list style="empty">
-                <t>TXT in &lt;serial number&gt;._zerotouch._tcp.local.</t>
-                <t>TXT in &lt;serial number&gt;._zerotouch._tcp.example.com.</t>
-                <t>SRV in _zerotouch._tcp.local.</t>
-                <t>SRV in _zerotouch._tcp.example.com.</t>
+                <t>TXT in &lt;serial number&gt;._sztp._tcp.local.</t>
+                <t>TXT in &lt;serial number&gt;._sztp._tcp.example.com.</t>
+                <t>SRV in _sztp._tcp.local.</t>
+                <t>SRV in _sztp._tcp.example.com.</t>
               </list>
               <?rfc subcompact="no"?>
             </t>
 
-            <t>This document registers the service name "zerotouch" in
+            <t>This document registers the service name "sztp" in
             <xref target="dns_srv"/>.</t>
 
           </section>
@@ -691,9 +690,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
   
             <t>Artifact to TXT Record Mapping:
               <list style="hanging" hangIndent="6">
-                <t hangText="   Zero Touch Information:">Mapped to a TXT record
-                having the key "zi" and the value being the binary
-                artifact described in <xref target="zerotouch-information"/>.</t>
+                <t hangText="   Conveyed Information:">Mapped to a TXT record
+                having the key "ci" and the value being the binary
+                artifact described in <xref target="conveyed-information"/>.</t>
                 <t hangText="   Owner Certificate:">Mapped to a TXT record
                 having the key "oc" and the value being the binary
                 artifact described in <xref target="owner-certificate"/>.</t>
@@ -714,9 +713,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             "&lt;sn&gt;":
               <figure>
                 <artwork><![CDATA[
-  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "zi=<binary data>"
-  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "oc=<binary data>"
-  <sn>._zerotouch._tcp.example.com. 3600 IN TXT "ov=<binary data>"]]>
+  <sn>._sztp._tcp.example.com. 3600 IN TXT "ci=<binary data>"
+  <sn>._sztp._tcp.example.com. 3600 IN TXT "oc=<binary data>"
+  <sn>._sztp._tcp.example.com. 3600 IN TXT "ov=<binary data>"]]>
                 </artwork>
               </figure>
             </t>
@@ -732,7 +731,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
   
             <t>Artifact to SRV Record Mapping:
               <list style="hanging" hangIndent="6">
-                <t hangText="   Zero Touch Information:">This artifact is not supported
+                <t hangText="   Conveyed Information:">This artifact is not supported
                 directly.  Instead, the essence of unsigned redirect information is
                 mapped to SVR records per <xref target="RFC2782"/>.</t>
                 <t hangText="   Owner Certificate:">Not supported.  Device-independent
@@ -749,10 +748,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             unsigned redirect information to four bootstrap servers:
               <figure>
                 <artwork>
-  _zerotouch._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
-  _zerotouch._tcp.example.com. 1800 IN SRV 1 0 443 sztp2.example.com.
-  _zerotouch._tcp.example.com. 1800 IN SRV 2 0 443 sztp3.example.com.
-  _zerotouch._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
+  _sztp._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
+  _sztp._tcp.example.com. 1800 IN SRV 1 0 443 sztp2.example.com.
+  _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp3.example.com.
+  _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
                 </artwork>
               </figure>
             </t>
@@ -792,7 +791,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         </section> <!-- end DNS Server -->
 
         <section title="DHCP Server" anchor="dhcp-server">
-          <t>A DHCP server MAY be used as a source of zero touch bootstrapping data.</t>
+          <t>A DHCP server MAY be used as a source of SZTP bootstrapping data.</t>
 
           <t>Using a DHCP server may be a compelling option for deployments having
           existing DHCP infrastructure, as it enables a touchless bootstrapping option
@@ -822,7 +821,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>Artifact to DHCP Option Fields Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Zero Touch Information:">This artifact is not supported
+              <t hangText="   Conveyed Information:">This artifact is not supported
               directly.  Instead, the essence of unsigned redirect information is
               mapped to the DHCP options described in <xref target="dhcp-options"/>.</t>
               <t hangText="   Owner Certificate:">Not supported.  There is not enough
@@ -834,7 +833,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         </section>
 
         <section title="Bootstrap Server" anchor="bootstrap-server">
-          <t>A bootstrap server MAY be used as a source of zero touch bootstrapping data.
+          <t>A bootstrap server MAY be used as a source of SZTP bootstrapping data.
           A bootstrap server is defined as a RESTCONF <xref target="RFC8040"/>
           server implementing the YANG module provided in <xref target="api"/>.</t>
 
@@ -853,8 +852,8 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>A bootstrap server may be a trusted or an untrusted source of bootstrapping
           data, depending on if the device learned about the bootstrap server's trust
           anchor from a trusted source.  When a bootstrap server is trusted, the
-          zero touch information returned from it MAY be signed.  When the bootstrap server is
-          untrusted, the zero touch information either MUST be signed or MUST be information
+          conveyed information returned from it MAY be signed.  When the bootstrap server is
+          untrusted, the conveyed information either MUST be signed or MUST be information
           that can be processed provisionally (e.g., unsigned redirect information).</t>
 
           <t>From an artifact perspective, since a bootstrap server presents data
@@ -865,7 +864,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>Artifact to Bootstrap Server Mapping:
             <list style="hanging" hangIndent="6">
-              <t hangText="   Zero Touch Information:">Mapped to the "zerotouch-information"
+              <t hangText="   Conveyed Information:">Mapped to the "conveyed-information"
               leaf in the output of the "get-bootstrapping-data" RPC.</t>
               <t hangText="   Owner Certificate:">Mapped to the "owner-certificate"
               leaf in the output of the "get-bootstrapping-data" RPC.</t>
@@ -874,7 +873,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             </list>
           </t>
 
-          <t>Zero touch bootstrap servers have only two endpoints, one for the
+          <t>SZTP bootstrap servers have only two endpoints, one for the
           "get-bootstrapping-data" RPC and one for the "report-progress" RPC.
           These RPCs use the authenticated RESTCONF username to isolate the
           execution of the RPC from other devices.</t>
@@ -901,7 +900,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 | +---------------------------------------------------------+ |
 | |                   <read/write storage>                  | |
 | |                                                         | |
-| | 1. flag to enable zerotouch bootstrapping set to "true" | |
+| | 1. flag to enable SZTP bootstrapping set to "true"      | |
 | +---------------------------------------------------------+ |
 |                                                             |
 | +---------------------------------------------------------+ |
@@ -917,7 +916,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 |   |                 <secure storage>                    |   |
 |   |                                                     |   |
 |   |  6. private key for TLS client certificate          |   |
-|   |  7. private key for decrypting zerotouch artifacts  |   |
+|   |  7. private key for decrypting SZTP artifacts       |   |
 |   +-----------------------------------------------------+   |
 |                                                             |
 +-------------------------------------------------------------+
@@ -927,10 +926,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             <list style="numbers">
 
               <t>Devices MUST have a configurable variable that is used to enable/disable
-              zerotouch bootstrapping.  This variable MUST be enabled by default in
-              order for zerotouch bootstrapping to run when the device first powers on.
+              SZTP bootstrapping.  This variable MUST be enabled by default in
+              order for SZTP bootstrapping to run when the device first powers on.
               Because it is a goal that the configuration installed by the bootstrapping
-              process disables zerotouch bootstrapping, and because the
+              process disables SZTP bootstrapping, and because the
               configuration may be merged into the existing configuration, using a
               configuration node that relies on presence is NOT RECOMMENDED, as it
               cannot be removed by the merging process.</t>
@@ -973,7 +972,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               in a cryptographic processor, such as a trusted platform module (TPM)
               chip.</t>
 
-              <t>Devices that support decrypting zerotouch artifacts MUST posses the
+              <t>Devices that support decrypting SZTP artifacts MUST posses the
               private key that corresponds to the public key encoded in the secure
               device identity certificate used when encrypting the artifacts.  This
               private key SHOULD be securely stored, ideally in a cryptographic 
@@ -995,8 +994,8 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
               <artwork><![CDATA[
     Power On
         |
-        v                                No
- 1. Zerotouch bootstrapping configured ------> Boot normally
+        v                           No
+ 1. SZTP bootstrapping configured ------> Boot normally
         |
         | Yes
         v
@@ -1020,9 +1019,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>Each numbered item below corresponds to a numbered item in the diagram above.
             <list style="numbers">
-              <t>When the device powers on, it first checks to see if zerotouch bootstrapping
+              <t>When the device powers on, it first checks to see if SZTP bootstrapping
               is configured, as is expected to be the case for the device's preconfigured
-              initial state.   If zerotouch bootstrapping is not configured, then the device
+              initial state.   If SZTP bootstrapping is not configured, then the device
               boots normally.</t>
               <t>The device iterates over its list of sources for
               bootstrapping data (<xref target="sources"/>).  Details for
@@ -1040,7 +1039,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
              a command line interface (CLI), a web-based user interface, or
              even another bootstrapping protocol.  Regardless how it is
              configured, the configuration SHOULD unset the flag enabling
-             zerotouch bootstrapping discussed in <xref target="initial-state"/>.</t>
+             SZTP bootstrapping discussed in <xref target="initial-state"/>.</t>
         </section>  <!-- end boot sequence -->
 
         <section title="Processing a Source of Bootstrapping Data" anchor="processing-a-source">
@@ -1049,7 +1048,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           because sources of bootstrapping data may return redirect information,
           which causes the algorithm to run again, for the newly discovered sources
           of bootstrapping data.  An expression that captures all possible
-          successful sequences of bootstrapping data is zero or more redirect
+          successful sequences of bootstrapping data is: zero or more redirect
           information responses, followed by one onboarding information response.</t>
 
           <t>An important aspect of the algorithm is knowing when data needs to be
@@ -1101,7 +1100,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           using the private key associated with the device certificate used to
           encrypt the artifact.</t>
 
-          <t>If the zero touch information artifact is signed, and the device
+          <t>If the conveyed information artifact is signed, and the device
           is able to validate the signed data using the algorithm described in
           <xref target="validating-signed-data"/>, then the device MUST set
           trust-state to TRUE; otherwise, if the device is unable to validate
@@ -1109,7 +1108,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           this is worded to cover the special case when signed data is returned
           even from a trusted source of bootstrapping data.</t>
 
-          <t>If the zero touch information artifact contains redirect information,
+          <t>If the conveyed information artifact contains redirect information,
           the device MUST, within limits of how many recursive loops the device
           allows, process the redirect information as described in
           <xref target="process-redirect-information"/>.  Implementations MUST
@@ -1120,7 +1119,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           server, as redirect information is only able to redirect devices to
           bootstrap servers.</t>
 
-          <t>If the zero touch information artifact contains onboarding information, and
+          <t>If the conveyed information artifact contains onboarding information, and
           trust-state is FALSE, the device MUST exit the recursive algorithm (as
           this is not allowed, see the figure above), returning to the bootstrapping sequence
           described in <xref target="boot-sequence"/>.  Otherwise, the device MUST
@@ -1167,7 +1166,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           the owner certificate and, if suitably-fresh revocation status is unattainable or
           if it is determined that a certificate has been revoked, the device
           MUST NOT validate the owner certificate.</t>
-          <t>Finally the device MUST verify the zero touch information
+          <t>Finally, the device MUST verify that the conveyed information
           artifact was signed by the validated owner certificate.</t>
           <t>If any of these steps fail, the device MUST invalidate the
           signed data and not perform any subsequent steps.</t>
@@ -1291,7 +1290,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <t>If the onboarding information was obtained from a trusted bootstrap server,
           and the result of the bootstrapping process did not disable the "flag to enable
-          zerotouch bootstrapping" described in <xref target="initial-state"/>, the device
+          SZTP bootstrapping" described in <xref target="initial-state"/>, the device
           SHOULD send an "bootstrap-warning" progress report.</t>
 
           <t>If the onboarding information was obtained from a trusted bootstrap server,
@@ -1319,7 +1318,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
                 any previous steps.</t>
                 <t>Most steps are atomic.  For example, the processing configuration
                 is specified as atomic above, and the processing scripts is similarly
-                specified as atomic in the "ietf-zerotouch-information" YANG module.</t>
+                specified as atomic in the "ietf-sztp-conveyed-info" YANG module.</t>
                 <t>In case the error occurs after the initial configuration was committed,
                 the device must restore the configuration to the configuration that
                 existed prior to the configuration being committed.</t>
@@ -1335,20 +1334,20 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         </section>
       </section>  <!-- end device details -->
 
-      <section title="The Zero Touch Information Data Model" anchor="zt-info-data-model">
+      <section title="The Conveyed Information Data Model" anchor="zt-info-data-model">
         <t>This section defines a YANG 1.1 <xref target="RFC7950"/> module that is used to
-        define the data model for the zero touch information artifact described in
-        <xref target="zerotouch-information"/>.  This data model uses the "yang-data"
+        define the data model for the conveyed information artifact described in
+        <xref target="conveyed-information"/>.  This data model uses the "yang-data"
         extension statement defined in <xref target="I-D.ietf-netmod-yang-data-ext"/>.
         Examples illustrating this data model are provided in
         <xref target="zt-info-data-model-examples"/>.</t>
 
         <section title="Data Model Overview">
           <t>The following tree diagram provides an overview of the data model for the
-          zero touch information artifact.</t>
+          conveyed information artifact.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-information-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/ietf-sztp-conveyed-info-tree.txt)
 ]]></artwork>
           </figure>
         </section>
@@ -1373,7 +1372,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
         </section>
 
         <section title="YANG Module" anchor="info-yang-module">
-          <t>The zero touch information data model is defined
+          <t>The conveyed information data model is defined
           by the YANG module presented in this section.</t>
 
           <t>This module uses data types defined in <xref target="RFC5280"/>,
@@ -1384,8 +1383,8 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
 
           <figure>
             <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-information@YYYY-MM-DD.yang"
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-information@YYYY-MM-DD.yang)
+<CODE BEGINS> file "ietf-sztp-conveyed-info@YYYY-MM-DD.yang"
+INSERT_TEXT_FROM_FILE(ietf-sztp-conveyed-info@YYYY-MM-DD.yang)
 <CODE ENDS>
 ]]></artwork>
           </figure>
@@ -1393,7 +1392,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-information@YYYY-MM-DD.yang)
 
       </section>
 
-      <section title="The Zero Touch Bootstrap Server API" anchor="api">
+      <section title="The SZTP Bootstrap Server API" anchor="api">
 
         <t>This section defines the API for bootstrap servers.  The API is
         defined as that produced by a RESTCONF <xref target="RFC8040"/>
@@ -1405,7 +1404,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-information@YYYY-MM-DD.yang)
           RESTCONF API.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/ietf-zerotouch-bootstrap-server-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/ietf-sztp-bootstrap-server-tree.txt)
 ]]></artwork>
           </figure>
         </section>
@@ -1427,8 +1426,8 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-POST /restconf/operations/ietf-zerotouch-bootstrap-server:get-boot\
-strapping-data HTTP/1.1
+POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrap\
+ping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
@@ -1456,8 +1455,8 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-POST /restconf/operations/ietf-zerotouch-bootstrap-server:get-boot\
-strapping-data HTTP/1.1
+POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrap\
+ping-data HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
 
@@ -1488,7 +1487,7 @@ REQUEST
 -------
 ['\' line wrapping added for formatting only]
 
-POST /restconf/operations/ietf-zerotouch-bootstrap-server:report-\
+POST /restconf/operations/ietf-sztp-bootstrap-server:report-\
 progress HTTP/1.1
 HOST: example.com
 Content-Type: application/yang.data+xml
@@ -1517,29 +1516,29 @@ Server: example-server
           <xref target="RFC6187"/>.</t>
           <figure>
             <artwork><![CDATA[
-<CODE BEGINS> file "ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang"
-INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
+<CODE BEGINS> file "ietf-sztp-bootstrap-server@YYYY-MM-DD.yang"
+INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
 <CODE ENDS>
 ]]></artwork>
           </figure>
         </section> <!-- YANG Module -->
-      </section> <!-- The Zero Touch Bootstrap Server API -->
+      </section> <!-- The STZP Bootstrap Server API -->
 
-      <section title="DHCP Zero Touch Options" anchor="dhcp-options">
+      <section title="DHCP Options" anchor="dhcp-options">
 
         <t>This section defines two DHCP options, one for DHCPv4 and one for
         DHCPv6.  These two options are semantically the same, though syntactically
         different.</t>
 
-        <section title="DHCPv4 Zero Touch Option">
+        <section title="DHCPv4 SZTP Redirect Option">
 
-          <t>The DHCPv4 Zero Touch Option is used to provision the client
+          <t>The DHCPv4 SZTP Redirect Option is used to provision the client
           with one or more URIs for bootstrap servers that can be
           contacted to attempt further configuration.</t>
 
           <figure>
             <artwork><![CDATA[
-   DHCPv4 Zero Touch Redirect Option
+   DHCPv4 SZTP Redirect Option
 
     0                             1
     0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
@@ -1551,7 +1550,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
    .                                               .
    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
-   o option-code: OPTION_V4_ZEROTOUCH_REDIRECT (143)
+   o option-code: OPTION_V4_SZTP_REDIRECT (143)
    o option-length: The option length in octets.
    o bootstrap-server-list: A list of servers for the
       client to attempt contacting, in order to obtain
@@ -1561,55 +1560,55 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           </figure>
 
           <t>DHCPv4 Client Behavior</t>
-          <t>Clients MAY request the OPTION_V4_ZEROTOUCH_REDIRECT by including its
+          <t>Clients MAY request the OPTION_V4_SZTP_REDIRECT by including its
           option code in the Parameter Request List (55) in DHCP request messages.</t>
           <t>On receipt of a DHCPv4 Reply message which contains the
-          OPTION_V4_ZEROTOUCH_REDIRECT, the client processes the response according
+          OPTION_V4_SZTP_REDIRECT, the client processes the response according
           to <xref target="process-redirect-information"/>, with the understanding
           that the "address" and "port" values are encoded in the URIs.</t>
           <t>Any invalid URI entries received in the uri-data field are ignored by
-          the client.  If OPTION_V4_ZEROTOUCH_REDIRECT does not contain at least one
+          the client.  If OPTION_V4_SZTP_REDIRECT does not contain at least one
           valid URI entry in the uri-data field, then the client MUST discard the
           option.</t>
 
           <t>As the list of URIs may exceed the maximum allowed length of
             a single DHCPv4 option (255 octets), the client MUST implement
             <xref target="RFC3396"/>, allowing the URI list to be split
-            across a number of OPTION_V4_ZEROTOUCH_REDIRECT option
+            across a number of OPTION_V4_SZTP_REDIRECT option
             instances.
           </t>
 
           <t>DHCPv4 Server Behavior</t>
           <t>The DHCPv4 server MAY include a single instance of Option
-            OPTION_V4_ZEROTOUCH_REDIRECT in DHCP messages it sends.  Servers MUST
-            NOT send more than one instance of the OPTION_V4_ZEROTOUCH_REDIRECT option.
+            OPTION_V4_SZTP_REDIRECT in DHCP messages it sends.  Servers MUST
+            NOT send more than one instance of the OPTION_V4_SZTP_REDIRECT option.
           </t>
 
           <t>The server’s DHCP message MUST contain only a single instance of the
-          OPTION_V4_ZEROTOUCH_REDIRECT’s 'bootstrap-server-list’
+          OPTION_V4_SZTP_REDIRECT’s 'bootstrap-server-list’
           field. However, the list of URIs in this field may exceed the maximum
           allowed length of a single DHCPv4 option (per <xref target="RFC3396"/>).
           </t>
 
           <t>If the length of 'bootstrap-server-list’ is small enough to fit into
-          a single instance of OPTION_V4_ZEROTOUCH_REDIRECT,  the server MUST NOT
+          a single instance of OPTION_V4_SZTP_REDIRECT,  the server MUST NOT
           send more than one instance of this option.</t>
 
           <t>If the length of the 'bootstrap-server-list’ field is too large to
-          fit into a single option, then OPTION_V4_ZEROTOUCH_REDIRECT MUST be
+          fit into a single option, then OPTION_V4_SZTP_REDIRECT MUST be
           split into multiple instances of the option according to the process
           described in <xref target="RFC3396"/>.</t>
 
         </section>
 
-        <section title="DHCPv6 Zero Touch Option">
+        <section title="DHCPv6 SZTP Redirect Option">
 
-          <t>The DHCPv6 Zero Touch Option is used to provision the client with
+          <t>The DHCPv6 SZTP Redirect Option is used to provision the client with
           one or more URIs for bootstrap servers that can be contacted to
           attempt further configuration.</t>
           <figure>
             <artwork><![CDATA[
-   DHCPv6 Zero Touch Redirect Option
+   DHCPv6 SZTP Redirect Option
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -1619,7 +1618,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
    .           bootstrap-server-list (variable length)             .
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   o option-code: OPTION_V6_ZEROTOUCH_REDIRECT (136)
+   o option-code: OPTION_V6_SZTP_REDIRECT (136)
    o option-length: The option length in octets.
    o bootstrap-server-list: A list of servers for the client to
      attempt contacting, in order to obtain further bootstrapping
@@ -1628,16 +1627,16 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           </figure>
 
           <t>DHCPv6 Client Behavior</t>
-          <t>Clients MAY request the OPTION_V6_ZEROTOUCH_REDIRECT option, as defined
+          <t>Clients MAY request the OPTION_V6_SZTP_REDIRECT option, as defined
           in <xref target="RFC8415"/>, Sections 18.2.1, 18.2.2, 18.2.4, 18.2.5,
           18.2.6, and 21.7.   As a convenience to the reader, we mention here that
           the client includes requested option codes in the Option Request Option.</t>
           <t>On receipt of a DHCPv6 Reply message which contains the
-          OPTION_V6_ZEROTOUCH_REDIRECT, the client processes the response according
+          OPTION_V6_SZTP_REDIRECT, the client processes the response according
           to <xref target="process-redirect-information"/>, with the understanding
           that the "address" and "port" values are encoded in the URIs.</t>
           <t>Any invalid URI entries received in the uri-data field are ignored
-          by the client.  If OPTION_V6_ZEROTOUCH_REDIRECT does not contain at least
+          by the client.  If OPTION_V6_SZTP_REDIRECT does not contain at least
           one valid URI entry in the uri-data field, then the client MUST discard
           the option.</t>
 
@@ -1648,8 +1647,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           code only if configured with specific values for that option code and
           if the client requested it.</t>
 
-          <t>Option OPTION_V6_ZEROTOUCH_REDIRECT is a singleton.  Servers MUST NOT
-           send more than one instance of the OPTION_V6_ZEROTOUCH_REDIRECT
+          <t>Option OPTION_V6_SZTP_REDIRECT is a singleton.  Servers MUST NOT
+           send more than one instance of the OPTION_V6_SZTP_REDIRECT
            option.</t>
 
 
@@ -1671,11 +1670,11 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
 
   o uri-length: 2 octets long, specifies the length of the URI data.
 
-  o URI: URI of zerotouch bootstrap server.
+  o URI: URI of SZTP bootstrap server.
 ]]></artwork>
           </figure>
 
-          <t>The URI of the zerotouch bootstrap server MUST use
+          <t>The URI of the SZTP bootstrap server MUST use
           the "https" URI scheme defined in Section 2.7.2 of 
           <xref target="RFC7230"/>, and MUST be in form 
           "https://&lt;ip-address-or-hostname&gt;[:&lt;port&gt;]".</t>
@@ -1712,7 +1711,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           are RECOMMENDED, both for the TLS-level client certificate used
           by devices when connecting to a bootstrap server, as well as for
           the device identity certificate used by owners when encrypting
-          the zero touch artifacts.</t>
+          the SZTP bootstrapping data artifacts.</t>
         </section>
         <section title="Immutable Storage for Trust Anchors">
           <t>Devices MUST ensure that all their trust anchor certificates,
@@ -1817,7 +1816,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           device identity certificate.</t>
         </section>
         <section title="Increased Reliance on Manufacturers">
-          <t>The zero touch bootstrapping protocol presented in this document shifts
+          <t>The SZTP bootstrapping protocol presented in this document shifts
           some control of initial configuration away from the rightful owner of the
           device and towards the manufacturer and its delegates.</t>
           <t>The manufacturer maintains the list of well-known bootstrap servers
@@ -1870,8 +1869,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
             </list>
           </t>
         </section>
-        <section title="Validity Period for Zero Touch Information">
-          <t>Zero touch information does not specify a validity period.  For
+        <section title="Validity Period for Conveyed Information">
+          <t>The conveyed information artifact does not specify a validity period.  For
           instance, neither redirect information nor onboarding information
           enable "not-before" or "not-after" values to be specified, and
           neither artifact alone can be revoked.</t>
@@ -1960,8 +1959,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           the context of the solution because the decrypted text never
           leaves the device.</t>
         </section>
-        <section title="The &quot;ietf-zerotouch-information&quot; YANG Module">
-          <t>The ietf-zerotouch-information module defined in this document
+        <section title="The &quot;ietf-sztp-conveyed-info&quot; YANG Module">
+          <t>The ietf-sztp-conveyed-info module defined in this document
           defines a data structure that is always wrapped by a CMS structure.
           When accessed by a secure mechanism (e.g., protected by TLS), then the
           CMS structure may be unsigned.  However, when accessed by an insecure
@@ -1972,7 +1971,7 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           visible to others.  This doesn't affect security so much as privacy.
           That the contents may be read by unintended parties when accessed by
           insecure mechanisms is considered next.</t>
-          <t>The ietf-zerotouch-information module defines a top-level "choice"
+          <t>The ietf-sztp-conveyed-info module defines a top-level "choice"
           statement that declares the contents are either "redirect-information"
           or "onboarding-information".  Each of these two cases are now considered.</t>
           <t>When the content of the CMS structure is redirect-information,
@@ -1987,8 +1986,8 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           should be considered sensitive and precautions should be taken to 
           protect it (e.g., encrypt the artifact using the device's public key).</t>
         </section>
-        <section title="The &quot;ietf-zerotouch-bootstrap-server&quot; YANG Module">
-          <t>The ietf-zerotouch-bootstrap-server module defined in this document
+        <section title="The &quot;ietf-sztp-bootstrap-server&quot; YANG Module">
+          <t>The ietf-sztp-bootstrap-server module defined in this document
           specifies an API for a RESTCONF <xref target="RFC8040"/>.  The lowest
           RESTCONF layer is HTTPS, and the mandatory-to-implement secure transport
           is TLS <xref target="RFC8446"/>.</t>
@@ -2027,11 +2026,11 @@ INSERT_TEXT_FROM_FILE(ietf-zerotouch-bootstrap-server@YYYY-MM-DD.yang)
           <t>
             <figure>
                 <artwork><![CDATA[
-URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-information
+URI: urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info
 Registrant Contact: The NETCONF WG of the IETF.
 XML: N/A, the requested URI is an XML namespace.
 
-URI: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server
+URI: urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server
 Registrant Contact: The NETCONF WG of the IETF.
 XML: N/A, the requested URI is an XML namespace.
 ]]></artwork>
@@ -2047,15 +2046,14 @@ XML: N/A, the requested URI is an XML namespace.
           <t>
             <figure>
                 <artwork><![CDATA[
-name:      ietf-zerotouch-information
-namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-information
-prefix:    zti
+name:      ietf-sztp-conveyed-info
+namespace: urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info
+prefix:    sztp-info
 reference: RFC XXXX
 
-name:      ietf-zerotouch-bootstrap-server
-namespace: urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-\
-           server  (note: '\' used for formatting reasons only)
-prefix:    ztbs
+name:      ietf-sztp-bootstrap-server
+namespace: urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server
+prefix:    sztp-svr
 reference: RFC XXXX
 ]]></artwork>
           </figure>
@@ -2070,16 +2068,16 @@ reference: RFC XXXX
           <t>
             <figure>
                 <artwork><![CDATA[
-Decimal  Description                             References
--------  --------------------------------------  ----------
-TBD1      id-ct-zerotouchInformationXML          [RFCXXXX]
-TBD2      id-ct-zerotouchInformationJSON         [RFCXXXX]
+Decimal   Description                  References
+-------   --------------------------   ----------
+TBD1      id-ct-sztpConveyedInfoXML    [RFCXXXX]
+TBD2      id-ct-sztpConveyedInfoJSON   [RFCXXXX]
 ]]></artwork>
           </figure>
         </t>
-        <t>id-ct-zerotouchInformationXML indicates that the "zerotouch-
-        information" is encoded using XML.  id-ct-zerotouchInformationJSON 
-        indicates that the "zerotouch-information" is encoded using JSON.</t>
+        <t>id-ct-sztpConveyedInfoXML indicates that the "conveyed-information"
+        is encoded using XML.  id-ct-sztpConveyedInfoJSON indicates that the
+        "conveyed-information" is encoded using JSON.</t>
         </section>
         <section title="The BOOTP Manufacturer Extensions and DHCP Options Registry">
           <t>This document registers one DHCP code point in the "BOOTP Manufacturer
@@ -2090,10 +2088,10 @@ TBD2      id-ct-zerotouchInformationJSON         [RFCXXXX]
             <figure>
               <artwork>
 Tag:         143
-Name:        OPTION_V4_ZEROTOUCH_REDIRECT
+Name:        OPTION_V4_SZTP_REDIRECT
 Data Length: N
 Meaning:     This option provides a list of URIs
-             for zero touch bootstrap servers
+             for SZTP bootstrap servers
 Reference:   [RFCXXXX]
               </artwork>
             </figure>
@@ -2110,7 +2108,7 @@ Reference:   [RFCXXXX]
             <figure>
               <artwork>
 Value:            136
-Description:      OPTION_V6_ZEROTOUCH_REDIRECT
+Description:      OPTION_V6_SZTP_REDIRECT
 Client ORO:       Yes
 Singleton Option: Yes
 Reference:        [RFCXXXX]
@@ -2129,13 +2127,13 @@ Reference:        [RFCXXXX]
           <t>
             <figure>
                 <artwork><![CDATA[
-Service Name:            zerotouch
+Service Name:            sztp
 Transport Protocol(s):   TCP
 Assignee:                IESG <iesg@ietf.org>
 Contact:                 IETF Chair <chair@ietf.org>
 Description:             This service name is used to construct the
-                         SRV service label "_zerotouch" for discovery
-                         of zero touch bootstrap servers.
+                         SRV service label "_sztp" for discovering
+                         SZTP bootstrap servers.
 Reference:               [RFCXXXX]
 Port Number:             N/A
 Service Code:            N/A
@@ -2221,24 +2219,24 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
       </references>
 
 
-      <section title="The Zero Touch Device Data Model" anchor="device-model">
+      <section title="Example Device Data Model" anchor="device-model">
 
         <t>This section defines a non-normative data model that 
-        enables the configuration of zerotouch bootstrapping and
+        enables the configuration of SZTP bootstrapping and
         discovery of what parameters are used by a device's bootstrapping logic.</t>
 
         <section title="Data Model Overview">
-          <t>The following tree diagram provides an overview for the zerotouch
+          <t>The following tree diagram provides an overview for the SZTP
           device data model.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(refs/example-zerotouch-device-tree.txt)
+INSERT_TEXT_FROM_FILE(refs/example-device-data-model-tree.txt)
 ]]></artwork>
           </figure>
           <t>In the above diagram, notice that there is only one configurable node
           "enabled".  The expectation is that this node would be set to "true" in
           device's factory default configuration and that it would either be set
-          to "false" or deleted when the zerotouch bootstrapping is longer needed.</t>
+          to "false" or deleted when the SZTP bootstrapping is longer needed.</t>
         </section>
 
         <section title="Example Usage" anchor="device-example">
@@ -2259,11 +2257,11 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml)
           <xref target="I-D.ietf-netconf-trust-anchors"/>.</t>
           <figure>
             <artwork><![CDATA[
-INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
+INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
 ]]></artwork>
           </figure>
         </section> <!-- YANG Module -->
-      </section> <!-- The Zero Touch Device Data Model -->
+      </section> <!-- Example Device Data Model -->
 
 
       <section title="Promoting a Connection from Untrusted to Trusted" anchor="untrust2trust">
@@ -2340,7 +2338,7 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
       </section>
       <section title="Workflow Overview" anchor="workflow-overview">
 
-        <t>The zero touch solution presented in this document is conceptualized
+        <t>The solution presented in this document is conceptualized
         to be composed of the non-normative workflows described in this section.
         Implementation details are expected to vary.  Each diagram is followed
         by a detailed description of the steps presented in the diagram, with
@@ -2348,7 +2346,7 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
 
         <section title="Enrollment and Ordering Devices" anchor="onboarding-and-ordering">
           <t>The following diagram illustrates key interactions that may occur from when a
-          prospective owner enrolls in a manufacturer's zero touch program to when the
+          prospective owner enrolls in a manufacturer's SZTP program to when the
           manufacturer ships devices for an order placed by the prospective owner.</t>
           <t>
             <figure>
@@ -2426,7 +2424,7 @@ INSERT_TEXT_FROM_FILE(example-zerotouch-device@YYYY-MM-DD.yang)
               data is described in <xref target="validating-signed-data"/>.</t>
               <t>Some time later, the prospective owner places an order
               with the manufacturer, perhaps with a special
-              flag checked for zero touch handling.  At this time, or
+              flag checked for SZTP handling.  At this time, or
               perhaps before placing the order, the owner may model
               the devices in their NMS, creating virtual objects for the
               devices with no real-world device associations.  For instance
@@ -2557,7 +2555,7 @@ device  |        |             |            |        |         |
 +------+                           +-----------+  +----------+  +---+
    |                                     |              |         |
    |                                     |              |         |
-   | 1. if zerotouch bootstrap service   |              |         |
+   | 1. if SZTP bootstrap service        |              |         |
    |    is not enabled, then exit.       |              |         |
    |                                     |              |         |
    | 2. for each source supported, check |              |         |
@@ -2590,9 +2588,9 @@ device  |        |             |            |        |         |
           </t>
           <t>The interactions in the above diagram are described below.
             <list style="numbers">
-              <t>Upon power being applied, the device checks to see if zerotouch
+              <t>Upon power being applied, the device checks to see if SZTP
               bootstrapping is configured, such as must be the case when running its
-              "factory default" configuration.  If zerotouch bootstrapping is
+              "factory default" configuration.  If SZTP bootstrapping is
               not configured, then the bootstrapping logic exits and none of the
               following interactions occur.</t>
               <t>For each source of bootstrapping data the device supports, preferably
@@ -2609,7 +2607,7 @@ device  |        |             |            |        |         |
                   an administrator account on the device (e.g., username, SSH public
                   key, etc.), and should configure the device either to listen for
                   NETCONF or RESTCONF connections or to initiate call home connections
-                  <xref target="RFC8071"/>, and should disable the zerotouch
+                  <xref target="RFC8071"/>, and should disable the SZTP
                   bootstrapping service (e.g., the "enabled" leaf in data model
                   presented in <xref target="device-model"/>).</t>
                   <t>If the bootstrap server supports forwarding device progress reports
@@ -2637,7 +2635,7 @@ device  |        |             |            |        |         |
               device may retry again all the sources and/or provide manageability
               interfaces for manual configuration (e.g., CLI, HTTP, NETCONF, etc.).
               If manual configuration is allowed, and such configuration is provided,
-              the configuration should also disable the zerotouch bootstrapping service,
+              the configuration should also disable the SZTP bootstrapping service,
               as the need for bootstrapping would no longer be present.</t>
             </list>
           </t>
@@ -2655,7 +2653,7 @@ device  |        |             |            |        |         |
             the "Device Boot Sequence" diagram</t>
             <t>Removed support for physical presence or any
             ability for configlets to not be signed.</t>
-            <t>Defined the Zero Touch Information DHCP option</t>
+            <t>Defined the Conveyed Information DHCP option</t>
             <t>Added an ability for devices to also download
             images from configuration servers</t>
             <t>Added an ability for configlets to be encrypted</t>
@@ -2673,7 +2671,7 @@ device  |        |             |            |        |         |
                current use of anyxml.</t>
             <t>Added encrypted and signed-encrypted examples</t>
             <t>Replaced YANG module with XSD schema</t>
-            <t>Added IANA request for the Zero Touch Information DHCP Option</t>
+            <t>Added IANA request for the Conveyed Information DHCP Option</t>
             <t>Added IANA request for media types for boot-image and configuration</t>
           </list>
           </t>
@@ -2869,7 +2867,7 @@ device  |        |             |            |        |         |
               <t>added a pointer to the Workflow Overview section (recently moved to
               the Appendix) to the Intro.</t>
               <t>added a note that, in order to simplify the verification process,
-              the "Zerotouch Information" PKCS #7 structure MUST also contain the
+              the "Conveyed Information" PKCS #7 structure MUST also contain the
               signing X.509 certificate.</t>
               <t>noted that the owner certificate's must either have no Key Usage or
               the Key Usage must set the "digitalSignature" bit.</t>
@@ -2933,7 +2931,7 @@ device  |        |             |            |        |         |
               <t>The "onboarding-information" container's support
               for image verification reworked to be extensible.</t>
               <t>Added a reference to the "Device Details" section to
-              the new example-zerotouch-device module.</t>
+              the new example-device-data-model module.</t>
               <t>Clarified that the device must always pass its IDevID
               certificate, even for untrusted bootstrap servers.</t>
               <t>Fixed the description statement for the "script" typedef
@@ -2959,7 +2957,7 @@ device  |        |             |            |        |         |
               send IDevID cert to device needing to always send authentication
               credentials, as this better matches what RFC 8040 Section 2.5 says.</t>
               <t>Moved normative module "ietf-zerotouch-device" to non-normative
-              module "example-zerotouch-device".</t>
+              module "example-device-data-model".</t>
               <t>Updated Title, Abstract, and Introduction per discussion on list.</t>
             </list>
           </t>
@@ -2977,9 +2975,9 @@ device  |        |             |            |        |         |
             <list style="symbols">
               <t>Removed specifics around how scripts indicate warnings
                  or errors and how scripts emit output.</t>
-              <t>Moved the Zero Touch Device Data Model section to
+              <t>Moved the SZTP Device Data Model section to
                  the Appendix.</t>
-              <t>Modified the YANG module in the Zero Touch Device Data
+              <t>Modified the YANG module in the SZTP Device Data
                  Model section to reflect the latest trust-anchors and
                  keystore drafts.</t>
               <t>Modified types in other YANG modules to more closely
@@ -3053,7 +3051,7 @@ device  |        |             |            |        |         |
                  review from Adam Roach.</t>
               <t>Clarified device's looping behavior and support for alternative
                  provisioning mechanisms, per IESG review from Mirja Kühlewind.</t>
-              <t>Updated "ietf-zerotouch-bootstrap-server:ssh-host-key" from
+              <t>Updated "ietf-sztp-bootstrap-server:ssh-host-key" from
                  leaf-list to list, per IESG review from Benjamin Kaduk.</t>
               <t>Added option size text to DHCPv4 option size to address
                  Suresh Krishnan's IESG review discuss point.</t>
@@ -3065,12 +3063,17 @@ device  |        |             |            |        |         |
           </t>
         </section>
         <section title="26 to 27">
-          <t>Added Security Consideration for cascading trust via redirects,
-          per Benjamin Kaduk's DISCUSS.</t>
+          <t>Added Security Consideration for cascading trust via redirects.</t>
+          <t>Modified the get-bootstrapping-data RPC's "nonce" input parameter
+          to being a minimum of 16-bytes (used to be 8-bytes).</t>
           <t>Added Security Consideration regarding posible reuse of device's
-          private key, per Benjamin Kaduk's COMMENT.</t>
-          <t>Added Security Consideration regarding use of sign-then-encrypt,
-          per Benjamin Kaduk's COMMENT.</t>
+          private key.</t>
+          <t>Added Security Consideration regarding use of sign-then-encrypt.</t>
+          <t>Renamed "Zero Touch"/"zerotouch" throughout.  Now uses "SZTP"
+          when referring to the draft/solution, and "conveyed" when referring
+          to the bootstrapping artifact.</t>
+          <t>Added missing text for "encrypted unsigned conveyed information"
+          case.</t>
         </section>
       </section>
 

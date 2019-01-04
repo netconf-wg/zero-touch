@@ -1,5 +1,5 @@
 <onboarding-information
-  xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-information">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info">
   <boot-image>
     <os-name>VendorOS</os-name>
     <os-version>17.2R1.6</os-version>

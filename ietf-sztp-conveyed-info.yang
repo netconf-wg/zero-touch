@@ -1,7 +1,7 @@
-module ietf-zerotouch-information {
+module ietf-sztp-conveyed-info {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-zerotouch-information";
-  prefix zti;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info";
+  prefix sztp-info;
 
   import ietf-yang-types {
     prefix yang;
@@ -25,9 +25,9 @@ module ietf-zerotouch-information {
      Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
 
   description
-   "This module defines the data model for the Zero Touch
-    Information artifact defined in RFC XXXX: Zero Touch
-    Provisioning for Networking Devices.
+   "This module defines the data model for the Conveyed
+    Information artifact defined in RFC XXXX: Secure Zero Touch
+    Provisioning (SZTP).
 
     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 
@@ -52,7 +52,7 @@ module ietf-zerotouch-information {
     description
       "Initial version";
     reference
-      "RFC XXXX: Zero Touch Provisioning for Networking Devices";
+      "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
   }
 
   // identities
@@ -88,7 +88,7 @@ module ietf-zerotouch-information {
 
   // yang-data
 
-  yd:yang-data "zerotouch-information" {
+  yd:yang-data "conveyed-information" {
     choice information-type {
       mandatory true;
       description
@@ -100,7 +100,7 @@ module ietf-zerotouch-information {
            RFC XXXX.  Its purpose is to redirect a device to 
            another bootstrap server.";
         reference
-          "RFC XXXX: Zero Touch Provisioning for Networking Devices";
+          "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
         list bootstrap-server {
           key "address";
           min-elements 1;
@@ -160,7 +160,7 @@ module ietf-zerotouch-information {
            RFC XXXX.  Its purpose is to provide the device everything
            it needs to bootstrap itself.";
         reference
-          "RFC XXXX: Zero Touch Provisioning for Networking Devices";
+          "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
         container boot-image {
           description
             "Specifies criteria for the boot image the device MUST 

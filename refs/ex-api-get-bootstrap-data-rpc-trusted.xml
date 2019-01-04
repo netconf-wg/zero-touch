@@ -1,7 +1,7 @@
 <input 
- xmlns="urn:ietf:params:xml:ns:yang:ietf-zerotouch-bootstrap-server">
+ xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <hw-model>model-x</hw-model>
   <os-name>vendor-os</os-name>
   <os-version>17.3R2.1</os-version>
-  <nonce>base64encodedvalue==</nonce>
+  <nonce>extralongbase64encodedvalue=</nonce>
 </input>
