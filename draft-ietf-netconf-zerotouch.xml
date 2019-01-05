@@ -1343,7 +1343,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
         <t>This section defines a YANG 1.1 <xref target="RFC7950"/> module that is used to
         define the data model for the conveyed information artifact described in
         <xref target="conveyed-information"/>.  This data model uses the "yang-data"
-        extension statement defined in <xref target="I-D.ietf-netmod-yang-data-ext"/>.
+        extension statement defined in <xref target="RFC8040"/>.
         Examples illustrating this data model are provided in
         <xref target="zt-info-data-model-examples"/>.</t>
 
@@ -1383,7 +1383,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
           <t>This module uses data types defined in <xref target="RFC5280"/>,
           <xref target="RFC5652"/>, <xref target="RFC6234"/>, and
           <xref target="RFC6991"/>, an extension statement from
-          <xref target="I-D.ietf-netmod-yang-data-ext"/>, and an
+          <xref target="RFC8040"/>, and an
           encoding defined in <xref target="ITU.X690.2015"/>.</t>
 
           <figure>
@@ -2143,7 +2143,6 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
         <?rfc include="reference.RFC.8040.xml"?>
         <?rfc include="reference.RFC.8174.xml"?>
         <?rfc include="reference.RFC.8366.xml"?>
-        <?rfc include="reference.I-D.ietf-netmod-yang-data-ext"?>
 
         <!-- THE FOLLOWING LINE DOESN'T RESOLVE FOR SOME REASON:
              <?rfc include="_reference.ITU.X690.2015.xml"?> -->

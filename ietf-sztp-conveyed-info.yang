@@ -11,9 +11,9 @@ module ietf-sztp-conveyed-info {
     prefix inet;
     reference "RFC 6991: Common YANG Data Types";
   }
-  import ietf-yang-data-ext {
-    prefix yd;
-    reference "I-D.ietf-netmod-yang-data-ext: YANG Data Extensions";
+  import ietf-restconf {
+    prefix rc;
+    reference "RFC 8040: RESTCONF Protocol";
   }
 
   organization
@@ -88,7 +88,7 @@ module ietf-sztp-conveyed-info {
 
   // yang-data
 
-  yd:yang-data "conveyed-information" {
+  rc:yang-data "conveyed-information" {
     choice information-type {
       mandatory true;
       description
