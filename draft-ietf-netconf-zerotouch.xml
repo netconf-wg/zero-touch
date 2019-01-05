@@ -271,7 +271,7 @@
           <xref target="info-yang-module"/>.  This container has the tree
           diagram shown below.</t>
           <t><figure>
-            <artwork name="redirect-information-tree.txt"><![CDATA[
+            <artwork name="redirect-information-tree.txt" align="center"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/redirect-information-tree.txt)
 ]]></artwork>
           </figure></t>
@@ -309,7 +309,7 @@ INSERT_TEXT_FROM_FILE(refs/redirect-information-tree.txt)
           shown below.</t>
 
          <t><figure>
-            <artwork name="onboarding-information-tree.txt"><![CDATA[
+            <artwork name="onboarding-information-tree.txt" align="center"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 ]]></artwork>
           </figure></t>
@@ -538,7 +538,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
              for each artifact grouping in the table below ("yes/no" regards if the
               artifact is present in the artifact grouping):
             <figure>
-              <artwork><![CDATA[
+              <artwork align="center"><![CDATA[
 +---------------------+---------------+--------------+--------------+
 | Artifact            | Conveyed      | Ownership    | Owner        |
 | Grouping            | Information   | Voucher      | Certificate  |
@@ -551,7 +551,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 | Signed Data,        | Yes, with sig | Yes, with    | Yes, with    |
 | with revocations    |               | revocations  | revocations  |
 +---------------------+---------------+--------------+--------------+
-  ]]></artwork>
+]]></artwork>
             </figure>
           </t>
         </section>
@@ -712,11 +712,11 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             This example assumes that the device's serial number is 
             "&lt;sn&gt;":
               <figure>
-                <artwork><![CDATA[
-  <sn>._sztp._tcp.example.com. 3600 IN TXT "ci=<binary data>"
-  <sn>._sztp._tcp.example.com. 3600 IN TXT "oc=<binary data>"
-  <sn>._sztp._tcp.example.com. 3600 IN TXT "ov=<binary data>"]]>
-                </artwork>
+                <artwork align="center"><![CDATA[
+<sn>._sztp._tcp.example.com. 3600 IN TXT "ci=<binary data>"
+<sn>._sztp._tcp.example.com. 3600 IN TXT "oc=<binary data>"
+<sn>._sztp._tcp.example.com. 3600 IN TXT "ov=<binary data>"
+]]></artwork>
               </figure>
             </t>
 
@@ -747,12 +747,12 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             it might be presented by a user-agent, containing (effectively)
             unsigned redirect information to four bootstrap servers:
               <figure>
-                <artwork>
-  _sztp._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
-  _sztp._tcp.example.com. 1800 IN SRV 1 0 443 sztp2.example.com.
-  _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp3.example.com.
-  _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
-                </artwork>
+                <artwork align="center">
+_sztp._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
+_sztp._tcp.example.com. 1800 IN SRV 1 0 443 sztp2.example.com.
+_sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp3.example.com.
+_sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
+</artwork>
               </figure>
             </t>
 
@@ -893,7 +893,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
           <section title="Initial State" anchor="initial-state">
             <figure>
-                <artwork><![CDATA[
+                <artwork align="center"><![CDATA[
 +-------------------------------------------------------------+
 |                           <device>                          |
 |                                                             |
@@ -991,28 +991,28 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           document MUST support the boot sequence described in this section.</t>
           <t>
             <figure>
-              <artwork><![CDATA[
-    Power On
-        |
-        v                           No
- 1. SZTP bootstrapping configured ------> Boot normally
-        |
-        | Yes
-        v
- 2. For each supported source of bootstrapping data,
-    try to load bootstrapping data from the source
-        |
-        |
-        v                               Yes
- 3. Able to bootstrap from any source? -----> Run with new config
-        |
-        | No
-        v
- 4. Loop back to Step 1.
+              <artwork align="center"><![CDATA[
+   Power On
+       |
+       v                           No
+1. SZTP bootstrapping configured ------> Boot normally
+       |
+       | Yes
+       v
+2. For each supported source of bootstrapping data,
+   try to load bootstrapping data from the source
+       |
+       |
+       v                               Yes
+3. Able to bootstrap from any source? -----> Run with new config
+       |
+       | No
+       v
+4. Loop back to Step 1.
 
 
- Note: At any time, the device MAY be configured via an alternate
-       provisioning mechanism (e.g., CLI).
+Note: At any time, the device MAY be configured via an alternate
+      provisioning mechanism (e.g., CLI).
 ]]></artwork>
             </figure>
           </t>
@@ -1054,20 +1054,20 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>An important aspect of the algorithm is knowing when data needs to be
           signed or not.  The following figure provides a summary of options:
           <figure>
-            <artwork><![CDATA[
-                                 Untrusted Source  Trusted Source
-    Kind of Bootstrapping Data     Can Provide?     Can Provide?
+            <artwork align="center"><![CDATA[
+                             Untrusted Source  Trusted Source
+Kind of Bootstrapping Data     Can Provide?     Can Provide?
 
-    Unsigned Redirect Info     :       Yes+             Yes
-    Signed Redirect Info       :       Yes              Yes*
-    Unsigned Onboarding Info   :        No              Yes
-    Signed Onboarding Info     :       Yes              Yes*
+Unsigned Redirect Info     :       Yes+             Yes
+Signed Redirect Info       :       Yes              Yes*
+Unsigned Onboarding Info   :        No              Yes
+Signed Onboarding Info     :       Yes              Yes*
 
-    The '+' above denotes that the source redirected to MUST
-    return signed data, or more unsigned redirect information.
+The '+' above denotes that the source redirected to MUST
+return signed data, or more unsigned redirect information.
 
-    The '*' above denotes that, while possible, it is generally
-    unnecessary for a trusted source to return signed data.
+The '*' above denotes that, while possible, it is generally
+unnecessary for a trusted source to return signed data.
 ]]></artwork>
           </figure></t>
 
@@ -1351,7 +1351,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The following tree diagram provides an overview of the data model for the
           conveyed information artifact.</t>
           <figure>
-            <artwork name="ietf-sztp-conveyed-info-tree.txt"><![CDATA[
+            <artwork name="ietf-sztp-conveyed-info-tree.txt" align="center"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ietf-sztp-conveyed-info-tree.txt)
 ]]></artwork>
           </figure>
@@ -1408,7 +1408,7 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-conveyed-info@YYYY-MM-DD.yang)
           <t>The following tree diagram provides an overview for the bootstrap server
           RESTCONF API.</t>
           <figure>
-            <artwork name="ietf-sztp-bootstrap-server-tree.txt"><![CDATA[
+            <artwork name="ietf-sztp-bootstrap-server-tree.txt" align="center"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ietf-sztp-bootstrap-server-tree.txt)
 ]]></artwork>
           </figure>
@@ -1511,25 +1511,25 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           contacted to attempt further configuration.</t>
 
           <figure>
-            <artwork><![CDATA[
-   DHCPv4 SZTP Redirect Option
+            <artwork align="center"><![CDATA[
+DHCPv4 SZTP Redirect Option
 
-    0                             1
-    0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-   |   option-code (143)   |     option-length     |
-   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-   .                                               .
-   .    bootstrap-server-list (variable length)    .
-   .                                               .
-   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ 0                             1
+ 0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|   option-code (143)   |     option-length     |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+.                                               .
+.    bootstrap-server-list (variable length)    .
+.                                               .
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
-   o option-code: OPTION_V4_SZTP_REDIRECT (143)
-   o option-length: The option length in octets.
-   o bootstrap-server-list: A list of servers for the
-      client to attempt contacting, in order to obtain
-      further bootstrapping data, in the format shown
-      in Section 8.3.
+* option-code: OPTION_V4_SZTP_REDIRECT (143)
+* option-length: The option length in octets.
+* bootstrap-server-list: A list of servers for the
+   client to attempt contacting, in order to obtain
+   further bootstrapping data, in the format shown
+   in Section 8.3.
 ]]></artwork>
           </figure>
 
@@ -1581,22 +1581,22 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           one or more URIs for bootstrap servers that can be contacted to
           attempt further configuration.</t>
           <figure>
-            <artwork><![CDATA[
-   DHCPv6 SZTP Redirect Option
+            <artwork align="center"><![CDATA[
+DHCPv6 SZTP Redirect Option
 
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |       option-code (136)       |          option-length        |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   .           bootstrap-server-list (variable length)             .
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|       option-code (136)       |          option-length        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+.           bootstrap-server-list (variable length)             .
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   o option-code: OPTION_V6_SZTP_REDIRECT (136)
-   o option-length: The option length in octets.
-   o bootstrap-server-list: A list of servers for the client to
-     attempt contacting, in order to obtain further bootstrapping
-     data, in the format shown in Section 8.3.
+* option-code: OPTION_V6_SZTP_REDIRECT (136)
+* option-length: The option length in octets.
+* bootstrap-server-list: A list of servers for the client to
+  attempt contacting, in order to obtain further bootstrapping
+  data, in the format shown in Section 8.3.
 ]]></artwork>
           </figure>
 
@@ -1637,14 +1637,13 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           </t>
 
           <figure>
-            <artwork><![CDATA[
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
-  |       uri-length              |          URI                  |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
+            <artwork align="center"><![CDATA[
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
+|       uri-length              |          URI                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+-+-+-+-+-+
 
-  o uri-length: 2 octets long, specifies the length of the URI data.
-
-  o URI: URI of SZTP bootstrap server.
+* uri-length: 2 octets long, specifies the length of the URI data.
+* URI: URI of SZTP bootstrap server.
 ]]></artwork>
           </figure>
 
@@ -2000,7 +1999,7 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
           registrations are requested:</t>
           <t>
             <figure>
-                <artwork><![CDATA[
+                <artwork align="center"><![CDATA[
 URI: urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info
 Registrant Contact: The NETCONF WG of the IETF.
 XML: N/A, the requested URI is an XML namespace.
@@ -2020,7 +2019,7 @@ XML: N/A, the requested URI is an XML namespace.
           registrations are requested:</t>
           <t>
             <figure>
-                <artwork><![CDATA[
+                <artwork align="center"><![CDATA[
 name:      ietf-sztp-conveyed-info
 namespace: urn:ietf:params:xml:ns:yang:ietf-sztp-conveyed-info
 prefix:    sztp-info
@@ -2042,7 +2041,7 @@ reference: RFC XXXX
           below registrations are requested:</t>
           <t>
             <figure>
-                <artwork><![CDATA[
+                <artwork align="center"><![CDATA[
 Decimal   Description                  References
 -------   --------------------------   ----------
 TBD1      id-ct-sztpConveyedInfoXML    [RFCXXXX]
@@ -2061,14 +2060,14 @@ TBD2      id-ct-sztpConveyedInfoJSON   [RFCXXXX]
           format used by other registrations, the below registration is requested:</t>
           <t>
             <figure>
-              <artwork>
+              <artwork align="center">
 Tag:         143
 Name:        OPTION_V4_SZTP_REDIRECT
 Data Length: N
 Meaning:     This option provides a list of URIs
              for SZTP bootstrap servers
 Reference:   [RFCXXXX]
-              </artwork>
+</artwork>
             </figure>
           </t>
           <t>Note: this request is to make permanent a previously registered
@@ -2081,13 +2080,13 @@ Reference:   [RFCXXXX]
           format used by other registrations, the below registration is requested:</t>
           <t>
             <figure>
-              <artwork>
+              <artwork align="center">
 Value:            136
 Description:      OPTION_V6_SZTP_REDIRECT
 Client ORO:       Yes
 Singleton Option: Yes
 Reference:        [RFCXXXX]
-              </artwork>
+</artwork>
             </figure>
           </t>
           <t>Note: this request is to make permanent a previously registered
@@ -2101,7 +2100,7 @@ Reference:        [RFCXXXX]
           below registration is requested:</t>
           <t>
             <figure>
-                <artwork><![CDATA[
+                <artwork align="center"><![CDATA[
 Service Name:            sztp
 Transport Protocol(s):   TCP
 Assignee:                IESG <iesg@ietf.org>
@@ -2203,7 +2202,7 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
           <t>The following tree diagram provides an overview for the SZTP
           device data model.</t>
           <figure>
-            <artwork name="example-device-data-model-tree.txt"><![CDATA[
+            <artwork name="example-device-data-model-tree.txt" align="center"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/example-device-data-model-tree.txt)
 ]]></artwork>
           </figure>
@@ -2324,7 +2323,7 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
           manufacturer ships devices for an order placed by the prospective owner.</t>
           <t>
             <figure>
-              <artwork><![CDATA[
+              <artwork align="center"><![CDATA[
                                +-----------+
 +------------+                 |Prospective|                    +---+
 |Manufacturer|                 |   Owner   |                    |NMS|
@@ -2360,7 +2359,7 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
       |                              #  and ownership vouchers    |
       |                              #--------------------------->|
       |                              |                            |
-  ]]></artwork>
+]]></artwork>
             </figure>
           </t>
           <t>Each numbered item below corresponds to a numbered item
@@ -2424,7 +2423,7 @@ INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
           network for bootstrapping devices.</t>
           <t>
             <figure>
-              <artwork><![CDATA[
+              <artwork align="center"><![CDATA[
             +----------+ +------------+
             |Deployment| |Manufacturer| +------+ +------+
             | Specific | |   Hosted   | | Local| | Local| +---------+
@@ -2460,7 +2459,7 @@ device  |        |             |            |        |         |
         |----------------------------------------------------->|
         |        |             |            |        |         |
         |        |             |            |        |         |
-  ]]></artwork>
+]]></artwork>
             </figure>
           </t>
 
@@ -2520,7 +2519,7 @@ device  |        |             |            |        |         |
           <t>The following diagram illustrates the sequence of activities
           that occur when a device powers on.
             <figure>
-              <artwork><![CDATA[
+              <artwork align="center"><![CDATA[
                                                   +----------+
                                    +-----------+  |Deployment|
                                    | Source of |  | Specific |
@@ -2557,7 +2556,7 @@ device  |        |             |            |        |         |
    |
    | 5. retry sources and/or wait for manual provisioning.
    |
-  ]]></artwork>
+]]></artwork>
             </figure>
           </t>
           <t>The interactions in the above diagram are described below.
@@ -3019,8 +3018,8 @@ device  |        |             |            |        |         |
         <section title="25 to 26">
           <t>
             <list style="symbols">
-              <t>Updated URI structure text (sec 8.3) and added norm. ref to RFC7230
-              reflecting Alexey Melnikov's comment.</t>
+              <t>Updated URI structure text (sec 8.3) and added norm. ref to
+                 RFC7230 reflecting Alexey Melnikov's comment.</t>
               <t>Added IANA registration for the 'zerotouch' service, per IESG
                  review from Adam Roach.</t>
               <t>Clarified device's looping behavior and support for alternative
@@ -3037,17 +3036,24 @@ device  |        |             |            |        |         |
           </t>
         </section>
         <section title="26 to 27">
-          <t>Added Security Consideration for cascading trust via redirects.</t>
-          <t>Modified the get-bootstrapping-data RPC's "nonce" input parameter
-          to being a minimum of 16-bytes (used to be 8-bytes).</t>
-          <t>Added Security Consideration regarding possible reuse of device's
-          private key.</t>
-          <t>Added Security Consideration regarding use of sign-then-encrypt.</t>
-          <t>Renamed "Zero Touch"/"zerotouch" throughout.  Now uses "SZTP"
-          when referring to the draft/solution, and "conveyed" when referring
-          to the bootstrapping artifact.</t>
-          <t>Added missing text for "encrypted unsigned conveyed information"
-          case.</t>
+          <t>
+            <list style="symbols">
+              <t>Added Security Consideration for cascading trust via redirects.</t>
+              <t>Modified the get-bootstrapping-data RPC's "nonce" input parameter
+                 to being a minimum of 16-bytes (used to be 8-bytes).</t>
+              <t>Added Security Consideration regarding possible reuse of device's
+                 private key.</t>
+              <t>Added Security Consideration regarding use of sign-then-encrypt.</t>
+              <t>Renamed "Zero Touch"/"zerotouch" throughout.  Now uses "SZTP"
+                 when referring to the draft/solution, and "conveyed" when referring
+                 to the bootstrapping artifact.</t>
+              <t>Added missing text for "encrypted unsigned conveyed information"
+                 case.</t>
+              <t>Renamed "untrusted-connection" input paramter to "signed-data-preferred"</t>
+              <t>Switch yd:yang-data back to rc:yang-data</t>
+              <t>Added a couple features to the bootstrap-server module.</t>
+            </list>
+          </t>
         </section>
       </section>
 
@@ -3080,7 +3086,7 @@ device  |        |             |            |        |         |
         Juergen Schoenwaelder.</t>
 
         <t>Special thanks goes to Steve Hanna, Russ Mundy, and
-        Wes Hardaker for brainstorming the original I-D's solution
+        Wes Hardaker for brainstorming the original solution
         during the IETF 87 meeting in Berlin.</t>
       </section>
     </back>

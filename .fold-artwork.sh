@@ -27,7 +27,7 @@ reversed=0
 infile=""
 outfile=""
 maxcol=70  # default, may be overridden by param
-header="\n[Note: '\' line wrapping for formatting only]\n\n"
+header="[Note: '\' line wrapping for formatting only]\n\n"
 
 
 fold_it() {
