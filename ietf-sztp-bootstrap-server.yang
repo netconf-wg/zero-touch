@@ -41,6 +41,17 @@ module ietf-sztp-bootstrap-server {
       "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
   }
 
+  // features
+  feature redirect-server {
+    description
+     "The server supports being a 'redirect server'.";
+  }
+
+  feature onboarding-server {
+    description
+     "The server supports being an 'onboarding server'.";
+  }
+
   // typedefs
 
   typedef cms {
@@ -131,10 +142,13 @@ module ietf-sztp-bootstrap-server {
     }
     output {
       leaf reporting-level {
+        if-feature onboarding-server;
         type enumeration {
           enum standard {
             description
               "Send just the progress reports required by RFC XXXX.";
+            reference
+              "RFC XXXX: Secure Zero Touch Provisioning (SZTP)";
           }
           enum verbose {
             description
@@ -194,6 +208,7 @@ module ietf-sztp-bootstrap-server {
   }
 
   rpc report-progress {
+    if-feature onboarding-server;
     description
       "This RPC enables a device, as identified by the RESTCONF
        username, to report its bootstrapping progress to the

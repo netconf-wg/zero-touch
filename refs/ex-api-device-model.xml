@@ -1,5 +1,4 @@
-<sztp
-  xmlns="https://example.com/sztp-device-data-model">
+<sztp xmlns="https://example.com/sztp-device-data-model">
   <enabled>true</enabled>
   <idevid-certificate>base64encodedvalue==</idevid-certificate>
   <bootstrap-servers>
@@ -16,6 +15,10 @@
       <port>8443</port>
     </bootstrap-server> 
   </bootstrap-servers>
-  <bootstrap-server-pinned-certificates>manufacturers-root-ca-certs</bootstrap-server-pinned-certificates>
-  <voucher-pinned-certificates>manufacturers-root-ca-certs</voucher-pinned-certificates>
+  <bootstrap-server-trust-anchors>
+    <reference>manufacturers-root-ca-certs</reference>
+  </bootstrap-server-trust-anchors>
+  <voucher-trust-anchors>
+    <reference>manufacturers-root-ca-certs</reference>
+  </voucher-trust-anchors>
 </sztp>

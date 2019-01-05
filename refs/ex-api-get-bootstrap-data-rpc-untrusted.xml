@@ -1,5 +1,8 @@
+POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrapping-data HTTP/1.1
+HOST: example.com
+Content-Type: application/yang.data+xml
+
 <input
- xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <signed-data-preferred/>
 </input>
-

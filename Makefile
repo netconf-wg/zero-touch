@@ -55,7 +55,6 @@ $(next).xml: $(draft).xml
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-sztp-bootstrap-server.yang > ietf-sztp-bootstrap-server\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" example-device-data-model.yang > example-device-data-model\@$(shell date +%Y-%m-%d).yang
 	cd refs; ./validate-all.sh; ./gen-trees.sh; cd ..;
-	#cd refs; ./gen-trees.sh; cd ..;
 	./.insert-figures.sh $@ > tmp
 	mv tmp $@
 	rm refs/*-tree.txt
@@ -69,6 +68,7 @@ $(next).xml: $(draft).xml
 
 %.txt: %.xml 
 	$(xml2rfc) $< -o $@ --text
+	idnits $@
 
 ifeq "$(shell uname -s 2>/dev/null)" "Darwin"
 sed_i := sed -i ''

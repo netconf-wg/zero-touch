@@ -1,5 +1,9 @@
-<input xmlns=
-  "urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
+POST /restconf/operations/ietf-sztp-bootstrap-server:report-progress HTTP/1.1
+HOST: example.com
+Content-Type: application/yang.data+xml
+
+<input
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <progress-type>bootstrap-complete</progress-type>
   <message>example message</message>
   <ssh-host-keys>

@@ -1,6 +1,10 @@
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2015 17:02:40 GMT
+Server: example-server
+Content-Type: application/yang.data+xml
+
 <output
- xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <reporting-level>verbose</reporting-level>
   <conveyed-information>base64encodedvalue==</conveyed-information>
 </output>
-

@@ -39,6 +39,7 @@ fold_it() {
     return 1
   fi
 
+  >&2 echo "folding $infile..."
   echo -ne "$header" > $outfile
   foldcol=`expr "$maxcol" - 2` # for the inserted '\' & '\n' chars
   gsed "/.\{$maxcol\}/s/\(.\{$foldcol\}\)/\1\\\\\n/g" < $infile >> $outfile

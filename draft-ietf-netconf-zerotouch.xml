@@ -271,7 +271,7 @@
           <xref target="info-yang-module"/>.  This container has the tree
           diagram shown below.</t>
           <t><figure>
-            <artwork><![CDATA[
+            <artwork name="redirect-information-tree.txt"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/redirect-information-tree.txt)
 ]]></artwork>
           </figure></t>
@@ -309,7 +309,7 @@ INSERT_TEXT_FROM_FILE(refs/redirect-information-tree.txt)
           shown below.</t>
 
          <t><figure>
-            <artwork><![CDATA[
+            <artwork name="onboarding-information-tree.txt"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 ]]></artwork>
           </figure></t>
@@ -1351,7 +1351,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <t>The following tree diagram provides an overview of the data model for the
           conveyed information artifact.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ietf-sztp-conveyed-info-tree.txt"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ietf-sztp-conveyed-info-tree.txt)
 ]]></artwork>
           </figure>
@@ -1362,7 +1362,7 @@ INSERT_TEXT_FROM_FILE(refs/ietf-sztp-conveyed-info-tree.txt)
           <t>The following example illustrates how redirect information
           (<xref target="redirect-information"/>) can be encoded using JSON.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ex-file-redirect-information.json"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
 ]]></artwork>
           </figure>
@@ -1370,7 +1370,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-redirect-information.json)
           <t>The following example illustrates how onboarding information
           (<xref target="onboarding-information"/>) can be encoded using JSON.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ex-file-onboarding-information.json"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
 ]]></artwork>
           </figure>
@@ -1387,7 +1387,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-file-onboarding-information.json)
           encoding defined in <xref target="ITU.X690.2015"/>.</t>
 
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ietf-sztp-conveyed-info@YYYY-MM-DD.yang"><![CDATA[
 <CODE BEGINS> file "ietf-sztp-conveyed-info@YYYY-MM-DD.yang"
 INSERT_TEXT_FROM_FILE(ietf-sztp-conveyed-info@YYYY-MM-DD.yang)
 <CODE ENDS>
@@ -1408,7 +1408,7 @@ INSERT_TEXT_FROM_FILE(ietf-sztp-conveyed-info@YYYY-MM-DD.yang)
           <t>The following tree diagram provides an overview for the bootstrap server
           RESTCONF API.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ietf-sztp-bootstrap-server-tree.txt"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ietf-sztp-bootstrap-server-tree.txt)
 ]]></artwork>
           </figure>
@@ -1426,26 +1426,14 @@ INSERT_TEXT_FROM_FILE(refs/ietf-sztp-bootstrap-server-tree.txt)
           device sends the "signed-data-preferred" input parameter and receives signed
           data in the response.</t>
           <figure>
-            <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrap\
-ping-data HTTP/1.1
-HOST: example.com
-Content-Type: application/yang.data+xml
-
+            <preamble>REQUEST</preamble>
+            <artwork name="ex-api-get-bootstrap-data-rpc-untrusted.xml"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-untrusted.xml)
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
+]]></artwork>
+          </figure>
+          <figure>
+            <preamble>RESPONSE</preamble>
+            <artwork name="ex-api-get-bootstrap-data-rpc-reply-untrusted.xml"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-untrusted.xml)
 ]]></artwork>
           </figure>
@@ -1455,26 +1443,14 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-untrusted.xml)
           device sends addition input parameters to the bootstrap server, which it
           may use when formulating its response to the device.</t>
           <figure>
-            <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrap\
-ping-data HTTP/1.1
-HOST: example.com
-Content-Type: application/yang.data+xml
-
+            <preamble>REQUEST</preamble>
+            <artwork name="ex-api-get-bootstrap-data-rpc-trusted.xml"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-trusted.xml)
-
-RESPONSE
---------
-
-HTTP/1.1 200 OK
-Date: Sat, 31 Oct 2015 17:02:40 GMT
-Server: example-server
-Content-Type: application/yang.data+xml
-
+]]></artwork>
+          </figure>
+          <figure>
+            <preamble>RESPONSE</preamble>
+            <artwork name="ex-api-get-bootstrap-data-rpc-reply-trusted.xml"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-trusted.xml)
 ]]></artwork>
           </figure>
@@ -1487,21 +1463,14 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-get-bootstrap-data-rpc-reply-trusted.xml)
           pass to an NMS, as discussed in <xref target="device-powers-on"/>.</t>
 
           <figure>
-            <artwork><![CDATA[
-REQUEST
--------
-['\' line wrapping added for formatting only]
-
-POST /restconf/operations/ietf-sztp-bootstrap-server:report-\
-progress HTTP/1.1
-HOST: example.com
-Content-Type: application/yang.data+xml
-
+            <preamble>REQUEST</preamble>
+            <artwork name=""><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-report-progress-rpc.xml)
-
-RESPONSE
---------
-
+]]></artwork>
+          </figure>
+          <figure>
+            <preamble>RESPONSE</preamble>
+            <artwork><![CDATA[
 HTTP/1.1 204 No Content
 Date: Sat, 31 Oct 2015 17:02:40 GMT
 Server: example-server
@@ -1520,7 +1489,7 @@ Server: example-server
           makes a reference to <xref target="RFC4250"/> and 
           <xref target="RFC6187"/>.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ietf-sztp-bootstrap-server@YYYY-MM-DD.yang"><![CDATA[
 <CODE BEGINS> file "ietf-sztp-bootstrap-server@YYYY-MM-DD.yang"
 INSERT_TEXT_FROM_FILE(ietf-sztp-bootstrap-server@YYYY-MM-DD.yang)
 <CODE ENDS>
@@ -2235,7 +2204,7 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
           <t>The following tree diagram provides an overview for the SZTP
           device data model.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="example-device-data-model-tree.txt"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/example-device-data-model-tree.txt)
 ]]></artwork>
           </figure>
@@ -2248,7 +2217,7 @@ INSERT_TEXT_FROM_FILE(refs/example-device-data-model-tree.txt)
         <section title="Example Usage" anchor="device-example">
           <t>Following is an instance example for this data model.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="ex-api-device-model.xml"><![CDATA[
 INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml)
 ]]></artwork>
           </figure>
@@ -2262,7 +2231,7 @@ INSERT_TEXT_FROM_FILE(refs/ex-api-device-model.xml)
           <xref target="I-D.ietf-netconf-crypto-types"/>, and
           <xref target="I-D.ietf-netconf-trust-anchors"/>.</t>
           <figure>
-            <artwork><![CDATA[
+            <artwork name="example-device-data-model@YYYY-MM-DD.yang"><![CDATA[
 INSERT_TEXT_FROM_FILE(example-device-data-model@YYYY-MM-DD.yang)
 ]]></artwork>
           </figure>
@@ -3072,7 +3041,7 @@ device  |        |             |            |        |         |
           <t>Added Security Consideration for cascading trust via redirects.</t>
           <t>Modified the get-bootstrapping-data RPC's "nonce" input parameter
           to being a minimum of 16-bytes (used to be 8-bytes).</t>
-          <t>Added Security Consideration regarding posible reuse of device's
+          <t>Added Security Consideration regarding possible reuse of device's
           private key.</t>
           <t>Added Security Consideration regarding use of sign-then-encrypt.</t>
           <t>Renamed "Zero Touch"/"zerotouch" throughout.  Now uses "SZTP"

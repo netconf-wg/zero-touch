@@ -119,23 +119,29 @@ module example-device-data-model {
         }
       }
     }
-    leaf bootstrap-server-pinned-certificates {
+    container bootstrap-server-trust-anchors {
       if-feature bootstrap-servers;
-      type ta:pinned-certificates-ref;
       config false;
-      description
-        "A reference to a list of pinned certificate authority (CA)
-         certificates that the device uses to validate bootstrap
-         servers with.";
+      description "Container for a list of trust anchor references.";
+      leaf-list reference {
+        type ta:pinned-certificates-ref;
+        description
+          "A reference to a list of pinned certificate authority (CA)
+           certificates that the device uses to validate bootstrap
+           servers with.";
+      }
     }
-    leaf voucher-pinned-certificates {
+    container voucher-trust-anchors {
       if-feature signed-data;
-      type ta:pinned-certificates-ref;
       config false;
-      description
-        "A reference to a list of pinned certificate authority (CA)
-         certificates that the device uses to validate ownership
-         vouchers with.";
+      description "Container for a list of trust anchor references.";
+      leaf-list reference {
+        type ta:pinned-certificates-ref;
+        description
+          "A reference to a list of pinned certificate authority (CA)
+           certificates that the device uses to validate ownership
+           vouchers with.";
+      }
     }
   }
 }

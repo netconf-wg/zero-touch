@@ -1,5 +1,9 @@
-<input 
- xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
+POST /restconf/operations/ietf-sztp-bootstrap-server:get-bootstrapping-data HTTP/1.1
+HOST: example.com
+Content-Type: application/yang.data+xml
+
+<input
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">
   <hw-model>model-x</hw-model>
   <os-name>vendor-os</os-name>
   <os-version>17.3R2.1</os-version>

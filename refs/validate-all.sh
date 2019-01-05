@@ -73,7 +73,7 @@ echo "Tranisitioning to testing ietf-sztp-bootstrap-server.yang examples"
 echo
 
 printf "validating ex-api-get-bootstrap-data-rpc-trusted.xml..."
-sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-trusted.xml > ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
+cat ex-api-get-bootstrap-data-rpc-trusted.xml | sed '1,4d' | sed 's/input/get-bootstrapping-data/' > ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
 response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
@@ -85,7 +85,7 @@ fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-reply-trusted.xml..."
-cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' -e 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
+cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | sed '1,5d' | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' -e 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
 response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
 rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
 rm ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
@@ -98,7 +98,7 @@ fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-untrusted.xml..."
-sed 's/input/get-bootstrapping-data/' ex-api-get-bootstrap-data-rpc-untrusted.xml > ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
+cat ex-api-get-bootstrap-data-rpc-untrusted.xml | sed '1,4d' | sed 's/input/get-bootstrapping-data/' > ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
 response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
@@ -110,7 +110,7 @@ fi
 printf "okay.\n"
 
 printf "validating ex-api-get-bootstrap-data-rpc-reply-untrusted.xml..."
-cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | grep -v "output" | grep -v "xmlns=" | sed 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
+cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | sed '1,5d' | grep -v "output" | grep -v "xmlns=" | sed 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
 response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
 rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
 rm ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
@@ -125,7 +125,7 @@ printf "okay.\n"
 
 
 printf "validating ex-api-report-progress-rpc.xml..."
-sed 's/input/report-progress/' ex-api-report-progress-rpc.xml > ex-api-report-progress-rpc-4nc.xml
+cat ex-api-report-progress-rpc.xml | sed '1,4d' | sed 's/input/report-progress/' > ex-api-report-progress-rpc-4nc.xml
 response=`yanglint -s -t rpc ../ietf-sztp-bootstrap-server\@*.yang ex-api-report-progress-rpc-4nc.xml 2>&1`
 if [ $? -ne 0 ]; then
   printf "failed (error code: $?)\n"
