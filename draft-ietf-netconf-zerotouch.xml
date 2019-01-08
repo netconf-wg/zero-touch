@@ -1680,7 +1680,7 @@ DHCPv6 SZTP Redirect Option
           <xref target="I-D.ietf-ntp-using-nts-for-ntp"/>.</t>
         </section>
         <section title="Use of IDevID Certificates">
-          <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2009"/>,
+          <t>IDevID certificates, as defined in <xref target="Std-802.1AR-2018"/>,
           are RECOMMENDED, both for the TLS-level client certificate used
           by devices when connecting to a bootstrap server, as well as for
           the device identity certificate used by owners when encrypting
@@ -1698,7 +1698,7 @@ DHCPv6 SZTP Redirect Option
         </section>
         <section title="Secure Storage for Long-lived Private Keys">
           <t>Manufacturer-generated device identifiers may have very long
-          lifetimes.  For instance, <xref target="Std-802.1AR-2009"/>
+          lifetimes.  For instance, <xref target="Std-802.1AR-2018"/>
           recommends using the "notAfter" value 99991231235959Z in IDevID
           certificates.  Given the long-lived nature of these private keys,
           it is paramount that they are stored so as to resist discovery,
@@ -1915,7 +1915,7 @@ DHCPv6 SZTP Redirect Option
           <t>This document, in <xref target="artifact-encryption"/>
           allows for the possibility that the same secure device
           identity certificate is used for both uses, as 
-          <xref target="Std-802.1AR-2009"/> states that a DevID
+          <xref target="Std-802.1AR-2018"/> states that a DevID
           certificate MAY have the "keyEncipherment" KeyUsage bit,
           in addition to the "digitalSignature" KeyUsage bit, set.</t>
           <t>While it is understood that it is generally frowned
@@ -2159,13 +2159,13 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
           <seriesInfo name="ITU-T Recommendation X.690," value="ISO/IEC 8825-1" />
 	</reference>
 
-        <reference anchor="Std-802.1AR-2009" target="http://standards.ieee.org/findstds/standard/802.1AR-2009.html">
+        <reference anchor="Std-802.1AR-2018" target="http://standards.ieee.org/findstds/standard/802.1AR-2018.html">
           <front>
             <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
             <author fullname="WG802.1 - Higher Layer LAN Protocols Working Group">
                <organization>IEEE SA-Standards Board</organization>
             </author>
-            <date month="December" year="2009"/>
+            <date day="14" month="June" year="2018"/>
           </front>
         </reference>
       </references>
