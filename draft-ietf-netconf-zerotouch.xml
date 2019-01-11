@@ -66,6 +66,7 @@
             <list  style="symbols">
               <t><spanx style="verb">TBD1</spanx> --&gt; the assigned value for id-ct-sztpConveyedInfoXML</t>
               <t><spanx style="verb">TBD2</spanx> --&gt; the assigned value for id-ct-sztpConveyedInfoJSON</t>
+              <t><spanx style="verb">TBD_IANA_URL</spanx> --&gt; the assigned URL for the IANA registry</t>
             </list>
           </t>
           <t>Artwork in this document contains shorthand references to drafts in
@@ -635,58 +636,67 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
           <section title="DNS Queries" toc="exclude">
 
             <t>Devices claiming to support DNS as a source of bootstrapping
-            data MUST first query for device-specific DNS records using DNS-SD
-            <xref target="RFC6763"/> and, only if doing so does not result in a
-            successful bootstrap, then query for device-independent records
-            using traditional service discovery <xref target="RFC2782"/>.
-            Furthermore, when issuing the device-specific and device-independent
-            queries, devices MUST first query using multicast DNS <xref target="RFC6762"/>
-            and, only if doing so does not result in a successful bootstrap, then
-            query again using unicast DNS <xref target="RFC1035"/><xref target="RFC7766"/>,
-            assuming the address of a DNS server is known.</t>
-  
-            <t>When querying for device-specific DNS records, devices SHOULD
-            immediately query for their instance-specific record, without first
-            querying for PTR records (Section 4.1 of <xref target="RFC6763"/>).
-            Device MUST use their serial number (i.e., the same value as in the
-            device identity certificate) for the "&lt;instance&gt;" portion of
-            the service instance name (Section 4.1.1 of <xref target="RFC6763"/>).
-            Device MUST only query for TXT records, in order to access the three
-            bootstrapping artifacts defined in <xref target="artifacts"/>.</t>
-  
-            <t>When querying for device-independent DNS records, devices MUST only
-            query for SRV records.  Multiple SRV records, each specifying an address,
-            port, weight, and priority <xref target="RFC2782"/> is comparable to 
-            an unsigned redirect information's list of bootstrap servers.  Note
-            that a device-independent response is only able to encode unsigned
-            data, since signed data necessitates the use of a device-specific
-            ownership voucher.  Exclusive use of SRV records maximally leverages
-            existing DNS standards for what is likely to be a common case when
-            using a DNS server as a source of bootstrapping data.</t>
- 
-            <t>By example, assuming a device's serial number is "&lt;serial number&gt;",
-            and that the domain discovered per Section 11 of <xref target="RFC6763"/>
-            is "example.com", the device may issue the following sequence of DNS queries:
+            data MUST first query for device-specific DNS records and, only
+            if doing so does not result in a successful bootstrap, then MUST
+            query for device-independent DNS records.</t>
+
+            <t>For each of the device-specific and device-independent queries,
+            devices MUST first query using multicast DNS <xref target="RFC6762"/>
+            and, only if doing so does not result in a successful bootstrap,
+            then MUST query again using unicast DNS <xref target="RFC1035"/>
+            <xref target="RFC7766"/>, assuming the address of a DNS server
+            is known, such as it may using techniques similar to those
+            described in Section 11 of <xref target="RFC6763"/>, which is
+            referenced a few times in this document, even though this
+            document does not itself use DNS-SD (RFC 6763 is identified
+            herein as an Informative reference).</t>
+
+            <t>When querying for device-specific DNS records, devices 
+            MUST query for TXT records <xref target="RFC1035"/> under
+            "&lt;serial-number&gt;._sztp", where &lt;serial-number&gt;
+            is the device's serial number (the same value as in the
+            device's secure device identity certificate), and "_sztp"
+            is the globally scoped DNS attribute registered by this
+            document in <xref target="_sztp_attr"/>.</t>
+
+            <t>Example device-specific DNS record queries:
               <?rfc subcompact="yes"?>
               <list style="empty">
-                <t>TXT in &lt;serial number&gt;._sztp._tcp.local.</t>
-                <t>TXT in &lt;serial number&gt;._sztp._tcp.example.com.</t>
-                <t>SRV in _sztp._tcp.local.</t>
-                <t>SRV in _sztp._tcp.example.com.</t>
+                <t>TXT in &lt;serial-number&gt;._sztp.local.  (multicast)</t>
+                <t>TXT in &lt;serial-number&gt;._sztp.&lt;domain&gt;.  (unicast)</t>
               </list>
               <?rfc subcompact="no"?>
             </t>
 
-            <t>This document registers the service name "sztp" in
-            <xref target="dns_srv"/>.</t>
+            <t>When querying for device-independent DNS records, devices MUST
+            query for SRV records <xref target="RFC2782"/> under "_sztp._tcp",
+            where "_sztp" is the service name registered by this document in
+            <xref target="dns_srv"/>, and "_tcp" is the globally scoped DNS
+            attribute registered by <xref target="I-D.ietf-dnsop-attrleaf"/>.</t>
 
+            <t>Note that a device-independent response is anyway only able to
+            encode unsigned data, since signed data necessitates the use of a
+            device-specific ownership voucher.  Use of SRV records leverages
+            existing DNS standards.  A response containing multiple SRV
+            records is comparable to an unsigned redirect information's list
+            of bootstrap servers.</t>
+
+            <t>Example device-independent DNS record queries:
+              <?rfc subcompact="yes"?>
+              <list style="empty">
+                <t>SRV in _sztp._tcp.local.  (multicast)</t>
+                <t>SRV in _sztp._tcp.&lt;domain&gt;.  (unicast)</t>
+              </list>
+              <?rfc subcompact="no"?>
+            </t>
           </section>
 
           <section title="DNS Response for Device-Specific Queries" toc="exclude">
 
             <t>For device-specific queries, the three bootstrapping artifacts defined
             in <xref target="artifacts"/> are encoded into the TXT records using 
-            key/value pairs, as described in Section 6.3 in <xref target="RFC6763"/>.</t>
+            key/value pairs, similar to the technique described in Section 6.3
+            of <xref target="RFC6763"/>.</t>
   
             <t>Artifact to TXT Record Mapping:
               <list style="hanging" hangIndent="6">
@@ -710,17 +720,18 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             <t>Following is an example of a device-specific response, as 
             it might be presented by a user-agent, containing signed data.
             This example assumes that the device's serial number is 
-            "&lt;sn&gt;":
+            "&lt;serial-number&gt;", the domain is "example.com", and
+            that "&lt;binary data&gt;" represents the binary artifact:
               <figure>
                 <artwork align="center"><![CDATA[
-<sn>._sztp._tcp.example.com. 3600 IN TXT "ci=<binary data>"
-<sn>._sztp._tcp.example.com. 3600 IN TXT "oc=<binary data>"
-<sn>._sztp._tcp.example.com. 3600 IN TXT "ov=<binary data>"
+<serial-number>._sztp.example.com. 3600 IN TXT "ci=<binary data>"
+<serial-number>._sztp.example.com. 3600 IN TXT "oc=<binary data>"
+<serial-number>._sztp.example.com. 3600 IN TXT "ov=<binary data>"
 ]]></artwork>
               </figure>
             </t>
 
-            <t>Note that, in the case that "zi" encodes unsigned data,
+            <t>Note that, in the case that "ci" encodes unsigned data,
             the "oc" and "ov" keys would not be present in the response.</t>
           </section>
   
@@ -745,7 +756,9 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
   
             <t>Following is an example of a device-independent response, as
             it might be presented by a user-agent, containing (effectively)
-            unsigned redirect information to four bootstrap servers:
+            unsigned redirect information to four bootstrap servers.  This
+            example assumes that the domain is "example.com" and that there
+            are four bootstrap servers "sztp[1-4]":
               <figure>
                 <artwork align="center">
 _sztp._tcp.example.com. 1800 IN SRV 0 0 443 sztp1.example.com.
@@ -761,6 +774,10 @@ _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
             of bootstrap servers.  While "sztp1" and "sztp2" only have
             a single SRV record each, it may be that the record points
             to a load-balancer fronting a cluster of bootstrap servers.</t>
+
+            <t>While this document does not use DNS-SD <xref target="RFC6763"/>,
+            per Section 12.2 of that RFC, mDNS responses SHOULD also include
+            all address records (type "A" and "AAAA") named in the SRV rdata.</t>
           </section>
 
           <section title="Size of Signed Data" toc="exclude">
@@ -782,9 +799,9 @@ _sztp._tcp.example.com. 1800 IN SRV 2 0 443 sztp4.example.com.
             that signed data will fit into a UDP-based DNS packet, even
             with the EDNS(0) Extensions <xref target="RFC6891"/> enabled.
             Depending on content, signed data may also not fit into a
-            multicast DNS packet, which bounds the size of the TXT records
-            to 8900 bytes, per Section 6.1 in <xref target="RFC6763"/>.  Thus
-            it is expected that DNS Transport over TCP <xref target="RFC7766"/>
+            multicast DNS packet, which bounds the size to 9000 bytes,
+            per Section 17 in <xref target="RFC6762"/>.  Thus it is
+            expected that DNS Transport over TCP <xref target="RFC7766"/>
             will be required in order to return signed data.</t>
           </section>
 
@@ -2117,6 +2134,21 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
             </figure>
           </t>
         </section>
+        <section title="The DNS Underscore Global Scoped Entry Registry" anchor="_sztp_attr">
+          <t>This document registers one service name in the DNS Underscore Global Scoped
+          Entry Registry <xref target="I-D.ietf-dnsop-attrleaf"/> maintained at TBD_IANA_URL.
+          Following the format defined in Section 4.3 of <xref target="I-D.ietf-dnsop-attrleaf"/>,
+          the below registration is requested:</t>
+          <t>
+            <figure>
+                <artwork align="center"><![CDATA[
+RR Type:            TXT
+_NODE NAME:         _sztp
+Reference:          [RFCXXXX]
+]]></artwork>
+            </figure>
+          </t>
+        </section>
       </section>
 
     </middle>
@@ -2134,7 +2166,6 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
         <?rfc include="reference.RFC.6020.xml"?>
         <?rfc include="reference.RFC.6125.xml"?>
         <?rfc include="reference.RFC.6762.xml"?>
-        <?rfc include="reference.RFC.6763.xml"?>
         <?rfc include="reference.RFC.6991.xml"?>
         <?rfc include="reference.RFC.7227.xml"?>
         <?rfc include="reference.RFC.7230.xml"?>
@@ -2142,6 +2173,7 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
         <?rfc include="reference.RFC.8040.xml"?>
         <?rfc include="reference.RFC.8174.xml"?>
         <?rfc include="reference.RFC.8366.xml"?>
+        <?rfc include="reference.I-D.ietf-dnsop-attrleaf"?>
 
         <!-- THE FOLLOWING LINE DOESN'T RESOLVE FOR SOME REASON:
              <?rfc include="_reference.ITU.X690.2015.xml"?> -->
@@ -2177,6 +2209,7 @@ Assignment Notes:        This protocol uses HTTPS as a substrate.
         <?rfc include="reference.RFC.6234.xml"?>
         <?rfc include="reference.RFC.6241.xml"?>
         <?rfc include="reference.RFC.6335.xml"?>
+        <?rfc include="reference.RFC.6763.xml"?>
         <?rfc include="reference.RFC.6891.xml"?>
         <?rfc include="reference.RFC.6960.xml"?>
         <?rfc include="reference.RFC.6698.xml"?>
@@ -3055,6 +3088,16 @@ device  |        |             |            |        |         |
             </list>
           </t>
         </section>
+        <section title="27 to 28">
+          <t>
+            <list style="symbols">
+              <t>Modified DNS section to no longer reference DNS-SD (now just plain
+              TXT and SRV lookups, via multicast or unicast.</t>
+              <t>Registers "_sztp" in the DNS Underscore Global Scoped Entry Registry.</t>
+              <t>Updated 802.1AR reference to current spec version.</t>
+            </list>
+          </t>
+        </section>
       </section>
 
       <section title="Acknowledgements" numbered="no">
@@ -3065,6 +3108,7 @@ device  |        |             |            |        |         |
         Dean Bogdanovic,
         Martin Bjorklund,
         Joe Clarke,
+        Dave Crocker,
         Toerless Eckert,
         Stephen Farrell,
         Stephen Hanna,

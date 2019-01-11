@@ -26,16 +26,15 @@ printf "okay.\n\n"
 
 
 echo "validating ietf-sztp-conveyed-info.yang..."
-# COMMENTING OUT DUE TO IMPROPER YANG_DATA VALIDATION ERROR
-#printf "  ^ with pyang..."
-#response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-sztp-conveyed-info\@*.yang 2>&1`
-#if [ $? -ne 0 ]; then
-#  printf "failed (error code: $?)\n"
-#  printf "$response\n\n"
-#  echo
-#  exit 1
-#fi
-#printf "okay.\n"
+printf "  ^ with pyang..."
+response=`pyang --ietf --strict --canonical --max-line-length=69 ../ietf-sztp-conveyed-info\@*.yang 2>&1`
+if [ $? -ne 0 ]; then
+  printf "failed (error code: $?)\n"
+  printf "$response\n\n"
+  echo
+  exit 1
+fi
+printf "okay.\n"
 printf "  ^ with yanglint..."
 response=`yanglint ../ietf-sztp-conveyed-info\@*.yang 2>&1`
 if [ $? -ne 0 ]; then
