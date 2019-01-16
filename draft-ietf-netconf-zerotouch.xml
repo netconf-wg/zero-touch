@@ -645,7 +645,7 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
             and, only if doing so does not result in a successful bootstrap,
             then MUST query again using unicast DNS <xref target="RFC1035"/>
             <xref target="RFC7766"/>, assuming the address of a DNS server
-            is known, such as it may using techniques similar to those
+            is known, such as it may be using techniques similar to those
             described in Section 11 of <xref target="RFC6763"/>, which is
             referenced a few times in this document, even though this
             document does not itself use DNS-SD (RFC 6763 is identified
@@ -676,10 +676,10 @@ INSERT_TEXT_FROM_FILE(refs/onboarding-information-tree.txt)
 
             <t>Note that a device-independent response is anyway only able to
             encode unsigned data, since signed data necessitates the use of a
-            device-specific ownership voucher.  Use of SRV records leverages
-            existing DNS standards.  A response containing multiple SRV
-            records is comparable to an unsigned redirect information's list
-            of bootstrap servers.</t>
+            device-specific ownership voucher.  Use of SRV records maximumly
+            leverages existing DNS standards.  A response containing multiple
+            SRV records is comparable to an unsigned redirect information's
+            list of bootstrap servers.</t>
 
             <t>Example device-independent DNS record queries:
               <?rfc subcompact="yes"?>
@@ -2191,7 +2191,7 @@ Reference:          [RFCXXXX]
           <seriesInfo name="ITU-T Recommendation X.690," value="ISO/IEC 8825-1" />
 	</reference>
 
-        <reference anchor="Std-802.1AR-2018" target="http://standards.ieee.org/findstds/standard/802.1AR-2018.html">
+        <reference anchor="Std-802.1AR-2018" target="https://standards.ieee.org/standard/802_1AR-2018.html">
           <front>
             <title>IEEE Standard for Local and metropolitan area networks - Secure Device Identity</title>
             <author fullname="WG802.1 - Higher Layer LAN Protocols Working Group">
