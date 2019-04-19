@@ -144,7 +144,7 @@ module ietf-sztp-bootstrap-server {
       leaf reporting-level {
         if-feature onboarding-server;
         type enumeration {
-          enum standard {
+          enum minimal {
             description
               "Send just the progress reports required by RFC XXXX.";
             reference
@@ -156,7 +156,7 @@ module ietf-sztp-bootstrap-server {
                troubleshooting an SZTP bootstrapping issue.";
           }
         }
-        default standard;
+        default minimal;
         description
           "Specifies the reporting level for progress reports the
            bootstrap server would like to receive when processing

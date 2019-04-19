@@ -87,9 +87,10 @@ printf "okay.\n"
 printf "validating ex-api-get-bootstrap-data-rpc-reply-trusted.xml..."
 cat ex-api-get-bootstrap-data-rpc-reply-trusted.xml | sed '1,5d' | grep -v "output" | grep -v "xmlns=" | sed -e 's/<reporting-level>/<reporting-level xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' -e 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
 response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml ex-api-get-bootstrap-data-rpc-trusted-4nc.xml 2>&1`
+exit_code=$?
 rm ex-api-get-bootstrap-data-rpc-trusted-4nc.xml
 rm ex-api-get-bootstrap-data-rpc-reply-trusted-4nc.xml
-if [ $? -ne 0 ]; then
+if [ $exit_code -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
   echo
@@ -112,9 +113,10 @@ printf "okay.\n"
 printf "validating ex-api-get-bootstrap-data-rpc-reply-untrusted.xml..."
 cat ex-api-get-bootstrap-data-rpc-reply-untrusted.xml | sed '1,5d' | grep -v "output" | grep -v "xmlns=" | sed 's/<conveyed-information>/<conveyed-information xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<owner-certificate>/<owner-certificate xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' | sed 's/<ownership-voucher>/<ownership-voucher xmlns="urn:ietf:params:xml:ns:yang:ietf-sztp-bootstrap-server">/' > ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
 response=`yanglint -s -t rpcreply ../ietf-sztp-bootstrap-server\@*.yang ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml 2>&1`
+exit_code=$?
 rm ex-api-get-bootstrap-data-rpc-untrusted-4nc.xml
 rm ex-api-get-bootstrap-data-rpc-reply-untrusted-4nc.xml
-if [ $? -ne 0 ]; then
+if [ $exit_code -ne 0 ]; then
   printf "failed (error code: $?)\n"
   printf "$response\n\n"
   echo
