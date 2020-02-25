@@ -54,8 +54,8 @@ $(next).xml: $(draft).xml
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-sztp-conveyed-info.yang > ietf-sztp-conveyed-info\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" ietf-sztp-bootstrap-server.yang > ietf-sztp-bootstrap-server\@$(shell date +%Y-%m-%d).yang
 	sed -e"s/YYYY-MM-DD/$(shell date +%Y-%m-%d)/" example-device-data-model.yang > example-device-data-model\@$(shell date +%Y-%m-%d).yang
-	cd refs; ./validate-all.sh; ./gen-trees.sh; cd ..;
-	./.insert-figures.sh $@ > tmp
+	cd refs && ./validate-all.sh && ./gen-trees.sh && cd ..
+	./.insert-figures.sh $@ > tmp && mv tmp $@
 	mv tmp $@
 	rm refs/*-tree.txt
 
