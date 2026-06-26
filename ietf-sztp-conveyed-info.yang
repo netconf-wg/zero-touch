@@ -20,8 +20,8 @@ module ietf-sztp-conveyed-info {
     "IETF NETCONF (Network Configuration) Working Group";
 
   contact
-    "WG Web:   http://tools.ietf.org/wg/netconf
-     WG List:  <mailto:netconf@ietf.org>
+    "WG Web:   https://datatracker.ietf.org/wg/netconf
+     WG List:  NETCONF WG list <mailto:netconf@ietf.org>
      Author:   Kent Watsen <mailto:kwatsen@juniper.net>";
 
   description
